@@ -1,5 +1,6 @@
-# Add patch, minor or major label to Pull Request depending on its notes
-# Pull request notes must be in Keep a Changelog format
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
 name: Update Pull Request labels
 
 # trigger workflow if pull request was opened or edited

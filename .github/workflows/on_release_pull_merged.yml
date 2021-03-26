@@ -1,4 +1,6 @@
-# Update release draft on non-release pull request merge
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
 name: Publish to NPM on Release Pull Request merged
 
 on:

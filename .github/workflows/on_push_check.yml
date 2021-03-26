@@ -1,3 +1,6 @@
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
 name: Run code style checks and unit tests
 
 on:

@@ -1,3 +1,6 @@
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
 name: Create or update a Release draft from Unreleased notes
 
 on:

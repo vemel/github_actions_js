@@ -1,4 +1,6 @@
-# Create a Release Pull Request on Release published
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
 name: Create Release Pull Request on Release
 
 on:
