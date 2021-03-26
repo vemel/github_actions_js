@@ -3,6 +3,7 @@ import fs from "fs";
 import yaml from "js-yaml";
 import os from "os";
 import path from "path";
+import { promisify } from "util";
 
 const LOCAL_WORKFLOWS_PATH = "./.github/workflows";
 const UTF8 = "utf-8";
@@ -42,23 +43,15 @@ export async function readRemoteWorkflows(
             } catch (e) {
                 return <[string, null]>[name, null];
             }
-            return new Promise(resolve => {
-                fs.readFile(filePath, { encoding: UTF8 }, (err, content) => {
-                    if (err) {
-                        resolve([name, null]);
-                        return;
-                    }
-                    resolve([name, content]);
-                });
+            const content = await promisify(fs.readFile)(filePath, {
+                encoding: UTF8
             });
+            return <[string, string]>[name, content];
         }
     );
-    return Promise.all(results).then(data => {
-        return new Promise(resolve => {
-            fs.rmdir(tempPath, () => {
-                resolve(data);
-            });
-        });
+    return Promise.all(results).then(async data => {
+        await promisify(fs.rmdir)(tempPath, { recursive: true });
+        return data;
     });
 }
 
@@ -68,15 +61,14 @@ export async function readLocalWorkflows(
     const results: Array<Promise<[string, string | null]>> = names.map(
         async name => {
             const filePath = getLocalPath(name);
-            return new Promise(resolve => {
-                fs.readFile(filePath, { encoding: UTF8 }, (err, content) => {
-                    if (err) {
-                        resolve([name, null]);
-                        return;
-                    }
-                    resolve([name, content]);
+            try {
+                const content = await promisify(fs.readFile)(filePath, {
+                    encoding: UTF8
                 });
-            });
+                return <[string, string]>[name, content];
+            } catch {
+                return <[string, null]>[name, null];
+            }
         }
     );
     return Promise.all(results);
