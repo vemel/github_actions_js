@@ -1,9 +1,9 @@
-# GitHub Actions for JavaScript/TypeScript projects
+# GitHubActions.js
 
-- [GitHub Actions for JavaScript/TypeScript projects](#github-actions-for-javascripttypescript-projects)
+- [GitHubActions.js](#githubactionsjs)
   - [Usage](#usage)
-  - [Summary](#summary)
-    - [Easy CI/CD Zen](#easy-cicd-zen)
+  - [Description](#description)
+    - [GitHubActions.js Zen](#githubactionsjs-zen)
     - [What it does](#what-it-does)
     - [What it does not](#what-it-does-not)
   - [Secrets](#secrets)
@@ -30,9 +30,9 @@ npx ghactions --help
 npx ghactions --add all
 ```
 
-## Summary
+## Description
 
-### Easy CI/CD Zen
+### GitHubActions.js Zen
 
 - Write Release and Pull Request notes in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
 - Follow [SemVer](https://semver.org/) versioning schema

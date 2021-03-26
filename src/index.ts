@@ -94,4 +94,8 @@ async function main(): Promise<void> {
     });
 }
 
+if (typeof require !== "undefined" && require.main === module) {
+    main();
+}
+
 export default main;

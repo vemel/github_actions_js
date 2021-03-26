@@ -1,5 +1,5 @@
-# This workflow provided by Easy CI/CD
-# Documentation: https://github.com/vemel/easycicd_js
+# This workflow provided by GitHubActions.js
+# Documentation: https://github.com/vemel/github_actions_js
 
 name: Update Pull Request labels
 
