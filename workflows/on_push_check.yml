@@ -20,7 +20,6 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install package
         run: |
-          npm install -g npm
           npm install
       - name: Get available scripts
         id: scripts

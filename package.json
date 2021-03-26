@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": false,
   "description": "GitHub Actions manager for automated JavaScript/TypeScript projects",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "rm -rf dist/* lib/* && tsc",
     "dev": "ts-node src/index.ts",
@@ -14,6 +14,9 @@
     "format-check": "prettier --check **/*.ts",
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"
   },
+  "files": [
+    "lib/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vemel/easycicd_js.git"
