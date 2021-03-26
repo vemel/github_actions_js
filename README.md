@@ -42,6 +42,8 @@ npx ghactions --add all
 - Always leave a final decision to a human in case automation goes crazy
 - Enforce best practices for versioning and changelog in a passive-aggressive way
 - All actions use only Node.js 12 for speed and stability
+- Every action should have an additional manual trigger in case of trouble
+- Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 
 ### What it does
 
@@ -60,7 +62,7 @@ npx ghactions --add all
 
 ## Secrets
 
-- `NPM_TOKEN` - If set, new version is published to [npm](https://www.npmjs.com/)
+- `NPM_TOKEN` - If set, new releases are published to [npm](https://www.npmjs.com/) on Release Pull Request merge
 
 ## Workflows
 

@@ -76,15 +76,18 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const fs = require('fs');
+            const { promisify } = require('util');
+            const exec = promisify(require('child_process').exec);
 
             // Script to build package
             const buildScript = 'build';
 
-            const data = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'}));
-            const scripts = Object.keys(data.scripts);
+            const output = (await exec('npm run')).stdout;
+            const scripts = output.split(/\r?\n/)
+              .filter(line => line.startsWith('  ') && !line.startsWith('   '))
+              .map(line => line.trim());
 
-            core.setOutput('build', scripts.filter(x => x === buildScript)[0] || "");
+            core.setOutput('build', scripts.includes(buildScript) ? buildScript : '');
             return true;
       - name: Install package
         if: "steps.pull-request.outputs.result"

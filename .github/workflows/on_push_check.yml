@@ -12,21 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Install package
-        run: |
-          npm install
       - name: Get available scripts
         id: scripts
         uses: actions/github-script@v3
         with:
           script: |
-            const fs = require('fs');
+            const { promisify } = require('util');
+            const exec = promisify(require('child_process').exec);
 
             // Script to run linting
             const lintScript = 'lint';
@@ -34,12 +26,32 @@ jobs:
             // Script to run unit tests
             const testScript = 'test';
 
-            const data = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'}));
-            const scripts = Object.keys(data.scripts);
+            const output = (await exec('npm run')).stdout;
+            const scripts = output.split(/\r?\n/)
+              .filter(line => line.startsWith('  ') && !line.startsWith('   '))
+              .map(line => line.trim());
 
-            core.setOutput('lint', scripts.filter(x => x === lintScript)[0] || "");
-            core.setOutput('test', scripts.filter(x => x === testScript)[0] || "");
-            return true;
+            let result = undefined;
+            if (scripts.includes(lintScript)) {
+              core.setOutput('lint', lintScript);
+              result = true;
+            }
+            if (scripts.includes(testScript)) {
+              core.setOutput('test', testScript);
+              result = true;
+            }
+            return result;
+      - uses: actions/cache@v2
+        if: "steps.scripts.outputs.result"
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install package
+        if: "steps.scripts.outputs.result"
+        run: |
+          npm install
       - name: Run linting
         if: "steps.scripts.outputs.lint"
         run: |
