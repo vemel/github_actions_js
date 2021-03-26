@@ -1,0 +1,108 @@
+name: Create or update a Release draft from Unreleased notes
+
+on:
+  workflow_dispatch:
+    target:
+      description: "Release target branch"
+      required: true
+      default: "main"
+    release:
+      description: "Release type: stable, rc, alpha, or beta"
+      required: true
+      default: "stable"
+
+jobs:
+  create-release-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Release target branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.target }}
+      - name: Get Unreleased notes
+        id: unreleased
+        uses: vemel/nextchange@main
+        with:
+          # get Unreleased section of CHANGELOG.md to set as a body of a newly created release draft
+          get: Unreleased
+          sanitize: true
+      - name: Get or create Release draft
+        uses: actions/github-script@v3
+        id: release
+        with:
+          script: |
+            let release = null;
+            const baseBranch = ${{ toJSON(github.event.inputs.target) }};
+            const unreleased = ${{ toJSON(steps.unreleased.outputs.result) }};
+
+            // find existing relese draft for pull request base branch in first 100 releases
+            const releasesResponse = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            for (let releaseItem of releasesResponse.data) {
+              if (!releaseItem.draft) continue;
+              if (releaseItem.target_commitish !== baseBranch) continue;
+              release = releaseItem;
+              core.info(`Found existing release draft ${release.name}`);
+              break;
+            }
+
+            // create a release draft if there is none
+            if (!release) {
+              const response = await github.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: '0.0.0',
+                name: '0.0.0',
+                draft: true,
+                target_commitish: baseBranch,
+                body: ${{ toJSON(steps.unreleased.outputs.result) }},
+              })
+              release = response.data;
+              core.info(`Created Release draft ${release.name}`);
+            }
+
+            core.setOutput('id', release.id);
+            core.setOutput("url", release.html_url);
+            core.setOutput('tag', release.tag_name);
+            core.setOutput('name', release.name);
+            core.setOutput('body', release.body.trim() ? release.body : unreleased);
+      - name: Analyze Release notes
+        id: notes
+        uses: vemel/nextchange@main
+        with:
+          set: ${{ steps.release.outputs.body }}
+      - name: Get suggested version
+        id: version
+        uses: vemel/nextversion@main
+        with:
+          path: ./package.json
+          release: ${{ github.event.inputs.release }}
+          # bump version from package.json according to release notes
+          result: ${{ steps.notes.outputs.label }}
+      - name: Update release draft
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const releaseId = ${{ steps.release.outputs.id }};
+            core.info(`Release ID: ${releaseId}`);
+
+            // set release draft tag and name to suggested version
+            const version = ${{ toJSON(steps.version.outputs.result) }};
+            core.info(`Release version: ${version}`);
+
+            const body = ${{ toJSON(steps.notes.outputs.result) }};
+            core.info(`Release body: ${body}`);
+
+            const response = await github.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              tag_name: version,
+              name: version,
+              draft: true,
+              body: body,
+              prerelease: true,
+            });
+            core.info(`Release URL: ${response.data.html_url}`);

@@ -1,0 +1,102 @@
+# Update release draft on non-release pull request merge
+name: Publish to NPM on Release Pull Request merged
+
+on:
+  pull_request:
+    types: [closed]
+  # remove manual dispatch if you do not need it
+  workflow_dispatch:
+    number:
+      description: "Pull Request number"
+      required: true
+
+jobs:
+  publish-to-npm:
+    if: "secrets.NPM_TOKEN"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Pull Request
+        uses: actions/github-script@v3
+        id: pull-request
+        with:
+          script: |
+            let pullRequest = null;
+            if (context.inputs && context.inputs.number) {
+              // find Pull Request by number fom input
+              try {
+                pullRequest = (await github.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: number,
+                })).data;
+              } catch(e) {
+                core.error(`Cannot get Pull Request #${number}: ${e}`);
+                return;
+              }
+            } else {
+              // get Pull Request from event payload
+              pullRequest = context.payload;
+            }
+
+            // Stop if Pull request is not merged
+            if (!pullRequest.merged) {
+              core.info(`Pull Request ${pullRequest.number} is not merged, skipping`);
+              return;
+            }
+
+            // Stop if Pull Request branch name starts with `release`
+            const branch = pullRequest.head.ref;
+            if (!branch.startswith('release')) {
+              core.info(`This is not a release branch ${branch}, skipping`);
+              return;
+            }
+
+            core.setOutput('branch', branch);
+            core.setOutput('base', pullRequest.base.ref);
+            core.setOutput('number', pullRequest.number);
+            core.setOutput('url', pullRequest.html_url);
+            core.setOutput('body', pullRequest.body);
+            core.setOutput('suffix', `[#${pullRequest.number}](${pullRequest.html_url})`);
+            return true;
+      # Switch to Pull Request base branch
+      - name: Checkout Pull Request base branch
+        if: "steps.pull-request.outputs.result"
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.pull-request.outputs.base }}
+      - uses: actions/setup-node@v2
+        if: "steps.pull-request.outputs.result"
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: Get available scripts
+        id: scripts
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Script to build package
+            const buildScript = 'build';
+
+            const data = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'}));
+            const scripts = Object.keys(data.scripts);
+
+            core.setOutput('build', scripts.filter(x => x === buildScript)[0] || "");
+            return true;
+      - name: Install package
+        if: "steps.pull-request.outputs.result"
+        run: |
+          npm install
+      - name: Build package
+        if: "steps.pull-request.outputs.result && steps.scripts.outputs.build"
+        run: |
+          echo "Running: npm run ${{ steps.scripts.outputs.build }}"
+          npm run ${{ steps.scripts.outputs.build }}
+      # publish to NPM if NPM_TOKEN secret is set
+      - name: Publish new version to NPM
+        if: "steps.pull-request.outputs.result"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --access public

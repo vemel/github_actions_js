@@ -1,0 +1,112 @@
+# Create a Release Pull Request on Release published
+name: Create Release Pull Request on Release
+
+on:
+  release:
+    types:
+      - published
+  # remove manual dispatch if you do not need it
+  workflow_dispatch:
+    tag:
+      description: "Release tag"
+      required: true
+
+jobs:
+  release-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Release
+        uses: actions/github-script@v3
+        id: release
+        with:
+          script: |
+            let release = null;
+            if (context.payload.inputs && context.payload.inputs.number) {
+              const tagName = context.payload.inputs.tag;
+              // find Pull Request by number fom input
+              const releasesResponse = await github.repos.listReleases({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              for (let releaseItem of releasesResponse.data) {
+                if (releaseItem.tag_name !== tagName) continue;
+                release = releaseItem;
+                core.info(`Found release ${release.name}`);
+                break;
+              }
+            }
+            if (context.payload.release){
+              // get Release from event payload
+              pullRequest = context.payload.release;
+            }
+
+            if (!release) {
+              core.error(`Cannot find Release`);
+              return;
+            }
+
+            core.setOutput('target', release.target_commitish);
+            core.setOutput('branch', `release/${release.tag_name}`);
+            core.setOutput('id', release.id);
+            core.setOutput("url", release.html_url);
+            core.setOutput('tag', release.tag_name);
+            core.setOutput('name', release.name);
+            core.setOutput('body', release.body);
+            return true;
+      # Switch to Release target branch
+      - name: Checkout Release target branch
+        if: "steps.release.outputs.result"
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.release.outputs.target }}
+      - name: Update version
+        id: version
+        if: "steps.release.outputs.result"
+        uses: vemel/nextversion@main
+        with:
+          # replace version in package.json with release tag
+          path: ./package.json
+          type: semver
+          result: ${{ steps.release.outputs.tag }}
+          # add extra paths to files where version should be updated
+          update: |
+            ./package.json
+      - name: Add new release to CHANGELOG.md
+        id: changelog
+        if: "steps.release.outputs.result"
+        uses: vemel/nextchange@main
+        with:
+          release: ${{ steps.version.outputs.result }}
+          clear: true
+          set: ${{ steps.release.outputs.body }}
+      - name: Clear Unreleased in CHANGELOG.md
+        if: "steps.release.outputs.result"
+        uses: vemel/nextchange@main
+        with:
+          release: Unreleased
+          clear: true
+      - name: Commit changes
+        if: "steps.release.outputs.result"
+        run: |
+          VERSION=${{ toJSON(steps.version.outputs.result) }}
+          BRANCH=${{ toJSON(steps.release.outputs.branch) }}
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout -b $BRANCH
+          git commit -am "Bump version to $VERSION"
+          git push --set-upstream origin $BRANCH
+      - name: Create Pull Request
+        uses: actions/github-script@v3
+        if: "steps.release.outputs.result"
+        with:
+          script: |
+            const response = await github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: ${{ toJSON(steps.release.outputs.branch) }},
+              base: ${{ toJSON(steps.release.outputs.target) }},
+              title: "Release ${{ steps.version.outputs.result }}",
+              body: ${{ toJSON(steps.changelog.outputs.result) }}
+            });
+            core.info(`Release Pull Request title: ${response.data.title}`);
+            core.info(`Release Pull Request URL: ${response.data.html_url}`);

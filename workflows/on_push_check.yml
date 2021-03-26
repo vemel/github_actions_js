@@ -1,0 +1,53 @@
+# This workflow provided by Easy CI/CD
+# Documentation: https://github.com/vemel/easycicd_js
+
+name: Run code style checks and unit tests
+
+on:
+  push: {}
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install package
+        run: |
+          npm install -g npm
+          npm install
+      - name: Get available scripts
+        id: scripts
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Script to run linting
+            const lintScript = 'lint';
+
+            // Script to run unit tests
+            const testScript = 'test';
+
+            const data = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'}));
+            const scripts = Object.keys(data.scripts);
+
+            core.setOutput('lint', scripts.filter(x => x === lintScript)[0] || "");
+            core.setOutput('test', scripts.filter(x => x === testScript)[0] || "");
+            return true;
+      - name: Run linting
+        if: "steps.scripts.outputs.lint"
+        run: |
+          echo "Running: npm run ${{ steps.scripts.outputs.lint }}"
+          npm run ${{ steps.scripts.outputs.lint }}
+      - name: Run tests
+        if: "steps.scripts.outputs.test"
+        run: |
+          echo "Running: npm run ${{ steps.scripts.outputs.test }}"
+          npm run ${{ steps.scripts.outputs.test }}
