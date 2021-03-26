@@ -14,6 +14,7 @@
     - [Create release Pull Request on Release](#create-release-pull-request-on-release)
     - [Publish to NPM on Release Pull Request merged](#publish-to-npm-on-release-pull-request-merged)
     - [Create or update a Release draft from Unreleased notes](#create-or-update-a-release-draft-from-unreleased-notes)
+  - [TODO](#todo)
 
 GitHub Actions for automated JavaScript/TypeScript projects.
 
@@ -22,11 +23,11 @@ GitHub Actions for automated JavaScript/TypeScript projects.
 ```bash
 npm i --save-dev easycicd
 
+# list available workflows
+npx easycicd --help
+
 # add all workflows
 npx easycicd --add all
-
-# update workflows
-npx easycicd --update all
 ```
 
 ## Summary
@@ -68,11 +69,11 @@ Workflow: [on_push_check.yml](workflows/on_push_check.yml)
 - Starts on push to any branch
 - Runs linting if `lint` script is available in `package.json`
 - Runs unit tests if `test` script is available in `package.json`
+- Uses `npm` cache to improve performance
 
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_push_check.yml -o .github/workflows/on_push_check.yml
+# install this action to .github/workflows
+npx easycicd on_push_check
 ```
 
 ### Update Pull Request labels
@@ -87,9 +88,8 @@ Workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.ym
 - Otherwise adds `patch` label
 
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_pull_opened_or_edited.yml -o .github/workflows/on_pull_opened_or_edited.yml
+# install this action to .github/workflows
+npx easycicd on_pull_opened_or_edited
 ```
 
 ### Update Release draft from Pull Request notes
@@ -103,9 +103,8 @@ Workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
 - Release draft suggested version is based on Release notes
 
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_pull_merged.yml -o .github/workflows/on_pull_merged.yml
+# install this action to .github/workflows
+npx easycicd on_pull_merged
 ```
 
 ### Create release Pull Request on Release
@@ -119,9 +118,8 @@ Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
 - Release Pull Request uses branch `release/<version>`
 
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_release_published.yml -o .github/workflows/on_release_published.yml
+# install this action to .github/workflows
+npx easycicd on_release_published
 ```
 
 ### Publish to NPM on Release Pull Request merged
@@ -135,9 +133,8 @@ Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 - Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
 
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_release_pull_merged.yml -o .github/workflows/on_release_pull_merged.yml
+# install this action to .github/workflows
+npx easycicd on_release_pull_merged
 ```
 
 ### Create or update a Release draft from Unreleased notes
@@ -150,8 +147,13 @@ Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_rele
 - If Release draft does not exist or has empty notes - notes are populated from `Unreleased` section of `CHANGELOG.md`
 - Sets suggested version as `name` and `tag` of the Release
 
+
 ```bash
-# download workflows to GitHub Action directory
-# run this command from a GitHub repository root
-curl https://github.com/vemel/easycicd_js/blob/main/workflows/on_demand_create_release_draft.yml -o .github/workflows/on_demand_create_release_draft.yml
+# install this action to .github/workflows
+npx easycicd on_demand_create_release_draft
 ```
+
+## TODO
+
+- [ ] Add test coverage support
+- [ ] Merge user-edited workflows
