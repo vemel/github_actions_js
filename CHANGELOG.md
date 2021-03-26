@@ -10,4 +10,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `[on_push_check]` `npm run` commands `lint` and `test` were not discovered properly from 3rd party scripts
 - `[on_push_check]` cache moved down to avoid installation and caching when there is nothing to do
 - `[on_release_pull_merged]` `npm run` commands `build` was not discovered properly from 3rd party scripts
-- Clean up temp download directory
+- `[cli]` Clean up temp download directory
