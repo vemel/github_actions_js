@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import fs from "fs";
 
 import { getHelp, Namespace, parseArgs } from "./cli";
 import {
@@ -75,6 +76,26 @@ async function main(): Promise<void> {
     if (args.help) {
         console.log(getHelp());
         process.exit(0);
+    }
+    if (!fs.existsSync("./.github/workflows")) {
+        console.warn(
+            chalk.red(
+                `✗  ${chalk.bold(
+                    ".github/workflows"
+                )} directory does not exist in current path`
+            )
+        );
+        console.warn(
+            chalk.yellow("✎  Probably this is not a GitHub repository root")
+        );
+        console.warn(
+            chalk.yellow(
+                `✎  If it is, create this directory with: ${chalk.bold(
+                    "mkdir -p .github/workflows"
+                )}`
+            )
+        );
+        process.exit(1);
     }
     if (!args.update.length) {
         console.log(getHelp());

@@ -21,7 +21,9 @@ Universal GitHub Actions pack for JavaScript/TypeScript projects.
 ## Usage
 
 ```bash
+# in a GitHub repository root
 npm i --save-dev github-actions
+mkdir -p .github/workflows
 
 # list available workflows
 npx ghactions --help
