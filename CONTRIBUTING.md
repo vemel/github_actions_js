@@ -1,7 +1,7 @@
 ## Contributing
 
-[fork]: https://github.com/vemel/easycicd_js/fork
-[pr]: https://github.com/vemel/easycicd_js/compare
+[fork]: https://github.com/vemel/github_actions_js/fork
+[pr]: https://github.com/vemel/github_actions_js/compare
 [style]: https://github.com/styleguide/js
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.

@@ -21,10 +21,10 @@ const ALL_WORKFLOW_NAMES = ["all (all workflows below)", ...WORKFLOW_NAMES];
 export function getHelp(): string {
     return commandLineUsage([
         {
-            header: "Easy CI/CD ",
+            header: "GitHubActions.js",
             content:
-                "GitHub Actions manager for automated JavaScript/TypeScript projects\n\n" +
-                "Documentation: https://github.com/vemel/easycicd_js"
+                "Universal GitHub Actions pack for JavaScript/TypeScript projects\n\n" +
+                "Documentation: https://github.com/vemel/github_actions_js"
         },
         {
             header: "Options",

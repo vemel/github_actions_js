@@ -83,7 +83,7 @@ async function main(): Promise<void> {
 
     console.log(
         chalk.grey(
-            `Checking https://github.com/vemel/easycicd_js for workflow updates`
+            `Checking https://github.com/vemel/github_actions_js for workflow updates`
         )
     );
     const remoteContents = await readRemoteWorkflows(args.update, args.ref);
@@ -93,7 +93,5 @@ async function main(): Promise<void> {
         processWorkflowUpdate(name, localContent, remoteContent, args.force);
     });
 }
-
-main();
 
 export default main;

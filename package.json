@@ -1,8 +1,8 @@
 {
-  "name": "easycicd",
+  "name": "github-actions",
   "version": "0.0.1",
   "private": false,
-  "description": "GitHub Actions manager for automated JavaScript/TypeScript projects",
+  "description": "Universal GitHub Actions pack for JavaScript/TypeScript projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -14,12 +14,15 @@
     "format-check": "prettier --check **/*.ts",
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"
   },
+  "bin": {
+    "ghactions": "bin/ghactions"
+  },
   "files": [
     "lib/*"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vemel/easycicd_js.git"
+    "url": "git+https://github.com/vemel/github_actions_js.git"
   },
   "keywords": [
     "actions",

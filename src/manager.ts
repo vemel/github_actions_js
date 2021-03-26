@@ -12,7 +12,7 @@ interface Workflow {
 }
 
 function getTempDir(): string {
-    return fs.mkdtempSync(path.join(os.tmpdir(), "easycicd-"));
+    return fs.mkdtempSync(path.join(os.tmpdir(), "ghactions-"));
 }
 
 export function getLocalPath(name: string): string {
@@ -36,7 +36,7 @@ export async function readRemoteWorkflows(
     const results: Array<Promise<[string, string | null]>> = names.map(
         async name => {
             const filePath = path.join(tempPath, `${name}.yml`);
-            const url = `https://raw.githubusercontent.com/vemel/easycicd_js/${ref}/workflows/${name}.yml`;
+            const url = `https://raw.githubusercontent.com/vemel/github_actions_js/${ref}/workflows/${name}.yml`;
             try {
                 await download(url, tempPath);
             } catch (e) {

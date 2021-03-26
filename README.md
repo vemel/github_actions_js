@@ -1,6 +1,6 @@
-# Easy CI/CD for JavaScript/TypeScript projects
+# GitHub Actions for JavaScript/TypeScript projects
 
-- [Easy CI/CD for JavaScript/TypeScript projects](#easy-cicd-for-javascripttypescript-projects)
+- [GitHub Actions for JavaScript/TypeScript projects](#github-actions-for-javascripttypescript-projects)
   - [Usage](#usage)
   - [Summary](#summary)
     - [Easy CI/CD Zen](#easy-cicd-zen)
@@ -16,18 +16,18 @@
     - [Create or update a Release draft from Unreleased notes](#create-or-update-a-release-draft-from-unreleased-notes)
   - [TODO](#todo)
 
-GitHub Actions for automated JavaScript/TypeScript projects.
+Universal GitHub Actions pack for JavaScript/TypeScript projects.
 
 ## Usage
 
 ```bash
-npm i --save-dev easycicd
+npm i --save-dev github-actions
 
 # list available workflows
-npx easycicd --help
+npx ghactions --help
 
 # add all workflows
-npx easycicd --add all
+npx ghactions --add all
 ```
 
 ## Summary
@@ -73,7 +73,7 @@ Workflow: [on_push_check.yml](workflows/on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_push_check
+npx ghactions on_push_check
 ```
 
 ### Update Pull Request labels
@@ -89,7 +89,7 @@ Workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.ym
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_pull_opened_or_edited
+npx ghactions on_pull_opened_or_edited
 ```
 
 ### Update Release draft from Pull Request notes
@@ -104,7 +104,7 @@ Workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_pull_merged
+npx ghactions on_pull_merged
 ```
 
 ### Create release Pull Request on Release
@@ -119,7 +119,7 @@ Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_release_published
+npx ghactions on_release_published
 ```
 
 ### Publish to NPM on Release Pull Request merged
@@ -134,7 +134,7 @@ Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_release_pull_merged
+npx ghactions on_release_pull_merged
 ```
 
 ### Create or update a Release draft from Unreleased notes
@@ -150,7 +150,7 @@ Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_rele
 
 ```bash
 # install this action to .github/workflows
-npx easycicd on_demand_create_release_draft
+npx ghactions on_demand_create_release_draft
 ```
 
 ## TODO
