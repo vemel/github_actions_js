@@ -8,7 +8,7 @@
 # - Do not change job name, it is important for updates
 # - Comments in yaml are removed on update, sorry :(
 
-name: Publish to NPM on Release Pull Request merged
+name: Publish to NPM
 "on":
   pull_request:
     types:

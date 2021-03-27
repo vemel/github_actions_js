@@ -61,7 +61,7 @@ export function runCheck(
             );
         console.log(color(`  ${icon}  ${message}`));
     });
-    return hasErrors;
+    return !hasErrors;
 }
 
 export async function runCheckAll(
@@ -70,13 +70,13 @@ export async function runCheckAll(
 ): Promise<boolean> {
     const remoteContents = await readRemoteWorkflows(names, ref);
     const localContents = new Map(await readLocalWorkflows(names));
-    let hasErrors = false;
+    let noErrors = true;
     remoteContents.forEach(([name, remoteContent]) => {
         const localContent = localContents.get(name) || null;
         const result = runCheck(name, localContent, remoteContent);
-        hasErrors = hasErrors || result;
+        noErrors = noErrors && result;
     });
-    if (!hasErrors) {
+    if (noErrors) {
         console.log(
             chalk.green(
                 `✓  Run ${chalk.bold("ghactions all")} any time you want!`
@@ -95,5 +95,5 @@ export async function runCheckAll(
             "  ✎  Check for updates: https://github.com/vemel/github_actions_js"
         );
     }
-    return hasErrors;
+    return noErrors;
 }

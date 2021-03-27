@@ -8,7 +8,7 @@
 # - Do not change job name, it is important for updates
 # - Comments in yaml are removed on update, sorry :(
 
-name: Update Release draft from Pull Request notes
+name: Update Release from Pull Request
 "on":
   pull_request:
     types:

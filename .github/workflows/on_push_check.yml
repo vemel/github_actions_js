@@ -8,7 +8,7 @@
 # - Do not change job name, it is important for updates
 # - Comments in yaml are removed on update, sorry :(
 
-name: Run code style checks and unit tests
+name: Run style checks and unit tests
 "on":
   push: {}
   workflow_dispatch: {}

@@ -8,7 +8,7 @@
 # - Do not change job name, it is important for updates
 # - Comments in yaml are removed on update, sorry :(
 
-name: Create Release draft from Unreleased notes
+name: Create Release draft
 "on":
   workflow_dispatch:
     inputs:

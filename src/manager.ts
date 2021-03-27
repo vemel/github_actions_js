@@ -25,7 +25,11 @@ export function getWorkflowData(content: string): Workflow {
 }
 
 export function renderWorkflow(workflow: Workflow): string {
-    return `${HEADER}\n\n${yaml.dump(workflow, { lineWidth: 999 })}`;
+    const body = yaml.dump(workflow, {
+        lineWidth: 999,
+        quotingType: '"'
+    });
+    return `${HEADER}\n\n${body}`;
 }
 
 export async function readRemoteWorkflows(
