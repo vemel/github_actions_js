@@ -75,7 +75,7 @@ jobs:
             core.setOutput("url", release.html_url);
             core.setOutput('tag', release.tag_name);
             core.setOutput('name', release.name);
-            core.setOutput('body', release.body.trim() ? release.body : unreleased);
+            core.setOutput('body', unreleased);
       - name: Analyze Release notes
         id: notes
         uses: vemel/nextchange@main

@@ -158,7 +158,7 @@ Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_rele
 - Starts only manually
 - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
 - Creates or updates a release draft for `target` branch
-- If Release draft does not exist or has empty notes - notes are populated from `Unreleased` section of `CHANGELOG.md`
+- Release notes are populated from `Unreleased` section of `CHANGELOG.md`
 - Sets suggested version as `name` and `tag` of the Release
 
 
