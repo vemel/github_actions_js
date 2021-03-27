@@ -29,7 +29,7 @@ test("merge workflows", async () => {
     localJob.steps = [
         {
             id: "remote1",
-            with: { "github-actions-managed": true, key: "local" }
+            run: "\n\n  # github-actions-managed: true \n\nkey: local"
         },
         {
             id: "local11",
@@ -59,7 +59,7 @@ test("merge workflows", async () => {
     remoteJob.steps = [
         {
             id: "remote1",
-            with: { "github-actions-managed": true, key: "remote" }
+            run: "\n# github-actions-managed: true\nkey: remote"
         },
         {
             id: "remote2",
@@ -80,10 +80,7 @@ test("merge workflows", async () => {
             stepName: "remote1",
             step: {
                 id: "remote1",
-                with: {
-                    "github-actions-managed": true,
-                    key: "remote"
-                }
+                run: "\n# github-actions-managed: true\nkey: remote"
             }
         },
         {

@@ -39,7 +39,7 @@ export function mergesToSteps(merges: Array<StepMerge>): Array<Step> {
 export function isStepManaged(step: Step): boolean {
     if (step.with?.["github-actions-managed"]) return true;
     if (step.run) {
-        const lines = step.run.split(/\r?\n/);
+        const lines = step.run.split(/\r?\n/).map(x => x.trim());
         if (lines.includes("# github-actions-managed: true")) return true;
     }
     return false;
