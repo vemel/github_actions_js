@@ -14,9 +14,10 @@ name: Create Release Pull Request on Release
     types:
       - published
   workflow_dispatch:
-    tag:
-      description: Release tag
-      required: true
+    inputs:
+      tag:
+        description: Release tag
+        required: true
 jobs:
   release-new-version:
     runs-on: ubuntu-latest

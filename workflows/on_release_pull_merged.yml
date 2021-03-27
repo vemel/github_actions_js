@@ -14,9 +14,10 @@ name: Publish to NPM on Release Pull Request merged
     types:
       - closed
   workflow_dispatch:
-    number:
-      description: Pull Request number
-      required: true
+    inputs:
+      number:
+        description: Pull Request number
+        required: true
 jobs:
   publish-to-npm:
     if: secrets.NPM_TOKEN

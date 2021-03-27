@@ -9,16 +9,17 @@
 # - Comments in yaml are removed on update, sorry :(
 
 name: Create or update a Release draft from Unreleased notes
-'on':
+"on":
   workflow_dispatch:
-    target:
-      description: Release target branch
-      required: true
-      default: main
-    release:
-      description: 'Release type: stable, rc, alpha, or beta'
-      required: true
-      default: stable
+    inputs:
+      target:
+        description: Release target branch
+        required: true
+        default: main
+      release:
+        description: "Release type: stable, rc, alpha, or beta"
+        required: true
+        default: stable
 jobs:
   create-release-draft:
     runs-on: ubuntu-latest
