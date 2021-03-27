@@ -1,5 +1,7 @@
 # GitHubActions.js
 
+Universal GitHub Actions pack for JavaScript/TypeScript projects.
+
 - [GitHubActions.js](#githubactionsjs)
   - [Usage](#usage)
   - [Description](#description)
@@ -17,8 +19,6 @@
     - [Create Release draft](#create-release-draft)
   - [TODO](#todo)
 
-Universal GitHub Actions pack for JavaScript/TypeScript projects.
-
 ## Usage
 
 ```bash
@@ -29,8 +29,11 @@ mkdir -p .github/workflows
 # list available workflows
 npx ghactions --help
 
-# add all workflows
+# add or update all workflows
 npx ghactions all
+
+# force update all workflows
+npx ghactions all --force
 
 # check if workflows can be safely updated
 npx ghactions --check
