@@ -8,14 +8,10 @@
 # - Do not change job name, it is important for updates
 # - Comments in yaml are removed on update, sorry :(
 
-name: Create or update a Release draft from Unreleased notes
+name: Create Release draft from Unreleased notes
 "on":
   workflow_dispatch:
     inputs:
-      target:
-        description: Release target branch
-        required: true
-        default: main
       release:
         description: "Release type: stable, rc, alpha, or beta"
         required: true
@@ -29,7 +25,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           github-actions-managed: true
-          ref: ${{ github.event.inputs.target }}
       - name: Get Unreleased notes
         id: unreleased
         uses: vemel/nextchange@main
@@ -42,10 +37,10 @@ jobs:
         uses: actions/github-script@v3
         id: release
         with:
+          github-actions-managed: true
           script: |
-            console.log(${{ toJSON(github.event) }});
             let release = null;
-            const baseBranch = ${{ toJSON(github.event.inputs.target) }};
+            const baseBranch = ${{ toJSON(github.event.ref) }}.replace("refs/heads/", "");
             const unreleased = ${{ toJSON(steps.unreleased.outputs.result) }};
 
             // find existing relese draft for pull request base branch in first 100 releases

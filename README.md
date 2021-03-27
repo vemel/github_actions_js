@@ -9,12 +9,12 @@
     - [How to modify workflows and keep updated](#how-to-modify-workflows-and-keep-updated)
   - [Secrets](#secrets)
   - [Workflows](#workflows)
-    - [Run code style checks and unit tests](#run-code-style-checks-and-unit-tests)
+    - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
-    - [Update Release draft from Pull Request notes](#update-release-draft-from-pull-request-notes)
-    - [Create release Pull Request on Release](#create-release-pull-request-on-release)
-    - [Publish to NPM on Release Pull Request merged](#publish-to-npm-on-release-pull-request-merged)
-    - [Create or update a Release draft from Unreleased notes](#create-or-update-a-release-draft-from-unreleased-notes)
+    - [Update Release from Pull Request](#update-release-from-pull-request)
+    - [Create Release Pull Request](#create-release-pull-request)
+    - [Publish to NPM](#publish-to-npm)
+    - [Create Release draft](#create-release-draft)
   - [TODO](#todo)
 
 Universal GitHub Actions pack for JavaScript/TypeScript projects.
@@ -76,7 +76,7 @@ npx ghactions --check
 
 ## Workflows
 
-### Run code style checks and unit tests
+### Run style checks and unit tests
 
 Workflow: [on_push_check.yml](workflows/on_push_check.yml)
 
@@ -106,7 +106,7 @@ Workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.ym
 npx ghactions on_pull_opened_or_edited
 ```
 
-### Update Release draft from Pull Request notes
+### Update Release from Pull Request
 
 Workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
 
@@ -121,7 +121,7 @@ Workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
 npx ghactions on_pull_merged
 ```
 
-### Create release Pull Request on Release
+### Create Release Pull Request
 
 Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
 
@@ -136,7 +136,7 @@ Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
 npx ghactions on_release_published
 ```
 
-### Publish to NPM on Release Pull Request merged
+### Publish to NPM
 
 Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 
@@ -151,7 +151,7 @@ Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 npx ghactions on_release_pull_merged
 ```
 
-### Create or update a Release draft from Unreleased notes
+### Create Release draft
 
 Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_release_draft.yml)
 

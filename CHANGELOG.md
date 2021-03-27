@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `[cli]` added workflow header with instructions
 - `[on_Push_check]` Node.js version changed from 12 to 14
 - `[cli]` step can be marked as `github-actions-managed: false` to prevent overwrite on update
+- `[on_demand_create_release_draft]` removed `target` input, base branch is extracted from `ref`
 
 ### Fixed
 - Check if CLI command is started in a GitHub repository root
