@@ -42,8 +42,8 @@ jobs:
         uses: actions/github-script@v3
         id: release
         with:
-          github-actions-managed: true
           script: |
+            console.log(${{ toJSON(github.event) }});
             let release = null;
             const baseBranch = ${{ toJSON(github.event.inputs.target) }};
             const unreleased = ${{ toJSON(steps.unreleased.outputs.result) }};
