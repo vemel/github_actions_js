@@ -22,9 +22,6 @@
     "simple-import-sort",
     "jest"
   ],
-  "ignorePatterns": [
-    "dist/*.js"
-  ],
   "rules": {
     "import/first": "error",
     "import/newline-after-import": "error",
