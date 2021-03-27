@@ -5,7 +5,7 @@ import os from "os";
 import path from "path";
 import { promisify } from "util";
 
-import { LOCAL_WORKFLOWS_PATH, UTF8 } from "./constants";
+import { HEADER, LOCAL_WORKFLOWS_PATH, UTF8 } from "./constants";
 import { Workflow } from "./workflow";
 
 function getTempDir(): string {
@@ -22,6 +22,10 @@ export function updateWorkflow(name: string, content: string): void {
 
 export function getWorkflowData(content: string): Workflow {
     return <Workflow>yaml.load(content);
+}
+
+export function renderWorkflow(workflow: Workflow): string {
+    return `${HEADER}\n\n${yaml.dump(workflow, { lineWidth: 999 })}`;
 }
 
 export async function readRemoteWorkflows(

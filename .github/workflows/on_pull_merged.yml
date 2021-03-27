@@ -1,17 +1,22 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Update Release draft from Pull Request notes
-
-on:
+'on':
   pull_request:
-    types: [closed]
-  # remove manual dispatch if you do not need it
+    types:
+      - closed
   workflow_dispatch:
     number:
-      description: "Pull Request number"
+      description: Pull Request number
       required: true
-
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest
@@ -67,17 +72,16 @@ jobs:
             core.setOutput('body', pullRequest.body);
             core.setOutput('suffix', `[#${pullRequest.number}](${pullRequest.html_url})`);
             return true;
-      # Switch to Pull Request base branch to set release draft tag based on package.json and CHANGELOG.md
       - name: Checkout Pull Request base branch
         id: checkout
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
           github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
       - name: Get Unreleased notes
         id: unreleased
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -87,7 +91,7 @@ jobs:
       - name: Get or create Release draft
         uses: actions/github-script@v3
         id: release
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           script: |
@@ -129,7 +133,7 @@ jobs:
             core.setOutput('body', release.body);
       - name: Build Release notes
         id: notes
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -139,7 +143,7 @@ jobs:
           suffix: ${{ steps.pull-request.outputs.suffix }}
       - name: Get suggested version
         id: version
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: vemel/nextversion@main
         with:
           github-actions-managed: true
@@ -150,7 +154,7 @@ jobs:
       - name: Update release draft
         uses: actions/github-script@v3
         id: update-release
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           script: |
@@ -182,7 +186,7 @@ jobs:
       - name: Add comment to Pull Request
         id: add-comment
         uses: actions/github-script@v3
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           script: |

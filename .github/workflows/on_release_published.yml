@@ -1,17 +1,22 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Create Release Pull Request on Release
-
-on:
+'on':
   release:
     types:
       - published
   workflow_dispatch:
     tag:
-      description: "Release tag"
+      description: Release tag
       required: true
-
 jobs:
   release-new-version:
     runs-on: ubuntu-latest
@@ -57,14 +62,14 @@ jobs:
             return true;
       - name: Checkout Release target branch
         id: checkout
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         uses: actions/checkout@v2
         with:
           github-actions-managed: true
           ref: ${{ steps.release.outputs.target }}
       - name: Update version
         id: version
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         uses: vemel/nextversion@main
         with:
           github-actions-managed: true
@@ -76,7 +81,7 @@ jobs:
             ./package.json
       - name: Add new release to CHANGELOG.md
         id: changelog
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -85,7 +90,7 @@ jobs:
           set: ${{ steps.release.outputs.body }}
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -93,7 +98,7 @@ jobs:
           clear: true
       - name: Commit changes
         id: commit
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         with:
           github-actions-managed: true
         run: |
@@ -107,7 +112,7 @@ jobs:
       - name: Create Pull Request
         id: create-pull-request
         uses: actions/github-script@v3
-        if: "steps.release.outputs.result"
+        if: steps.release.outputs.result
         with:
           github-actions-managed: true
           script: |

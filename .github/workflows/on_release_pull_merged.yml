@@ -1,19 +1,25 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Publish to NPM on Release Pull Request merged
-
-on:
+'on':
   pull_request:
-    types: [closed]
+    types:
+      - closed
   workflow_dispatch:
     number:
-      description: "Pull Request number"
+      description: Pull Request number
       required: true
-
 jobs:
   publish-to-npm:
-    if: "secrets.NPM_TOKEN"
+    if: secrets.NPM_TOKEN
     runs-on: ubuntu-latest
     steps:
       - name: Get Pull Request
@@ -62,7 +68,7 @@ jobs:
             return true;
       - name: Checkout Pull Request base branch
         id: checkout
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
           github-actions-managed: true
@@ -70,7 +76,7 @@ jobs:
       - name: Setup Node.js 12
         uses: actions/setup-node@v2
         id: setup-node
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           node-version: 12
@@ -96,14 +102,14 @@ jobs:
             return true;
       - name: Install package
         id: install
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
         run: |
           npm install
       - name: Build package
         id: build
-        if: "steps.pull-request.outputs.result && steps.scripts.outputs.build"
+        if: steps.pull-request.outputs.result && steps.scripts.outputs.build
         with:
           github-actions-managed: true
         run: |
@@ -111,7 +117,7 @@ jobs:
           npm run ${{ steps.scripts.outputs.build }}
       - name: Publish new version to NPM
         id: publish
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
         env:

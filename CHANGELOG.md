@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `[cli]` `--check` flag to check if workflows are ready for updates
+- `[on_Push_check]` can run on multiple Node.js versions
+
+### Changed
+- `[cli]` merges changes on update instead of overwrite
+- `[cli]` added workflow header with instructions
+- `[on_Push_check]` Node.js version changed from 12 to 14
 
 ### Fixed
 - Check if CLI command is started in a GitHub repository root

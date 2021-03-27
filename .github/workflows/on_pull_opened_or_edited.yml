@@ -1,16 +1,23 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Update Pull Request labels
-
-on:
+'on':
   pull_request:
-    types: [opened, edited]
+    types:
+      - opened
+      - edited
   workflow_dispatch:
     number:
-      description: "Pull Request number"
+      description: Pull Request number
       required: true
-
 jobs:
   update-pull-request-labels:
     runs-on: ubuntu-latest
@@ -53,7 +60,7 @@ jobs:
             return true;
       - name: Analyze PR notes
         id: notes
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -62,7 +69,7 @@ jobs:
       - name: Update Pull Request labels
         id: update-labels
         uses: actions/github-script@v3
-        if: "steps.pull-request.outputs.result"
+        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           script: |

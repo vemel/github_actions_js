@@ -6,6 +6,7 @@ export const HEADER = [
     "# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update",
     "# - User-added steps survive update as well",
     "# - Deleted steps are restored on update, so make them empty instead of removing",
+    "# - Do not change job name, it is important for updates",
     "# - Comments in yaml are removed on update, sorry :("
 ].join("\n");
 

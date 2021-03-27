@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import fs from "fs";
 
+import { getLocalPath } from "../lib/manager";
 import { getHelp, Namespace, parseArgs } from "./cli";
 import { WORKFLOW_NAMES } from "./constants";
 import { readLocalWorkflows, readRemoteWorkflows } from "./manager";
@@ -60,6 +61,8 @@ async function main(): Promise<void> {
     const localContents = new Map(await readLocalWorkflows(args.update));
     remoteContents.forEach(([name, remoteContent]) => {
         const localContent = localContents.get(name) || null;
+        const localPath = getLocalPath(name);
+        console.log(`${localPath} : `);
         runUpdate(name, localContent, remoteContent, args.force);
     });
 }

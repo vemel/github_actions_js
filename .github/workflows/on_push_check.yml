@@ -1,15 +1,24 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Run code style checks and unit tests
-
-on:
+"on":
   push: {}
   workflow_dispatch: {}
-
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 14
     steps:
       - name: Checkout current branch
         id: checkout
@@ -49,23 +58,30 @@ jobs:
       - name: Cache npm downloads
         uses: actions/cache@v2
         id: cache
-        if: "steps.scripts.outputs.result"
+        if: steps.scripts.outputs.result
         with:
           github-actions-managed: true
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+      - name: Set up Node
+        id: setup-node
+        uses: actions/setup-node@v2
+        with:
+          github-actions-managed: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/
       - name: Install package
         id: install
-        if: "steps.scripts.outputs.result"
+        if: steps.scripts.outputs.result
         with:
           github-actions-managed: true
         run: |
           npm install
       - name: Run linting
         id: lint
-        if: "steps.scripts.outputs.lint"
+        if: steps.scripts.outputs.lint
         with:
           github-actions-managed: true
         run: |
@@ -73,7 +89,7 @@ jobs:
           npm run ${{ steps.scripts.outputs.lint }}
       - name: Run tests
         id: test
-        if: "steps.scripts.outputs.test"
+        if: steps.scripts.outputs.test
         with:
           github-actions-managed: true
         run: |

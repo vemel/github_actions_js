@@ -1,19 +1,24 @@
 # This workflow provided by GitHubActions.js
 # Documentation: https://github.com/vemel/github_actions_js
+#
+# --- How to modify this workflow and still get updates ---
+# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+# - User-added steps survive update as well
+# - Deleted steps are restored on update, so make them empty instead of removing
+# - Do not change job name, it is important for updates
+# - Comments in yaml are removed on update, sorry :(
 
 name: Create or update a Release draft from Unreleased notes
-
-on:
+'on':
   workflow_dispatch:
     target:
-      description: "Release target branch"
+      description: Release target branch
       required: true
-      default: "main"
+      default: main
     release:
-      description: "Release type: stable, rc, alpha, or beta"
+      description: 'Release type: stable, rc, alpha, or beta'
       required: true
-      default: "stable"
-
+      default: stable
 jobs:
   create-release-draft:
     runs-on: ubuntu-latest

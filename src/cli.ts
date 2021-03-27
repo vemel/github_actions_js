@@ -40,7 +40,7 @@ export function getHelp(): string {
                 {
                     name: "force",
                     alias: "f",
-                    description: "Force update workflow even if it exists",
+                    description: "Force update workflow name and triggers",
                     type: Boolean
                 },
                 {
