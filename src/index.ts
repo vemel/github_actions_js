@@ -1,10 +1,13 @@
 import chalk from "chalk";
 import fs from "fs";
 
-import { getLocalPath } from "./manager";
 import { getHelp, Namespace, parseArgs } from "./cli";
 import { WORKFLOW_NAMES } from "./constants";
-import { readLocalWorkflows, readRemoteWorkflows } from "./manager";
+import {
+    getLocalPath,
+    readLocalWorkflows,
+    readRemoteWorkflows
+} from "./manager";
 import { runCheckAll } from "./runCheck";
 import runUpdate from "./runUpdate";
 
