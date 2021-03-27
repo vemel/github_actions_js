@@ -5,7 +5,7 @@
 # - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
 # - User-added steps survive update as well
 # - Deleted steps are restored on update, so make them empty instead of removing
-# - Do not change job name, it is important for updates
+# - Do not add multiple jobs, only one job is supported
 # - Comments in yaml are removed on update, sorry :(
 
 name: Create Release draft
@@ -75,7 +75,7 @@ jobs:
             core.setOutput("url", release.html_url);
             core.setOutput('tag', release.tag_name);
             core.setOutput('name', release.name);
-            core.setOutput('body', release.body.trim() ? release.body : unreleased);
+            core.setOutput('body', unreleased);
       - name: Analyze Release notes
         id: notes
         uses: vemel/nextchange@main
