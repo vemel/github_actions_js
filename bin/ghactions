@@ -1,3 +1,4 @@
 #!/usr/bin/env node
-const main = require('./../lib/index').default
-main()
+const main = require("./../lib/index").default;
+
+main();

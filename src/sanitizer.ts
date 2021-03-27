@@ -36,6 +36,15 @@ export function mergesToSteps(merges: Array<StepMerge>): Array<Step> {
     return result;
 }
 
+export function isStepManaged(step: Step): boolean {
+    if (step.with?.["github-actions-managed"]) return true;
+    if (step.run) {
+        const lines = step.run.split(/\r?\n/);
+        if (lines.includes("# github-actions-managed: true")) return true;
+    }
+    return false;
+}
+
 export function mergeWorkflows(
     localWorkflow: Workflow,
     remoteWorkflow: Workflow
@@ -59,7 +68,7 @@ export function mergeWorkflows(
         }
         const [localStep, ...followSteps] = localSteps.splice(localStepIndex);
         followSteps.reverse().forEach(step => {
-            if (step.with?.["github-actions-managed"]) {
+            if (isStepManaged(step)) {
                 result.push({
                     step: step,
                     stepName: step.name || step.id || `${remoteIndex}`,
@@ -82,7 +91,7 @@ export function mergeWorkflows(
                     action: "same"
                 });
             } else {
-                if (localStep.with?.["github-actions-managed"]) {
+                if (isStepManaged(localStep)) {
                     result.push({
                         step: remoteStep,
                         stepName:
@@ -103,7 +112,7 @@ export function mergeWorkflows(
         }
     });
     localSteps.reverse().forEach(step => {
-        if (step.with?.["github-actions-managed"]) {
+        if (isStepManaged(step)) {
             result.push({
                 step: step,
                 stepName: step.name || step.id || "0",
@@ -195,7 +204,7 @@ export function checkWorkflow(workflow: Workflow): Array<WorkflowCheck> {
                     message: `${jobName} : step ${stepName} has no name, please add it`
                 });
             }
-            if (!step.with?.["github-actions-managed"]) {
+            if (!isStepManaged(step)) {
                 return result.push({
                     level: "info",
                     highlight: step.name,

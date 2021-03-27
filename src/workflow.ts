@@ -9,6 +9,7 @@ export interface Step {
     id?: string;
     with?: StepWith;
     env?: Env;
+    run?: string;
     [index: string]: unknown;
 }
 
