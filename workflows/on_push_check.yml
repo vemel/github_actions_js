@@ -75,23 +75,20 @@ jobs:
       - name: Install package
         id: install
         if: steps.scripts.outputs.result
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           npm install
       - name: Run linting
         id: lint
         if: steps.scripts.outputs.lint
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.lint }}"
           npm run ${{ steps.scripts.outputs.lint }}
       - name: Run tests
         id: test
         if: steps.scripts.outputs.test
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.test }}"
           npm run ${{ steps.scripts.outputs.test }}

@@ -9,7 +9,7 @@
 # - Comments in yaml are removed on update, sorry :(
 
 name: Create Release Pull Request on Release
-'on':
+"on":
   release:
     types:
       - published
@@ -99,9 +99,8 @@ jobs:
       - name: Commit changes
         id: commit
         if: steps.release.outputs.result
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           VERSION=${{ toJSON(steps.version.outputs.result) }}
           BRANCH=${{ toJSON(steps.release.outputs.branch) }}
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"

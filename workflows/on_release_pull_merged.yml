@@ -9,7 +9,7 @@
 # - Comments in yaml are removed on update, sorry :(
 
 name: Publish to NPM on Release Pull Request merged
-'on':
+"on":
   pull_request:
     types:
       - closed
@@ -79,7 +79,7 @@ jobs:
         if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
-          node-version: 12
+          node-version: 14
           registry-url: https://registry.npmjs.org/
       - name: Get available scripts
         id: scripts
@@ -103,24 +103,21 @@ jobs:
       - name: Install package
         id: install
         if: steps.pull-request.outputs.result
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           npm install
       - name: Build package
         id: build
         if: steps.pull-request.outputs.result && steps.scripts.outputs.build
-        with:
-          github-actions-managed: true
         run: |
+          # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.build }}"
           npm run ${{ steps.scripts.outputs.build }}
       - name: Publish new version to NPM
         id: publish
         if: steps.pull-request.outputs.result
-        with:
-          github-actions-managed: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          # github-actions-managed: true
           npm publish --access public
