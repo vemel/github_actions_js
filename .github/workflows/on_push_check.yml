@@ -11,11 +11,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout current branch
+        id: checkout
+        uses: actions/checkout@v2
+        with:
+          github-actions-managed: true
       - name: Get available scripts
         id: scripts
         uses: actions/github-script@v3
         with:
+          github-actions-managed: true
           script: |
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
@@ -41,24 +46,36 @@ jobs:
               result = true;
             }
             return result;
-      - uses: actions/cache@v2
+      - name: Cache npm downloads
+        uses: actions/cache@v2
+        id: cache
         if: "steps.scripts.outputs.result"
         with:
+          github-actions-managed: true
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install package
+        id: install
         if: "steps.scripts.outputs.result"
+        with:
+          github-actions-managed: true
         run: |
           npm install
       - name: Run linting
+        id: lint
         if: "steps.scripts.outputs.lint"
+        with:
+          github-actions-managed: true
         run: |
           echo "Running: npm run ${{ steps.scripts.outputs.lint }}"
           npm run ${{ steps.scripts.outputs.lint }}
       - name: Run tests
+        id: test
         if: "steps.scripts.outputs.test"
+        with:
+          github-actions-managed: true
         run: |
           echo "Running: npm run ${{ steps.scripts.outputs.test }}"
           npm run ${{ steps.scripts.outputs.test }}

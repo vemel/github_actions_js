@@ -5,12 +5,8 @@ import os from "os";
 import path from "path";
 import { promisify } from "util";
 
-const LOCAL_WORKFLOWS_PATH = "./.github/workflows";
-const UTF8 = "utf-8";
-
-interface Workflow {
-    name: string;
-}
+import { LOCAL_WORKFLOWS_PATH, UTF8 } from "./constants";
+import { Workflow } from "./workflow";
 
 function getTempDir(): string {
     return fs.mkdtempSync(path.join(os.tmpdir(), "ghactions-"));
@@ -24,9 +20,8 @@ export function updateWorkflow(name: string, content: string): void {
     fs.writeFileSync(getLocalPath(name), content, { encoding: UTF8 });
 }
 
-export function getWorkflowTitle(content: string): string {
-    const data = <Workflow>yaml.load(content);
-    return data.name;
+export function getWorkflowData(content: string): Workflow {
+    return <Workflow>yaml.load(content);
 }
 
 export async function readRemoteWorkflows(

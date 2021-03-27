@@ -1,22 +1,15 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
+import { HELP_WORKFLOW_NAMES, WORKFLOW_NAMES } from "./constants";
+
 export interface Namespace {
     help: boolean;
     update: Array<string>;
     ref: string;
     force: boolean;
+    check: boolean;
 }
-
-const WORKFLOW_NAMES = [
-    "on_demand_create_release_draft",
-    "on_pull_merged",
-    "on_pull_opened_or_edited",
-    "on_push_check",
-    "on_release_published",
-    "on_release_pull_merged"
-];
-const ALL_WORKFLOW_NAMES = ["all (all workflows below)", ...WORKFLOW_NAMES];
 
 export function getHelp(): string {
     return commandLineUsage([
@@ -34,7 +27,7 @@ export function getHelp(): string {
                     alias: "u",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Create or update workflow .github/workflows/<name>.yml. Choices: ${ALL_WORKFLOW_NAMES.map(
+                    description: `Create or update workflow .github/workflows/<name>.yml. Choices: ${HELP_WORKFLOW_NAMES.map(
                         x => `\n- ${x}`
                     ).join("")}`
                 },
@@ -55,6 +48,13 @@ export function getHelp(): string {
                     alias: "h",
                     description: "Print this usage guide",
                     type: Boolean
+                },
+                {
+                    name: "check",
+                    alias: "c",
+                    description:
+                        "Check if workflows are are update-friendly, does not update workflows",
+                    type: Boolean
                 }
             ]
         }
@@ -67,7 +67,7 @@ function getWorkflowNames(names: Array<string> | null): Array<string> {
     result.forEach(name => {
         if (!WORKFLOW_NAMES.includes(name))
             throw new Error(
-                `Unknown workflow name: ${name}, choices are: ${ALL_WORKFLOW_NAMES.map(
+                `Unknown workflow name: ${name}, choices are: ${HELP_WORKFLOW_NAMES.map(
                     x => `\n  ${x}`
                 ).join("")}`
             );
@@ -79,6 +79,7 @@ export function parseArgs(): Namespace {
     const result = <Namespace>commandLineArgs([
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
+        { name: "check", alias: "c", type: Boolean },
         {
             name: "update",
             alias: "u",

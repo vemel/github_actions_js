@@ -6,6 +6,7 @@
     - [GitHubActions.js Zen](#githubactionsjs-zen)
     - [What it does](#what-it-does)
     - [What it does not](#what-it-does-not)
+    - [How to modify workflows and keep updated](#how-to-modify-workflows-and-keep-updated)
   - [Secrets](#secrets)
   - [Workflows](#workflows)
     - [Run code style checks and unit tests](#run-code-style-checks-and-unit-tests)
@@ -29,7 +30,10 @@ mkdir -p .github/workflows
 npx ghactions --help
 
 # add all workflows
-npx ghactions --add all
+npx ghactions all
+
+# check if workflows can be safely updated
+npx ghactions --check
 ```
 
 ## Description
@@ -59,6 +63,12 @@ npx ghactions --add all
   so you can always check that automation does exactly what you want
 - Does not analyze your project files to suggest versions, all suggested versions are based
   only on Release/Pull Request notes
+
+### How to modify workflows and keep updated
+- Set `github-actions-managed: false` on manual edit to prevent step overwrite on update
+- User-added steps survive update as well
+- Deleted steps are restored on update, so make them empty instead of removing
+- Comments in yaml are removed on update, sorry :(
 
 ## Secrets
 

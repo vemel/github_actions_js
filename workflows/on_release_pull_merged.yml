@@ -6,7 +6,6 @@ name: Publish to NPM on Release Pull Request merged
 on:
   pull_request:
     types: [closed]
-  # remove manual dispatch if you do not need it
   workflow_dispatch:
     number:
       description: "Pull Request number"
@@ -21,6 +20,7 @@ jobs:
         uses: actions/github-script@v3
         id: pull-request
         with:
+          github-actions-managed: true
           script: |
             let pullRequest = null;
             if (context.inputs && context.inputs.number) {
@@ -60,21 +60,26 @@ jobs:
             core.setOutput('body', pullRequest.body);
             core.setOutput('suffix', `[#${pullRequest.number}](${pullRequest.html_url})`);
             return true;
-      # Switch to Pull Request base branch
       - name: Checkout Pull Request base branch
+        id: checkout
         if: "steps.pull-request.outputs.result"
         uses: actions/checkout@v2
         with:
+          github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
-      - uses: actions/setup-node@v2
+      - name: Setup Node.js 12
+        uses: actions/setup-node@v2
+        id: setup-node
         if: "steps.pull-request.outputs.result"
         with:
+          github-actions-managed: true
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - name: Get available scripts
         id: scripts
         uses: actions/github-script@v3
         with:
+          github-actions-managed: true
           script: |
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
@@ -90,17 +95,25 @@ jobs:
             core.setOutput('build', scripts.includes(buildScript) ? buildScript : '');
             return true;
       - name: Install package
+        id: install
         if: "steps.pull-request.outputs.result"
+        with:
+          github-actions-managed: true
         run: |
           npm install
       - name: Build package
+        id: build
         if: "steps.pull-request.outputs.result && steps.scripts.outputs.build"
+        with:
+          github-actions-managed: true
         run: |
           echo "Running: npm run ${{ steps.scripts.outputs.build }}"
           npm run ${{ steps.scripts.outputs.build }}
-      # publish to NPM if NPM_TOKEN secret is set
       - name: Publish new version to NPM
+        id: publish
         if: "steps.pull-request.outputs.result"
+        with:
+          github-actions-managed: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |

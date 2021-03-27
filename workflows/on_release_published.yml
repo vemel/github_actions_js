@@ -7,7 +7,6 @@ on:
   release:
     types:
       - published
-  # remove manual dispatch if you do not need it
   workflow_dispatch:
     tag:
       description: "Release tag"
@@ -21,6 +20,7 @@ jobs:
         uses: actions/github-script@v3
         id: release
         with:
+          github-actions-managed: true
           script: |
             let release = null;
             if (context.payload.inputs && context.payload.inputs.number) {
@@ -55,22 +55,23 @@ jobs:
             core.setOutput('name', release.name);
             core.setOutput('body', release.body);
             return true;
-      # Switch to Release target branch
       - name: Checkout Release target branch
+        id: checkout
         if: "steps.release.outputs.result"
         uses: actions/checkout@v2
         with:
+          github-actions-managed: true
           ref: ${{ steps.release.outputs.target }}
       - name: Update version
         id: version
         if: "steps.release.outputs.result"
         uses: vemel/nextversion@main
         with:
-          # replace version in package.json with release tag
+          github-actions-managed: true
+          github-actions-comment: Add paths where version needs to be updated to 'update'
           path: ./package.json
           type: semver
           result: ${{ steps.release.outputs.tag }}
-          # add extra paths to files where version should be updated
           update: |
             ./package.json
       - name: Add new release to CHANGELOG.md
@@ -78,17 +79,23 @@ jobs:
         if: "steps.release.outputs.result"
         uses: vemel/nextchange@main
         with:
+          github-actions-managed: true
           release: ${{ steps.version.outputs.result }}
           clear: true
           set: ${{ steps.release.outputs.body }}
       - name: Clear Unreleased in CHANGELOG.md
+        id: clear-unreleased
         if: "steps.release.outputs.result"
         uses: vemel/nextchange@main
         with:
+          github-actions-managed: true
           release: Unreleased
           clear: true
       - name: Commit changes
+        id: commit
         if: "steps.release.outputs.result"
+        with:
+          github-actions-managed: true
         run: |
           VERSION=${{ toJSON(steps.version.outputs.result) }}
           BRANCH=${{ toJSON(steps.release.outputs.branch) }}
@@ -98,9 +105,11 @@ jobs:
           git commit -am "Bump version to $VERSION"
           git push --set-upstream origin $BRANCH
       - name: Create Pull Request
+        id: create-pull-request
         uses: actions/github-script@v3
         if: "steps.release.outputs.result"
         with:
+          github-actions-managed: true
           script: |
             const response = await github.pulls.create({
               owner: context.repo.owner,

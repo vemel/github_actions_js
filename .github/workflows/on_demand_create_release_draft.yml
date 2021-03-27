@@ -19,20 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Release target branch
+        id: checkout
         uses: actions/checkout@v2
         with:
+          github-actions-managed: true
           ref: ${{ github.event.inputs.target }}
       - name: Get Unreleased notes
         id: unreleased
         uses: vemel/nextchange@main
         with:
-          # get Unreleased section of CHANGELOG.md to set as a body of a newly created release draft
+          github-actions-managed: true
+          github-actions-comment: Get Unreleased section of CHANGELOG.md to set as a body of a newly created release draft
           get: Unreleased
           sanitize: true
       - name: Get or create Release draft
         uses: actions/github-script@v3
         id: release
         with:
+          github-actions-managed: true
           script: |
             let release = null;
             const baseBranch = ${{ toJSON(github.event.inputs.target) }};
@@ -75,18 +79,22 @@ jobs:
         id: notes
         uses: vemel/nextchange@main
         with:
+          github-actions-managed: true
           set: ${{ steps.release.outputs.body }}
       - name: Get suggested version
         id: version
         uses: vemel/nextversion@main
         with:
+          github-actions-managed: true
+          github-actions-comment: Bump version from package.json according to release notes
           path: ./package.json
           release: ${{ github.event.inputs.release }}
-          # bump version from package.json according to release notes
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft
+        id: update-release
         uses: actions/github-script@v3
         with:
+          github-actions-managed: true
           script: |
             const releaseId = ${{ steps.release.outputs.id }};
             core.info(`Release ID: ${releaseId}`);
