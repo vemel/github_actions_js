@@ -115,6 +115,7 @@ jobs:
         if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
+          registry-url: https://registry.npmjs.org/
           node-version: 14
       - name: Install package
         id: install
@@ -137,4 +138,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # github-actions-managed: true
-          npm publish --verbose
+          npm publish --access public --verbose
