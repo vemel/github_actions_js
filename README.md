@@ -186,3 +186,5 @@ npx ghactions on_demand_create_release_draft
 - [ ] Add `mypy` support
 - [ ] Add `pyright` support
 - [ ] Allow user comments in workflow header
+- [ ] Add `latest` ref support
+- [ ] Use `latest` tag for updates by default instead of `main`
