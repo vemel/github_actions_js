@@ -5,7 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `[cli]` Workflow top comment can be changed by user, overwrite with `--force` flag
+- `[cli]` massive logging facelift, cleaner changes description
+- `[cli]` `--check` can be combined with `--force` flag to check force update result
+- `[cli]` `// github-actions-managed: false` can be added to `with.script` lines to prevent step update
+
+### Changed
+- `[cli]` update does not apply if workflow has errors
+
 ### Fixed
+- `[cli]` show correct `ghactions_py` command in output for Python projects
 - `[on_push_check]` install latest `npm` before package installation
 - `[on_push_check]` use `npm ci` instead of `npm install`
 - `[on_release_pull_merged]` install latest `npm` before package installation

@@ -66,7 +66,7 @@ npx ghactions --check
 
 ### What it does not
 
-- Does not update files in your branches, ll updates happen in newly created `release/*`,
+- Does not update files in your branches, all updates happen in newly created `release/*` branch,
   so you can always check that automation does exactly what you want
 - Does not analyze your project files to suggest versions, all suggested versions are based
   only on Release/Pull Request notes
@@ -185,6 +185,6 @@ npx ghactions on_demand_create_release_draft
 - [ ] Add `pytest-cov` support
 - [ ] Add `mypy` support
 - [ ] Add `pyright` support
-- [ ] Allow user comments in workflow header
 - [ ] Add `latest` ref support
 - [ ] Use `latest` tag for updates by default instead of `main`
+- [ ] Publish to GitHub Packages

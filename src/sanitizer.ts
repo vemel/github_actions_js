@@ -1,17 +1,33 @@
 import equal from "deep-equal";
 
+import { getTopCommentLines, getWorkflowData } from "./manager";
+import { decapitalize } from "./utils";
 import { Step, Workflow } from "./workflow";
 
-interface WorkflowCheck {
+export interface WorkflowCheck {
     highlight?: string;
-    level: "info" | "warn" | "error";
-    message: string;
+    level: "info" | "success" | "update" | "delete" | "add" | "error";
+    item: string;
+    noForceMessage?: string;
+    checkMessage: string;
+    updateMessage: string;
 }
 
 interface StepMerge {
     step: Step;
     stepName: string;
     action: "same" | "keep" | "update" | "add" | "delete" | "local";
+}
+
+export function getCheckIcon(check: WorkflowCheck): string {
+    return {
+        info: "✓",
+        success: "✓",
+        update: "↻",
+        delete: "✖",
+        add: "✎",
+        error: "✗"
+    }[check.level];
 }
 
 function findStepIndex(step: Step, steps: Array<Step>): number {
@@ -140,54 +156,70 @@ export function checkWorkflowRemote(
     const result: Array<WorkflowCheck> = [];
     if (!equal(local.name, remote.name)) {
         result.push({
-            level: "warn",
-            highlight: "name",
-            message:
-                "workflow name is different from remote, update with --force"
+            level: "update",
+            item: "name",
+            highlight: remote.name,
+            noForceMessage: "is different from remote",
+            checkMessage: `will be updated to ${remote.name}`,
+            updateMessage: `updated to ${remote.name}`
         });
     }
     if (!equal(local.on, remote.on)) {
         result.push({
-            level: "warn",
-            highlight: "on:",
-            message: "on: section is different from remote, update with --force"
+            level: "update",
+            item: "triggers",
+            highlight: "updated",
+            noForceMessage: "are different from remote",
+            checkMessage: "will be updated",
+            updateMessage: "updated"
         });
     }
     const stepMerges = mergeWorkflows(local, remote);
     stepMerges.forEach(stepMerge => {
         if (stepMerge.action === "update") {
             result.push({
-                level: "warn",
-                highlight: stepMerge.stepName,
-                message: `step ${stepMerge.stepName} will be overwritten`
+                level: "update",
+                highlight: "updated",
+                item: stepMerge.stepName,
+                checkMessage: "step will be updated",
+                updateMessage: "step is updated"
             });
         }
         if (stepMerge.action === "local") {
             result.push({
-                level: "warn",
-                highlight: stepMerge.stepName,
-                message: `step ${stepMerge.stepName} exists only locally, so it will be kept untouched`
+                level: "info",
+                highlight: "kept untouched",
+                item: stepMerge.stepName,
+                checkMessage: "local-only step will be kept untouched",
+                updateMessage: "local-only step is kept untouched"
             });
         }
         if (stepMerge.action === "keep") {
             result.push({
-                level: "warn",
-                highlight: stepMerge.stepName,
-                message: `step ${stepMerge.stepName} is user-edited and will be kept untouched`
+                level: "info",
+                highlight: "kept untouched",
+                item: stepMerge.stepName,
+                checkMessage: "step will be kept untouched",
+                updateMessage: "step is kept untouched"
             });
         }
         if (stepMerge.action === "add") {
             result.push({
-                level: "warn",
-                highlight: stepMerge.stepName,
-                message: `step ${stepMerge.stepName} will be added`
+                level: "add",
+                highlight: "added",
+                item: stepMerge.stepName,
+                checkMessage: "step will be added",
+                updateMessage: "step added"
             });
         }
         if (stepMerge.action === "delete") {
             result.push({
-                level: "warn",
-                highlight: stepMerge.stepName,
-                message: `step ${stepMerge.stepName} will be deleted, set github-actions-managed: false to keep it`
+                level: "delete",
+                highlight: "deleted",
+                item: stepMerge.stepName,
+                checkMessage:
+                    "step will be deleted, remove github-actions-managed to keep it",
+                updateMessage: "step deleted"
             });
         }
     });
@@ -200,22 +232,66 @@ export function checkWorkflow(workflow: Workflow): Array<WorkflowCheck> {
         const job = (workflow.jobs || {})[jobName];
         if (!job) return;
         job.steps?.forEach((step, stepIndex) => {
+            const stepName = step.name || step.id || `${stepIndex + 1}`;
             if (!step.name) {
-                const stepName = step.id || `${stepIndex + 1}`;
                 return result.push({
                     level: "error",
-                    highlight: stepName,
-                    message: `${jobName} : step ${stepName} has no name, please add it`
-                });
-            }
-            if (!isStepManaged(step)) {
-                return result.push({
-                    level: "info",
-                    highlight: step.name,
-                    message: `${jobName} : step ${step.name} will not be updated because github-actions-managed is false`
+                    highlight: "name",
+                    item: stepName,
+                    checkMessage: "step has no name, please add it",
+                    updateMessage: "step has no name, please add it"
                 });
             }
         });
     });
+    return result;
+}
+
+export function getWorkflowChecks(
+    localContent: string | null,
+    remoteContent: string | null
+): Array<WorkflowCheck> {
+    const result: Array<WorkflowCheck> = [];
+    if (!remoteContent) {
+        result.push({
+            level: "error",
+            item: "remote workflow",
+            highlight: "failed",
+            checkMessage: "download failed",
+            updateMessage: "download failed"
+        });
+        return result;
+    }
+    const remoteData = getWorkflowData(remoteContent);
+    const workflowPurpose = decapitalize(remoteData.name);
+    if (!localContent) {
+        result.push({
+            level: "info",
+            item: "workflow",
+            highlight: workflowPurpose,
+            checkMessage: `will be created to ${workflowPurpose}`,
+            updateMessage: `created to ${workflowPurpose}`
+        });
+        return result;
+    }
+    const data = getWorkflowData(localContent);
+    result.push(...checkWorkflow(data));
+
+    if (
+        !equal(
+            getTopCommentLines(localContent),
+            getTopCommentLines(remoteContent)
+        )
+    ) {
+        result.push({
+            level: "update",
+            item: "top comment",
+            highlight: "updated",
+            noForceMessage: "is different from remote",
+            checkMessage: "will be updated",
+            updateMessage: "updated"
+        });
+    }
+    result.push(...checkWorkflowRemote(data, remoteData));
     return result;
 }

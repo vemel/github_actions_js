@@ -15,6 +15,9 @@ async function main(
     language: "python" | "javascript" = "javascript"
 ): Promise<void> {
     let args: Namespace;
+    const commandName = process.argv[1]
+        ? process.argv[1].split("/").pop()
+        : "ghactions";
     try {
         args = parseArgs();
     } catch (e) {
@@ -55,7 +58,33 @@ async function main(
 
     if (args.check) {
         const names = args.update.length ? args.update : WORKFLOW_NAMES;
-        const result = await runCheckAll(names, args.ref, remotePath);
+        const result = await runCheckAll(
+            names,
+            args.ref,
+            remotePath,
+            args.force
+        );
+        if (result) {
+            console.log(
+                chalk.green(
+                    `✓  Run ${chalk.bold(
+                        `${commandName} all`
+                    )} any time you want!`
+                )
+            );
+        } else {
+            console.log(
+                chalk.red(
+                    "✗  Workflows have errors so updating them automatically is not recommended"
+                )
+            );
+            console.log(
+                "  ✎  Delete invalid workflows, update all, and merge your changes"
+            );
+            console.log(
+                "  ✎  Check for updates: https://github.com/vemel/github_actions_js"
+            );
+        }
         process.exit(result ? 0 : 1);
     }
 

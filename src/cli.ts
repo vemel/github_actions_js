@@ -41,7 +41,7 @@ export function getHelp(): string {
                 {
                     name: "force",
                     alias: "f",
-                    description: "Force update workflow name and triggers",
+                    description: "Update workflow user-managed workflow parts",
                     type: Boolean
                 },
                 {

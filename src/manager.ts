@@ -5,7 +5,7 @@ import os from "os";
 import path from "path";
 import { promisify } from "util";
 
-import { HEADER, LOCAL_WORKFLOWS_PATH, REPO_URL, UTF8 } from "./constants";
+import { LOCAL_WORKFLOWS_PATH, REPO_URL, UTF8 } from "./constants";
 import { Workflow } from "./workflow";
 
 function getTempDir(): string {
@@ -24,16 +24,30 @@ export function getWorkflowData(content: string): Workflow {
     return <Workflow>yaml.load(content);
 }
 
-export function renderWorkflow(workflow: Workflow): string {
+export function renderWorkflow(
+    workflow: Workflow,
+    commentLines: Array<string>
+): string {
     const body = yaml.dump(workflow, {
         lineWidth: 999,
         quotingType: '"'
     });
-    return `${HEADER}\n\n${body}`;
+    const header = commentLines
+        .map(line => (line.length ? `# ${line}` : "#"))
+        .join("\n");
+    if (header.length) return `${header}\n\n${body}`;
+    return body;
 }
 
 export function getRemoteURL(name: string, ref: string, path: string): string {
     return `${REPO_URL}/${ref}/${path}/${name}.yml`;
+}
+
+export function getTopCommentLines(content: string): Array<string> {
+    return content
+        .split(/\r?\n/)
+        .filter(line => line.startsWith("#"))
+        .map(line => line.substr(1).trim());
 }
 
 export async function readRemoteWorkflows(

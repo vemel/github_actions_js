@@ -2,99 +2,77 @@ import chalk from "chalk";
 
 import {
     getLocalPath,
-    getWorkflowData,
     readLocalWorkflows,
     readRemoteWorkflows
 } from "./manager";
-import { checkWorkflow, checkWorkflowRemote } from "./sanitizer";
+import { getCheckIcon, getWorkflowChecks, WorkflowCheck } from "./sanitizer";
 
-export function runCheck(
-    name: string,
-    localContent: string | null,
-    remoteContent: string | null
-): boolean {
-    let hasErrors = false;
-    if (!localContent) {
-        console.log(
-            chalk.grey("  ✓  Does not exist locally yet and can be created")
-        );
-        return false;
-    }
-    if (!remoteContent) {
-        console.log(
-            chalk.red(
-                "  ✗  Could not download remote workflow, running only local checks"
-            )
-        );
-    }
-    const data = getWorkflowData(localContent);
-    const messages = checkWorkflow(data);
-    if (remoteContent) {
-        const remoteData = getWorkflowData(remoteContent);
-        messages.push(...checkWorkflowRemote(data, remoteData));
-    }
-    hasErrors =
-        hasErrors || messages.filter(m => m.level == "error").length > 0;
-
-    console.log(`${chalk.bold(getLocalPath(name))} : `);
-    if (!messages.length) {
-        console.log(
-            chalk.grey("  ✓  All good, the workflow can be fully updated")
-        );
-    }
-    messages.forEach(report => {
-        const icon = {
-            info: "✓",
-            warn: "✎",
-            error: "✗"
-        }[report.level];
-        const color = {
+function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
+    const icon = getCheckIcon(check);
+    const color =
+        {
             info: chalk.grey,
-            warn: chalk.white,
-            error: chalk.yellow
-        }[report.level];
-        let message = report.message;
-        if (report.highlight)
-            message = message.replace(
-                report.highlight,
-                chalk.bold(report.highlight)
-            );
-        console.log(color(`  ${icon}  ${message}`));
-    });
-    return !hasErrors;
+            success: chalk.green,
+            delete: chalk.yellow,
+            error: chalk.red
+        }[check.level] || chalk.blue;
+    let message = check.checkMessage;
+    if (check.noForceMessage && !forceUpdate) message = check.noForceMessage;
+    if (check.highlight)
+        message = message.replace(check.highlight, chalk.bold(check.highlight));
+
+    if (check.noForceMessage && !forceUpdate) {
+        message = `${message}, use ${chalk.bold("--force")} flag to update`;
+    }
+    if (!check.item) return color(`  ${icon}  ${message}`);
+    return color(`  ${icon}  ${chalk.bold(check.item)} ${message}`);
 }
 
 export async function runCheckAll(
     names: Array<string>,
     ref: string,
-    remotePath: string
+    remotePath: string,
+    forceUpdate: boolean
 ): Promise<boolean> {
     const remoteContents = await readRemoteWorkflows(names, ref, remotePath);
     const localContents = new Map(await readLocalWorkflows(names));
     let noErrors = true;
     remoteContents.forEach(([name, remoteContent]) => {
         const localContent = localContents.get(name) || null;
-        const result = runCheck(name, localContent, remoteContent);
-        noErrors = noErrors && result;
+        console.log(`${chalk.bold(getLocalPath(name))} : `);
+        const workflowChecks = getWorkflowChecks(localContent, remoteContent);
+        const noChecks = !workflowChecks.length;
+        const noErrorChecks = !workflowChecks.filter(c => c.level === "error")
+            .length;
+        if (noChecks) {
+            workflowChecks.push({
+                level: "success",
+                item: "workflow",
+                checkMessage: "is up-to-date",
+                updateMessage: "is up-to-date",
+                highlight: "up-to-date"
+            });
+        } else if (noErrorChecks) {
+            workflowChecks.push({
+                level: "info",
+                item: "workflow",
+                checkMessage: "can be safely updated",
+                updateMessage: "updated",
+                highlight: "updated"
+            });
+        } else {
+            workflowChecks.push({
+                level: "error",
+                item: "workflow",
+                checkMessage: "has errors that need to be fixed before update",
+                updateMessage: "updated, even though it had errors",
+                highlight: "errors"
+            });
+        }
+        workflowChecks.forEach(check =>
+            console.log(renderCheck(check, forceUpdate))
+        );
+        noErrors = noErrors && noErrorChecks;
     });
-    if (noErrors) {
-        console.log(
-            chalk.green(
-                `✓  Run ${chalk.bold("ghactions all")} any time you want!`
-            )
-        );
-    } else {
-        console.log(
-            chalk.red(
-                "✗  Workflows have errors so updating them automatically is not recommended"
-            )
-        );
-        console.log(
-            "  ✎  Delete invalid workflows, update all, and merge your changes"
-        );
-        console.log(
-            "  ✎  Check for updates: https://github.com/vemel/github_actions_js"
-        );
-    }
     return noErrors;
 }
