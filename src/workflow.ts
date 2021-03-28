@@ -1,6 +1,7 @@
 export interface StepWith {
     "github-actions-managed"?: boolean;
     "github-actions-comment"?: string;
+    script?: string;
     [index: string]: unknown;
 }
 

@@ -42,6 +42,10 @@ export function isStepManaged(step: Step): boolean {
         const lines = step.run.split(/\r?\n/).map(x => x.trim());
         if (lines.includes("# github-actions-managed: true")) return true;
     }
+    if (step.with?.script) {
+        const lines = step.with.script.split(/\r?\n/).map(x => x.trim());
+        if (lines.includes("// github-actions-managed: true")) return true;
+    }
     return false;
 }
 
