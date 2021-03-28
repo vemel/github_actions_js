@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - `[on_push_check]` install latest `npm` before package installation
+- `[on_push_check]` use `npm ci` instead of `npm install`
 - `[on_release_pull_merged]` install latest `npm` before package installation
 - `[on_release_pull_merged]` fix gettng inputs for manual run
+- `[on_release_pull_merged]` use `npm ci` instead of `npm install`
 - `[on_release_published]` fix getting inputs for manual run
 
 ## [0.1.0]

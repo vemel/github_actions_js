@@ -123,7 +123,7 @@ jobs:
         run: |
           # github-actions-managed: true
           npm install -g npm
-          npm install
+          npm ci
       - name: Build package
         id: build
         if: steps.pull-request.outputs.result && steps.scripts.outputs.build

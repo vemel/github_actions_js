@@ -78,7 +78,7 @@ jobs:
         run: |
           # github-actions-managed: true
           npm install -g npm
-          npm install
+          npm ci
       - name: Run linting
         id: lint
         if: steps.scripts.outputs.lint
