@@ -44,7 +44,7 @@ jobs:
               }
             } else {
               // get Pull Request from event payload
-              pullRequest = context.payload;
+              pullRequest = context.payload.pull_request;
             }
 
             // Stop if Pull request is not merged

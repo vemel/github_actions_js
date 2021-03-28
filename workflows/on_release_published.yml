@@ -45,7 +45,7 @@ jobs:
             }
             if (context.payload.release){
               // get Release from event payload
-              pullRequest = context.payload.release;
+              release = context.payload.release;
             }
 
             if (!release) {
