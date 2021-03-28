@@ -76,7 +76,7 @@ export default function runUpdate(
     const remoteCommentLines = getTopCommentLines(remoteContent);
     let commentLines = localCommentLines;
     if (forceUpdate && !equal(commentLines, remoteCommentLines)) {
-        commentLines = localCommentLines;
+        commentLines = remoteCommentLines;
     }
     if (forceUpdate && localWorkflow.name !== remoteWorkflow.name) {
         localWorkflow.name = remoteWorkflow.name;
