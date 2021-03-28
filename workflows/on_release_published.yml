@@ -124,5 +124,18 @@ jobs:
               title: "Release ${{ steps.version.outputs.result }}",
               body: ${{ toJSON(steps.changelog.outputs.result) }}
             });
+
+            const pullRequestNumber = response.data.number;
+            core.info(`Release Pull Request labels: ${pullRequestNumber}`);
+
+            const labels = ['release', ${{ toJSON(steps.changelog.outputs.label) }}];
+            core.info(`Labels: ${labels}`);
+            await github.issues.setLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              labels: labels
+            });
+
             core.info(`Release Pull Request title: ${response.data.title}`);
             core.info(`Release Pull Request URL: ${response.data.html_url}`);
