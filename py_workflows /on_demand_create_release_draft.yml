@@ -116,6 +116,6 @@ jobs:
               name: version,
               draft: true,
               body: body,
-              prerelease: true,
+              prerelease: ${{ steps.version.outputs.is-prerelease }},
             });
             core.info(`Release URL: ${response.data.html_url}`);
