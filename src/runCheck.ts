@@ -66,9 +66,10 @@ export function runCheck(
 
 export async function runCheckAll(
     names: Array<string>,
-    ref: string
+    ref: string,
+    remotePath: string
 ): Promise<boolean> {
-    const remoteContents = await readRemoteWorkflows(names, ref);
+    const remoteContents = await readRemoteWorkflows(names, ref, remotePath);
     const localContents = new Map(await readLocalWorkflows(names));
     let noErrors = true;
     remoteContents.forEach(([name, remoteContent]) => {

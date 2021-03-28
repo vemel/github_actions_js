@@ -15,7 +15,8 @@
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"
   },
   "bin": {
-    "ghactions": "bin/ghactions"
+    "ghactions": "bin/ghactions",
+    "ghactions_py": "bin/ghactions_py"
   },
   "files": [
     "lib/*"
@@ -33,6 +34,14 @@
   ],
   "author": "Vlad Emelianov",
   "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^6.1.1",
+    "deep-equal": "^2.0.5",
+    "download": "^8.0.0",
+    "js-yaml": "^4.0.0"
+  },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
@@ -55,13 +64,5 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "uglify-js": "^3.13.1"
-  },
-  "dependencies": {
-    "chalk": "^4.1.0",
-    "command-line-args": "^5.1.1",
-    "command-line-usage": "^6.1.1",
-    "deep-equal": "^2.0.5",
-    "download": "^8.0.0",
-    "js-yaml": "^4.0.0"
   }
 }

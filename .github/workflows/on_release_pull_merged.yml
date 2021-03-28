@@ -1,4 +1,4 @@
-# This workflow provided by GitHubActions.js
+# This workflow provided by GitHubActions project
 # Documentation: https://github.com/vemel/github_actions_js
 #
 # --- How to modify this workflow and still get updates ---
@@ -74,7 +74,7 @@ jobs:
         with:
           github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
-      - name: Setup Node.js 12
+      - name: Set up Node.js 12
         uses: actions/setup-node@v2
         id: setup-node
         if: steps.pull-request.outputs.result

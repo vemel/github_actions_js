@@ -1,4 +1,4 @@
-# This workflow provided by GitHubActions.js
+# This workflow provided by GitHubActions project
 # Documentation: https://github.com/vemel/github_actions_js
 #
 # --- How to modify this workflow and still get updates ---
@@ -150,6 +150,7 @@ jobs:
           github-actions-managed: true
           github-actions-comment: Release draft will be an RC, use 'stable' instead if needed
           path: ./package.json
+          type: semver
           release: rc
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft

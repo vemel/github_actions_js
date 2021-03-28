@@ -8,7 +8,7 @@
 # - Do not add multiple jobs, only one job is supported
 # - Comments in yaml are removed on update, sorry :(
 
-name: Publish to NPM
+name: Publish to PyPI
 "on":
   pull_request:
     types:
@@ -19,8 +19,8 @@ name: Publish to NPM
         description: Pull Request number
         required: true
 jobs:
-  publish-to-npm:
-    if: secrets.NPM_TOKEN
+  publish-to-pypi:
+    if: secrets.PYPI_PASSWORD
     runs-on: ubuntu-latest
     steps:
       - name: Get Pull Request
@@ -74,51 +74,21 @@ jobs:
         with:
           github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
-      - name: Set up Node.js 12
-        uses: actions/setup-node@v2
-        id: setup-node
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        id: setup-python
         if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
-          node-version: 14
-          registry-url: https://registry.npmjs.org/
-      - name: Get available scripts
-        id: scripts
-        uses: actions/github-script@v3
-        with:
-          github-actions-managed: true
-          script: |
-            const { promisify } = require('util');
-            const exec = promisify(require('child_process').exec);
-
-            // Script to build package
-            const buildScript = 'build';
-
-            const output = (await exec('npm run')).stdout;
-            const scripts = output.split(/\r?\n/)
-              .filter(line => line.startsWith('  ') && !line.startsWith('   '))
-              .map(line => line.trim());
-
-            core.setOutput('build', scripts.includes(buildScript) ? buildScript : '');
-            return true;
-      - name: Install package
-        id: install
-        if: steps.pull-request.outputs.result
-        run: |
-          # github-actions-managed: true
-          npm install
-      - name: Build package
-        id: build
-        if: steps.pull-request.outputs.result && steps.scripts.outputs.build
-        run: |
-          # github-actions-managed: true
-          echo "Running: npm run ${{ steps.scripts.outputs.build }}"
-          npm run ${{ steps.scripts.outputs.build }}
-      - name: Publish new version to NPM
+          python-version: 3.9
+      - name: Publish new version to PyPI
         id: publish
         if: steps.pull-request.outputs.result
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TWINE_USERNAME: "__token__"
+          TWINE_PASSWORD: "${{ secrets.PYPI_PASSWORD }}"
         run: |
           # github-actions-managed: true
-          npm publish --access public
+          python -m pip install wheel
+          python setup.py build sdist bdist_wheel
+          twine upload --non-interactive dist/*

@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 const main = require("./../lib/index").default;
 
-main("javascript");
+main("python");

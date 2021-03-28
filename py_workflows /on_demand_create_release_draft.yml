@@ -89,7 +89,7 @@ jobs:
           github-actions-managed: true
           github-actions-comment: Bump version from package.json according to release notes
           path: ./package.json
-          type: semver
+          type: pep440
           release: ${{ github.event.inputs.release }}
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft

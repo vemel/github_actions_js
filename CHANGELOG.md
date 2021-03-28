@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `[cli]` `--check` flag to check if workflows are ready for updates
 - `[on_Push_check]` can run on multiple Node.js versions
+- `[cli]` `ghactions_py` command to generate Python workflows
 
 ### Changed
 - `[cli]` merges changes on update instead of overwrite

@@ -5,7 +5,7 @@ import os from "os";
 import path from "path";
 import { promisify } from "util";
 
-import { HEADER, LOCAL_WORKFLOWS_PATH, UTF8 } from "./constants";
+import { HEADER, LOCAL_WORKFLOWS_PATH, REPO_URL, UTF8 } from "./constants";
 import { Workflow } from "./workflow";
 
 function getTempDir(): string {
@@ -32,15 +32,20 @@ export function renderWorkflow(workflow: Workflow): string {
     return `${HEADER}\n\n${body}`;
 }
 
+export function getRemoteURL(name: string, ref: string, path: string): string {
+    return `${REPO_URL}/${ref}/${path}/${name}.yml`;
+}
+
 export async function readRemoteWorkflows(
     names: Array<string>,
-    ref: string
+    ref: string,
+    remotePath: string
 ): Promise<Array<[string, string | null]>> {
     const tempPath = getTempDir();
     const results: Array<Promise<[string, string | null]>> = names.map(
         async name => {
             const filePath = path.join(tempPath, `${name}.yml`);
-            const url = `https://raw.githubusercontent.com/vemel/github_actions_js/${ref}/workflows/${name}.yml`;
+            const url = getRemoteURL(name, ref, remotePath);
             try {
                 await download(url, tempPath);
             } catch (e) {

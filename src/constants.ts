@@ -1,5 +1,5 @@
 export const HEADER = [
-    "# This workflow provided by GitHubActions.js",
+    "# This workflow provided by GitHubActions project",
     "# Documentation: https://github.com/vemel/github_actions_js",
     "#",
     "# --- How to modify this workflow and still get updates ---",
@@ -25,3 +25,5 @@ export const HELP_WORKFLOW_NAMES = [
     "all (all workflows below)",
     ...WORKFLOW_NAMES
 ];
+export const REPO_URL =
+    "https://raw.githubusercontent.com/vemel/github_actions_js";

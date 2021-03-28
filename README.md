@@ -1,11 +1,12 @@
-# GitHubActions.js
+# GitHubActions
 
-Universal GitHub Actions pack for JavaScript/TypeScript projects.
+Hackable GitHub Actions pack for JavaScript/TypeScript and Python projects.
+Comes with a nice and a bit shy CLI manager. 
 
-- [GitHubActions.js](#githubactionsjs)
+- [GitHubActions](#githubactions)
   - [Usage](#usage)
   - [Description](#description)
-    - [GitHubActions.js Zen](#githubactionsjs-zen)
+    - [GitHubActions Zen](#githubactions-zen)
     - [What it does](#what-it-does)
     - [What it does not](#what-it-does-not)
     - [How to modify workflows and keep updated](#how-to-modify-workflows-and-keep-updated)
@@ -37,24 +38,27 @@ npx ghactions all --force
 
 # check if workflows can be safely updated
 npx ghactions --check
+
+# for python use ghactions_py instead of ghactions
 ```
 
 ## Description
 
-### GitHubActions.js Zen
+### GitHubActions Zen
 
+- Enforce best practices for versioning and changelog in a passive-aggressive way
 - Write Release and Pull Request notes in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Follow [SemVer](https://semver.org/) versioning schema
+- Follow [SemVer](https://semver.org/) or [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
 - Noone likes to write and assemble Release notes, so leave it to automation
 - Always leave a final decision to a human in case automation goes crazy
-- Enforce best practices for versioning and changelog in a passive-aggressive way
 - All actions use only Node.js 12 for speed and stability
 - Every action should have an additional manual trigger in case of trouble
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
+- Do not try to build one-fits-all soultion, provide customization instead
 
 ### What it does
 
-- Enforces [SemVer](https://semver.org/) versioning schema
+- Enforces [SemVer](https://semver.org/) or [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
 - Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
 - Supports publishing new versions to [npm](https://www.npmjs.com/)
 - Automatically bumps version in `package.json` and adds published Release notes to `CHANGELOG.md`
@@ -76,6 +80,7 @@ npx ghactions --check
 ## Secrets
 
 - `NPM_TOKEN` - If set, new releases are published to [npm](https://www.npmjs.com/) on Release Pull Request merge
+- `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
 
 ## Workflows
 
@@ -147,7 +152,8 @@ Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 - Uses Pull Request branch for deployment, so released version contains only changes
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
-- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
+- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set (`javascript`)
+- Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD` secret is set (`python`)
 
 ```bash
 # install this action to .github/workflows
@@ -172,5 +178,11 @@ npx ghactions on_demand_create_release_draft
 
 ## TODO
 
-- [ ] Add test coverage support
-- [ ] Merge user-edited workflows
+- [ ] Add `npm run coverage` support
+- [ ] Add `flake8` support
+- [ ] Add `pylint` support
+- [ ] Add `pytest` support
+- [ ] Add `pytest-cov` support
+- [ ] Add `mypy` support
+- [ ] Add `pyright` support
+- [ ] Allow user comments in workflow header

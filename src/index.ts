@@ -11,7 +11,9 @@ import {
 import { runCheckAll } from "./runCheck";
 import runUpdate from "./runUpdate";
 
-async function main(): Promise<void> {
+async function main(
+    language: "python" | "javascript" = "javascript"
+): Promise<void> {
     let args: Namespace;
     try {
         args = parseArgs();
@@ -44,9 +46,16 @@ async function main(): Promise<void> {
         );
         process.exit(1);
     }
+
+    language = args.language || language;
+    const remotePath = {
+        javascript: "workflows",
+        python: "py_workflows"
+    }[language];
+
     if (args.check) {
         const names = args.update.length ? args.update : WORKFLOW_NAMES;
-        const result = await runCheckAll(names, args.ref);
+        const result = await runCheckAll(names, args.ref, remotePath);
         process.exit(result ? 0 : 1);
     }
 
@@ -60,7 +69,12 @@ async function main(): Promise<void> {
             `Checking https://github.com/vemel/github_actions_js for workflow updates`
         )
     );
-    const remoteContents = await readRemoteWorkflows(args.update, args.ref);
+
+    const remoteContents = await readRemoteWorkflows(
+        args.update,
+        args.ref,
+        remotePath
+    );
     const localContents = new Map(await readLocalWorkflows(args.update));
     remoteContents.forEach(([name, remoteContent]) => {
         const localContent = localContents.get(name) || null;

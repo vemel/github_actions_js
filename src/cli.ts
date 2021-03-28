@@ -9,12 +9,13 @@ export interface Namespace {
     ref: string;
     force: boolean;
     check: boolean;
+    language: "python" | "javascript" | null;
 }
 
 export function getHelp(): string {
     return commandLineUsage([
         {
-            header: "GitHubActions.js",
+            header: "GitHubActions",
             content:
                 "Universal GitHub Actions pack for JavaScript/TypeScript projects\n\n" +
                 "Documentation: https://github.com/vemel/github_actions_js"
@@ -55,6 +56,13 @@ export function getHelp(): string {
                     description:
                         "Check if workflows are are update-friendly, does not update workflows",
                     type: Boolean
+                },
+                {
+                    name: "language",
+                    alias: "l",
+                    typeLabel: "lang",
+                    description: "Project language: python or javascript",
+                    type: String
                 }
             ]
         }
@@ -80,6 +88,7 @@ export function parseArgs(): Namespace {
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
         { name: "check", alias: "c", type: Boolean },
+        { name: "language", alias: "l", type: String },
         {
             name: "update",
             alias: "u",
@@ -97,5 +106,11 @@ export function parseArgs(): Namespace {
     result.force = result.force || false;
     result.ref = result.ref || "main";
     result.update = getWorkflowNames(result.update);
+    if (
+        result.language &&
+        !["python", "javascript"].includes(result.language)
+    ) {
+        throw new Error(`Unsupported language: ${result.language}`);
+    }
     return result;
 }
