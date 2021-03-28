@@ -74,12 +74,13 @@ jobs:
         uses: vemel/nextversion@main
         with:
           github-actions-managed: true
-          github-actions-comment: Add paths where version needs to be updated to 'update'
-          path: ./package.json
+          github-actions-comment: Change path here if version is stored in another file
+          path: ./setup.cfg
           type: semver
           result: ${{ steps.release.outputs.tag }}
           update: |
-            ./package.json
+            ./setup.cfg
+            ./pyproject.toml
       - name: Add new release to CHANGELOG.md
         id: changelog
         if: steps.release.outputs.result

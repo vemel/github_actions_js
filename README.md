@@ -1,14 +1,16 @@
 # GitHubActions
 
-Hackable GitHub Actions pack for JavaScript/TypeScript and Python projects.
-Comes with a nice and a bit shy CLI manager. 
+> Who will automate our automation?
+
+Nice and a bit shy CLI tool that provides hackable an universal [GitHub Actions](https://github.com/features/actions) for [Node.js](https://nodejs.org/) and [Python](https://www.python.org/) projects.
 
 - [GitHubActions](#githubactions)
   - [Usage](#usage)
   - [Description](#description)
+    - [What it does for Node.js projects](#what-it-does-for-nodejs-projects)
+    - [And for Python](#and-for-python)
+    - [What it does not do](#what-it-does-not-do)
     - [GitHubActions Zen](#githubactions-zen)
-    - [What it does](#what-it-does)
-    - [What it does not](#what-it-does-not)
     - [How to modify workflows and keep updated](#how-to-modify-workflows-and-keep-updated)
   - [Secrets](#secrets)
   - [Workflows](#workflows)
@@ -44,6 +46,27 @@ npx ghactions --check
 
 ## Description
 
+### What it does for Node.js projects
+
+- Enforces [SemVer](https://semver.org/) versioning schema
+- Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+- Supports publishing new versions to [npm](https://www.npmjs.com/)
+- Automatically bumps version in `package.json` and adds published Release notes to `CHANGELOG.md`
+- Releases are build in `release/*` branches to prevent unwanted changes
+
+### And for Python
+- Enforces [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
+- Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+- Supports publishing new versions to [PyPI](https://pypi.org/)
+- Automatically bumps version in `setup.cfg`, `pyproject.toml`, and adds published Release notes to `CHANGELOG.md`
+- Releases are build in `release/*` branches to prevent unwanted changes
+
+### What it does not do
+- Does not update files in your branches, all updates happen in newly created `release/*` branch,
+  so you can always check that automation does exactly what you want
+- Does not analyze your project files to suggest versions, all suggested versions are based
+  only on Release/Pull Request notes
+
 ### GitHubActions Zen
 
 - Enforce best practices for versioning and changelog in a passive-aggressive way
@@ -56,28 +79,15 @@ npx ghactions --check
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 - Do not try to build one-fits-all soultion, provide customization instead
 
-### What it does
-
-- Enforces [SemVer](https://semver.org/) or [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
-- Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Supports publishing new versions to [npm](https://www.npmjs.com/)
-- Automatically bumps version in `package.json` and adds published Release notes to `CHANGELOG.md`
-- Releases are build in `release/*` branches to prevent unwanted changes 
-
-### What it does not
-
-- Does not update files in your branches, all updates happen in newly created `release/*` branch,
-  so you can always check that automation does exactly what you want
-- Does not analyze your project files to suggest versions, all suggested versions are based
-  only on Release/Pull Request notes
-
 ### How to modify workflows and keep updated
 - Set `github-actions-managed: false` on manual edit to prevent step overwrite on update
 - User-added steps survive update as well
 - Deleted steps are restored on update, so make them empty instead of removing
-- Comments in yaml are removed on update, sorry :(
+- YAML comments are preserved as well, but will be moved to the top
 
 ## Secrets
+
+List of optional secrets to unleash secret techniques
 
 - `NPM_TOKEN` - If set, new releases are published to [npm](https://www.npmjs.com/) on Release Pull Request merge
 - `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
@@ -86,7 +96,8 @@ npx ghactions --check
 
 ### Run style checks and unit tests
 
-Workflow: [on_push_check.yml](workflows/on_push_check.yml)
+Node.js workflow: [on_push_check.yml](./workflows/on_push_check.yml)
+Python workflow: [on_push_check.yml](./workflows_py/on_push_check.yml)
 
 - Starts on push to any branch
 - Runs linting if `lint` script is available in `package.json`
@@ -94,13 +105,17 @@ Workflow: [on_push_check.yml](workflows/on_push_check.yml)
 - Uses `npm` cache to improve performance
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_push_check
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_push_check
 ```
 
 ### Update Pull Request labels
 
-Workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.yml)
+Node.js workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.yml)
+Python workflow: [on_pull_opened_or_edited.yml](./workflows_py/on_pull_opened_or_edited.yml)
 
 - Starts on Pull Request opened or edited event
 - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -110,28 +125,36 @@ Workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.ym
 - Otherwise adds `patch` label
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_pull_opened_or_edited
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_pull_opened_or_edited
 ```
 
 ### Update Release from Pull Request
 
-Workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
+Node.js workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
+Python workflow: [on_pull_merged.yml](./workflows_py/on_pull_merged.yml)
 
 - Starts on Pull Request merge for non-`release/*` branch
 - Creates or updates a Release draft for Pull Request base branch
 - Release draft notes are merged from existing notes and Pull Request notes
-- Each entry added from Pull Request notes contains a link to the Pull Request 
+- Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_pull_merged
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_pull_merged
 ```
 
 ### Create Release Pull Request
 
-Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
+Node.js workflow: [on_release_published.yml](./workflows/on_release_published.yml)
+Python workflow: [on_release_published.yml](./workflows_py/on_release_published.yml)
 
 - Starts on Release published
 - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -140,13 +163,17 @@ Workflow: [on_release_published.yml](./workflows/on_release_published.yml)
 - Release Pull Request uses branch `release/<version>`
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_release_published
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_release_published
 ```
 
 ### Publish to NPM
 
-Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
+Node.js workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
+Python workflow: [on_release_pull_merged.yml](./workflows_py/on_release_pull_merged.yml)
 
 - Starts on Pull Request merge for `release/*` branch
 - Uses Pull Request branch for deployment, so released version contains only changes
@@ -156,13 +183,17 @@ Workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
 - Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD` secret is set (`python`)
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_release_pull_merged
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_release_pull_merged
 ```
 
 ### Create Release draft
 
-Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_release_draft.yml)
+Node.js workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_release_draft.yml)
+Python workflow: [on_demand_create_release_draft.yml](./workflows_py/on_demand_create_release_draft.yml)
 
 - Starts only manually
 - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
@@ -172,8 +203,11 @@ Workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_rele
 
 
 ```bash
-# install this action to .github/workflows
+# install this action to .github/workflows for Node.js projects
 npx ghactions on_demand_create_release_draft
+
+# install this action to .github/workflows for Python projects
+npx ghactions_py on_demand_create_release_draft
 ```
 
 ## TODO
@@ -188,3 +222,5 @@ npx ghactions on_demand_create_release_draft
 - [ ] Add `latest` ref support
 - [ ] Use `latest` tag for updates by default instead of `main`
 - [ ] Publish to GitHub Packages
+- [ ] Mark prereleases correctly
+- [ ] Assign labels to Release Pull Request
