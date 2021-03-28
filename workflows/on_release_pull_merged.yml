@@ -138,4 +138,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # github-actions-managed: true
-          npm publish --access public
+          npm publish --verbose
