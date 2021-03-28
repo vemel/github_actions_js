@@ -96,7 +96,7 @@ jobs:
         with:
           github-actions-managed: true
           node-version: 14
-          registry-url: https://registry.npmjs.org/
+          registry-url: "https://registry.npmjs.org"
       - name: Get available scripts
         id: scripts
         if: steps.pull-request.outputs.result
