@@ -22,10 +22,19 @@ jobs:
   publish-to-npm:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Pull Request
+      - name: Check Secrets
+        id: secrets
         uses: actions/github-script@v3
-        if: secrets.NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        with:
+          github-actions-managed: true
+          script: |
+            process.env.NPM_TOKEN && core.setOutput("NPM_TOKEN", true);
+      - name: Get Pull Request
         id: pull-request
+        if: steps.secrets.outputs.NPM_TOKEN
+        uses: actions/github-script@v3
         with:
           github-actions-managed: true
           script: |
@@ -122,11 +131,11 @@ jobs:
           # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.build }}"
           npm run ${{ steps.scripts.outputs.build }}
-      # - name: Publish new version to NPM
-      #   id: publish
-      #   if: steps.pull-request.outputs.result
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   run: |
-      #     # github-actions-managed: true
-      #     npm publish --access public
+      - name: Publish new version to NPM
+        id: publish
+        if: steps.pull-request.outputs.result
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # github-actions-managed: true
+          npm publish --access public

@@ -22,9 +22,18 @@ jobs:
   publish-to-pypi:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Secrets
+        id: secrets
+        uses: actions/github-script@v3
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        with:
+          github-actions-managed: true
+          script: |
+            process.env.PYPI_PASSWORD && core.setOutput("PYPI_PASSWORD", true);
       - name: Get Pull Request
         id: pull-request
-        if: secrets.PYPI_PASSWORD
+        if: steps.secrets.outputs.PYPI_PASSWORD
         uses: actions/github-script@v3
         with:
           github-actions-managed: true

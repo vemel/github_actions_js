@@ -20,12 +20,20 @@ name: Publish to NPM
         required: true
 jobs:
   publish-to-npm:
-    if: secrets.NPM_TOKEN
     runs-on: ubuntu-latest
     steps:
+      - name: Check Secrets
+        id: secrets
+        uses: actions/github-script@v3
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        with:
+          github-actions-managed: true
+          script: |
+            process.env.NPM_TOKEN && core.setOutput("NPM_TOKEN", true);
       - name: Get Pull Request
         id: pull-request
-        if: secrets.NPM_TOKEN
+        if: steps.secrets.outputs.NPM_TOKEN
         uses: actions/github-script@v3
         with:
           github-actions-managed: true
