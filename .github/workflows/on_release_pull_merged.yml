@@ -109,6 +109,13 @@ jobs:
 
             core.setOutput('build', scripts.includes(buildScript) ? buildScript : '');
             return true;
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        id: setup-node
+        if: steps.pull-request.outputs.result
+        with:
+          github-actions-managed: true
+          node-version: 14
       - name: Install package
         id: install
         if: steps.pull-request.outputs.result
