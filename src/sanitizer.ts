@@ -65,17 +65,19 @@ export function isStepManaged(step: Step): boolean {
     return false;
 }
 
+function getSteps(workflow: Workflow): Array<Step> {
+    const jobs = Object.values(workflow.jobs || {});
+    if (!jobs.length) return [];
+    return jobs[0].steps || [];
+}
+
 export function mergeWorkflows(
     localWorkflow: Workflow,
     remoteWorkflow: Workflow
 ): Array<StepMerge> {
     const result: Array<StepMerge> = [];
-    const localSteps = [
-        ...(Object.values(localWorkflow.jobs || {})[0]?.steps || [])
-    ];
-    const remoteSteps = [
-        ...(Object.values(remoteWorkflow.jobs || {})[0]?.steps || [])
-    ];
+    const localSteps = getSteps(localWorkflow);
+    const remoteSteps = getSteps(remoteWorkflow);
     remoteSteps.reverse().forEach((remoteStep, remoteIndex) => {
         const localStepIndex = findStepIndex(remoteStep, localSteps);
         if (localStepIndex < 0) {
@@ -247,6 +249,25 @@ export function checkWorkflow(workflow: Workflow): Array<WorkflowCheck> {
     return result;
 }
 
+function validateWorkflow(workflow: Workflow): Array<WorkflowCheck> {
+    const result: Array<WorkflowCheck> = [];
+    const steps = getSteps(workflow);
+    const stepIds = new Set();
+    steps.forEach(step => {
+        if (!step.id) return;
+        if (stepIds.has(step.id))
+            result.push({
+                level: "error",
+                item: step.id,
+                checkMessage: "step id is not unique",
+                updateMessage: "step id is not unique"
+            });
+        stepIds.add(step.id);
+    });
+
+    return result;
+}
+
 export function getWorkflowChecks(
     localContent: string | null,
     remoteContent: string | null
@@ -275,6 +296,7 @@ export function getWorkflowChecks(
         return result;
     }
     const data = getWorkflowData(localContent);
+    result.push(...validateWorkflow(data));
     result.push(...checkWorkflow(data));
 
     if (

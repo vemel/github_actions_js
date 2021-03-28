@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `[cli]` update does not apply if workflow has errors
+- `[cli]` check fails if workflows has duplicated step ids
 
 ### Fixed
 - `[cli]` show correct `ghactions_py` command in output for Python projects

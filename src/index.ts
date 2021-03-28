@@ -74,15 +74,13 @@ async function main(
             );
         } else {
             console.log(
-                chalk.red(
-                    "✗  Workflows have errors so updating them automatically is not recommended"
-                )
+                chalk.red("✗  Workflows have errors that prevent updates")
             );
             console.log(
-                "  ✎  Delete invalid workflows, update all, and merge your changes"
+                "✎  Delete invalid workflows, update all, and merge your changes"
             );
             console.log(
-                "  ✎  Check for updates: https://github.com/vemel/github_actions_js"
+                "✎  Check for updates: https://github.com/vemel/github_actions_js"
             );
         }
         process.exit(result ? 0 : 1);
