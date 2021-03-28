@@ -29,7 +29,7 @@ jobs:
           github-actions-managed: true
           script: |
             let release = null;
-            if (context.payload.inputs && context.payload.inputs.number) {
+            if (context.payload.inputs && context.payload.inputs.tag) {
               const tagName = context.payload.inputs.tag;
               // find Pull Request by number fom input
               const releasesResponse = await github.repos.listReleases({

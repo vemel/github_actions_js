@@ -24,14 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get Pull Request
-        uses: actions/github-script@v3
         id: pull-request
+        if: secrets.NPM_TOKEN
+        uses: actions/github-script@v3
         with:
           github-actions-managed: true
           script: |
             let pullRequest = null;
-            if (context.inputs && context.inputs.number) {
+            if (context.payload.inputs && context.payload.inputs.number) {
               // find Pull Request by number fom input
+              const number = context.payload.inputs.number;
               try {
                 pullRequest = (await github.pulls.get({
                   owner: context.repo.owner,
@@ -47,6 +49,11 @@ jobs:
               pullRequest = context.payload.pull_request;
             }
 
+            if (!pullRequest) {
+              core.error(`Cannot find Pull Request`);
+              return;
+            }
+
             // Stop if Pull request is not merged
             if (!pullRequest.merged) {
               core.info(`Pull Request ${pullRequest.number} is not merged, skipping`);
@@ -55,7 +62,7 @@ jobs:
 
             // Stop if Pull Request branch name starts with `release`
             const branch = pullRequest.head.ref;
-            if (!branch.startswith('release')) {
+            if (!branch.startsWith('release')) {
               core.info(`This is not a release branch ${branch}, skipping`);
               return;
             }
@@ -74,7 +81,7 @@ jobs:
         with:
           github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
-      - name: Set up Node.js 12
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         id: setup-node
         if: steps.pull-request.outputs.result
@@ -84,6 +91,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Get available scripts
         id: scripts
+        if: steps.pull-request.outputs.result
         uses: actions/github-script@v3
         with:
           github-actions-managed: true
@@ -106,6 +114,7 @@ jobs:
         if: steps.pull-request.outputs.result
         run: |
           # github-actions-managed: true
+          npm install -g npm
           npm install
       - name: Build package
         id: build
