@@ -6,7 +6,7 @@
 # - User-added steps survive update as well
 # - Deleted steps are restored on update, so make them empty instead of removing
 # - Do not add multiple jobs, only one job is supported
-# - Comments in yaml are removed on update, sorry :(
+# - This comment is user-editable and is not updated automatically
 
 name: Publish to PyPI
 "on":
