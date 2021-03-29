@@ -61,5 +61,3 @@ Let's start today:
 - [x] Add custom indexes support
 - [x] Add `--list` argument to list workflows in index
 - [ ] external `scripts` support
-- [ ] Add `latest` ref support
-- [ ] Use `latest` tag for updates by default instead of `main`
