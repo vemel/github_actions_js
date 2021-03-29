@@ -61,13 +61,13 @@ export async function readWorkflowIndex(
         name: data.name,
         workflows: data.workflows
             .filter(x => names.length === 0 || names.includes(x.name))
-            .map(({ name, url }) => {
+            .map(({ url, ...rest }) => {
                 if (url.startsWith("./")) {
                     url = joinURL(indexURL, url);
                 }
                 return {
-                    name,
-                    url
+                    url,
+                    ...rest
                 };
             })
     };

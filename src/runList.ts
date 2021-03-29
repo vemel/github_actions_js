@@ -5,9 +5,9 @@ import { WorkflowIndex } from "./workflow";
 export function runList(index: WorkflowIndex): void {
     index.workflows.forEach(item => {
         if (item.title) {
-            console.log(`- ${chalk.bold(chalk.blue(item.name))} ${item.title}`);
+            console.log(`${chalk.bold(chalk.blue(item.name))} : ${item.title}`);
         } else {
-            console.log(`- ${chalk.bold(chalk.blue(item.name))}`);
+            console.log(`${chalk.bold(chalk.blue(item.name))}`);
         }
         if (item.description) {
             item.description
