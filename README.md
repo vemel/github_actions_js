@@ -58,8 +58,8 @@ Let's start today:
 
 - [x] Unify `--check` and `update` reports
 - [x] Support user top comment in workflows
-- [ ] Add custom indexes support
-- [ ] Add `--list` argument to list workflows in index
+- [x] Add custom indexes support
+- [x] Add `--list` argument to list workflows in index
 - [ ] external `scripts` support
 - [ ] Add `latest` ref support
 - [ ] Use `latest` tag for updates by default instead of `main`
