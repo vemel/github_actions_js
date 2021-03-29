@@ -1,25 +1,61 @@
 name: GitHub Actions for Node.js projects
 workflows:
-  - name: on_demand_create_release_draft
-    title: Create Release draft
-    url: ./on_demand_create_release_draft.yml
-
-  - name: on_pull_merged
-    title: Update Release from Pull Request
-    url: ./on_pull_merged.yml
+  - name: on_push_check
+    title: Run style checks and unit tests
+    url: ./on_push_check.yml
+    description: |
+      - Starts on push to any branch
+      - Runs linting if `lint` script is available in `npm run`
+      - Runs unit tests if `test` script is available in `npm run`
+      - Uses `npm` cache to improve performance
 
   - name: on_pull_opened_or_edited
     title: Update Pull Request labels
     url: ./on_pull_opened_or_edited.yml
+    description: |
+      - Starts on Pull Request opened or edited event
+      - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+      - If Pull Request branch name is `release/*`, adds `release` label
+      - If Pull Request notes has `Removed` section, adds `major` label
+      - If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
+      - Otherwise adds `patch` label
 
-  - name: on_push_check
-    title: Run style checks and unit tests
-    url: ./on_push_check.yml
+  - name: on_pull_merged
+    title: Update Release from Pull Request
+    url: ./on_pull_merged.yml
+    description: |
+      - Starts on Pull Request merge for non-`release/*` branch
+      - Creates or updates a Release draft for Pull Request base branch
+      - Release draft notes are merged from existing notes and Pull Request notes
+      - Each entry added from Pull Request notes contains a link to the Pull Request
+      - Release draft suggested version is based on Release notes
 
   - name: on_release_published
     title: Create Release Pull Request
     url: ./on_release_published.yml
+    description: |
+      - Starts on Release published
+      - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+      - Creates a Release Pull Request from Release target branch with `release` label
+      - Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
+      - Release Pull Request uses branch `release/<version>`
 
   - name: on_release_pull_merged
     title: Publish to NPM
     url: ./on_release_pull_merged.yml
+    description: |
+      - Starts on Pull Request merge for `release/*` branch
+      - Uses Pull Request branch for deployment, so released version contains only changes
+        from base branch when Release had been published
+      - Builds package if `build` script is available in `package.json`
+      - Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
+
+  - name: on_demand_create_release_draft
+    title: Create Release draft
+    url: ./on_demand_create_release_draft.yml
+    description: |
+      - Starts only manually
+      - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
+      - Creates or updates a release draft for `target` branch
+      - Release notes are populated from `Unreleased` section of `CHANGELOG.md`
+      - Sets suggested version as `name` and `tag` of the Release

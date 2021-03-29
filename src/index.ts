@@ -5,14 +5,14 @@ import { getHelp, Namespace, parseArgs } from "./cli";
 import { DOCS_URL, JS_INDEX_URL } from "./constants";
 import { readWorkflowIndex } from "./manager";
 import { runCheckAll } from "./runCheck";
+import { runList } from "./runList";
 import { runUpdateAll } from "./runUpdate";
+import { getCommandName } from "./utils";
 import { WorkflowIndex } from "./workflow";
 
 async function main(indexURL: string): Promise<void> {
     let args: Namespace;
-    const commandName = process.argv[1]
-        ? process.argv[1].split("/").pop()
-        : "ghactions";
+    const commandName = getCommandName();
     try {
         args = parseArgs();
     } catch (e) {
@@ -51,7 +51,7 @@ async function main(indexURL: string): Promise<void> {
         workflowIndex = await readWorkflowIndex(indexURL, args.update);
         console.log(
             chalk.grey(
-                `✓  checking workflows from ${chalk.bold(workflowIndex.name)}`
+                `✓  getting actions from ${chalk.bold(workflowIndex.name)}`
             )
         );
     } catch (e) {
@@ -59,6 +59,10 @@ async function main(indexURL: string): Promise<void> {
         process.exit(1);
     }
 
+    if (args.list) {
+        runList(workflowIndex);
+        process.exit(0);
+    }
     if (args.check) {
         const result = await runCheckAll(workflowIndex.workflows, args.force);
         if (result) {
@@ -73,7 +77,7 @@ async function main(indexURL: string): Promise<void> {
             console.log(chalk.red("✗  Found errors that prevent update"));
             console.log(
                 chalk.grey(
-                    "✎  Delete invalid workflows, update all, and merge your changes"
+                    "✎  Delete invalid actions, update all, and merge your changes"
                 )
             );
             console.log(chalk.grey(`✎  Check for updates: ${DOCS_URL}`));

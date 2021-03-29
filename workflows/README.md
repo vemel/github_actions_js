@@ -116,8 +116,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 - Uses Pull Request branch for deployment, so released version contains only changes
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
-- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set (`javascript`)
-- Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD` secret is set (`python`)
+- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
 
 ```bash
 # install this action to .github/workflows

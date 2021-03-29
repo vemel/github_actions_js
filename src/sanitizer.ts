@@ -276,7 +276,7 @@ export function getWorkflowChecks(
     if (!remoteContent) {
         result.push({
             level: "error",
-            item: "remote workflow",
+            item: "action",
             highlight: "failed",
             checkMessage: "download failed",
             updateMessage: "download failed"
@@ -288,7 +288,7 @@ export function getWorkflowChecks(
     if (!localContent) {
         result.push({
             level: "info",
-            item: "workflow",
+            item: "action",
             highlight: workflowPurpose,
             checkMessage: `will be created to ${workflowPurpose}`,
             updateMessage: `created to ${workflowPurpose}`

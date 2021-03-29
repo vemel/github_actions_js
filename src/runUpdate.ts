@@ -59,7 +59,7 @@ export function runUpdate(
     }
     if (workflowCheckErrors.length) {
         workflowCheckErrors.push({
-            item: "workflow",
+            item: "action",
             level: "error",
             highlight: "errors",
             checkMessage: "",

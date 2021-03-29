@@ -6,7 +6,7 @@ import path from "path";
 import { promisify } from "util";
 
 import { LOCAL_WORKFLOWS_PATH, REPO_URL, UTF8 } from "./constants";
-import { joinURL } from "./utils";
+import { getCommandName, joinURL } from "./utils";
 import { Workflow, WorkflowIndex, WorkflowIndexItem } from "./workflow";
 
 function getTempDir(): string {
@@ -73,12 +73,12 @@ export async function readWorkflowIndex(
     };
     const foundNames = data.workflows.map(x => x.name);
     names.forEach(name => {
-        if (!foundNames.includes(name))
+        if (!foundNames.includes(name)) {
+            const commandName = getCommandName();
             throw new Error(
-                `workflow ${name} not found, choices are: ${foundNames.join(
-                    ", "
-                )}`
+                `action ${name} not found, run '${commandName} --list' to list available actions`
             );
+        }
     });
     return result;
 }

@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- `[cli]` `--index` argument to support custom workflow packs
+- `[cli]` `--index` argument to support custom action packs
+- `[cli]` `--list` argument to list available actions
 
 ### Changed
 - `[cli]` removed hardcoded workflow names

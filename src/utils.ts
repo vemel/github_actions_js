@@ -12,3 +12,7 @@ export function joinURL(base: string, newPath: string): string {
     const pathname = path.join(oldPathname, newPath);
     return new URL(pathname, url.origin).href;
 }
+
+export function getCommandName(): string {
+    return (process.argv[1] && process.argv[1].split("/").pop()) || "ghactions";
+}

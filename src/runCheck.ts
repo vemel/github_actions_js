@@ -48,7 +48,7 @@ export async function runCheckAll(
         if (noChecks) {
             workflowChecks.push({
                 level: "success",
-                item: "workflow",
+                item: "action",
                 checkMessage: "is up-to-date",
                 updateMessage: "is up-to-date",
                 highlight: "up-to-date"

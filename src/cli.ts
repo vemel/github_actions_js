@@ -9,6 +9,7 @@ export interface Namespace {
     ref: string;
     force: boolean;
     check: boolean;
+    list: boolean;
     index?: string;
 }
 
@@ -26,18 +27,18 @@ export function getHelp(): string {
                     alias: "u",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Create or update workflow .github/workflows/<name>.yml, or {bold all} to update all`
+                    description: `Create or update action .github/workflows/<name>.yml, or {bold all} to update all`
                 },
                 {
                     name: "ref",
                     alias: "r",
                     typeLabel: "version",
-                    description: "Update workflows to a specific tag/version"
+                    description: "Update actions to a specific tag/version"
                 },
                 {
                     name: "force",
                     alias: "f",
-                    description: "Update workflow user-managed workflow parts",
+                    description: "Update user-managed workflow parts",
                     type: Boolean
                 },
                 {
@@ -50,7 +51,7 @@ export function getHelp(): string {
                     name: "check",
                     alias: "c",
                     description:
-                        "Check if workflows are are update-friendly, does not update workflows",
+                        "Check if actions are are update-friendly, does not update actions",
                     type: Boolean
                 },
                 {
@@ -58,8 +59,14 @@ export function getHelp(): string {
                     alias: "i",
                     typeLabel: "URL",
                     description:
-                        "Link to workflows index YAML file. Supports {bold ref} placeholder.",
+                        "Link to actions index YAML file. Supports {bold ref} placeholder.",
                     type: String
+                },
+                {
+                    name: "list",
+                    alias: "l",
+                    description: "List available actions.",
+                    type: Boolean
                 }
             ]
         }
@@ -68,6 +75,7 @@ export function getHelp(): string {
 
 export function parseArgs(): Namespace {
     const result = <Namespace>commandLineArgs([
+        { name: "list", alias: "l", type: Boolean },
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
         { name: "check", alias: "c", type: Boolean },

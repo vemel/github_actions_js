@@ -2,6 +2,7 @@ export interface WorkflowIndexItem {
     name: string;
     url: string;
     title?: string;
+    description?: string;
 }
 
 export interface WorkflowIndex {
