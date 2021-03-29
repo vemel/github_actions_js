@@ -16,3 +16,14 @@ export function joinURL(base: string, newPath: string): string {
 export function getCommandName(): string {
     return (process.argv[1] && process.argv[1].split("/").pop()) || "ghactions";
 }
+
+export function getVersionString(): string {
+    const version = process.env.npm_package_version;
+    if (version) return version;
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        return require("../package.json").version || "unknown";
+    } catch {
+        return "unknown";
+    }
+}

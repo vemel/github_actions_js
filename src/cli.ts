@@ -5,6 +5,7 @@ import { DOCS_URL } from "./constants";
 
 export interface Namespace {
     help: boolean;
+    version: boolean;
     update: Array<string>;
     ref: string;
     force: boolean;
@@ -61,13 +62,19 @@ export function getHelp(): string {
                     alias: "i",
                     typeLabel: "URL",
                     description:
-                        "Link to actions index YAML file. Supports {bold ref} placeholder.",
+                        "Link to actions index YAML file, supports {bold ref} placeholder",
                     type: String
                 },
                 {
                     name: "list",
                     alias: "l",
-                    description: "List available actions.",
+                    description: "List available actions",
+                    type: Boolean
+                },
+                {
+                    name: "version",
+                    alias: "v",
+                    description: "Show package version",
                     type: Boolean
                 }
             ]
@@ -77,6 +84,7 @@ export function getHelp(): string {
 
 export function parseArgs(): Namespace {
     const result = <Namespace>commandLineArgs([
+        { name: "version", alias: "v", type: Boolean },
         { name: "list", alias: "l", type: Boolean },
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },

@@ -7,7 +7,7 @@ import { readWorkflowIndex } from "./manager";
 import { runCheckAll } from "./runCheck";
 import { runList } from "./runList";
 import { runUpdateAll } from "./runUpdate";
-import { getCommandName } from "./utils";
+import { getCommandName, getVersionString } from "./utils";
 import { WorkflowIndex } from "./workflow";
 
 async function main(indexURL: string): Promise<void> {
@@ -22,6 +22,10 @@ async function main(indexURL: string): Promise<void> {
     }
     if (args.help) {
         console.log(getHelp());
+        process.exit(0);
+    }
+    if (args.version) {
+        console.log(`${getCommandName()} ${getVersionString()}`);
         process.exit(0);
     }
     if (!fs.existsSync("./.github/workflows")) {
