@@ -20,14 +20,32 @@ test("merge workflows", async () => {
     localJob.steps = [];
     remoteJob.steps = [{ id: "remote1" }];
     expect(mergeWorkflows(local, remote)).toEqual([
-        { action: "add", stepName: "remote1", step: { id: "remote1" } }
+        {
+            action: "add",
+            stepName: "remote1",
+            step: {
+                id: "remote1",
+                with: {
+                    "github-actions-managed": true
+                }
+            }
+        }
     ]);
 
     localJob.steps = [{ name: "local1" }];
     remoteJob.steps = [{ id: "remote1" }];
     expect(mergeWorkflows(local, remote)).toEqual([
         { action: "local", stepName: "local1", step: { name: "local1" } },
-        { action: "add", stepName: "remote1", step: { id: "remote1" } }
+        {
+            action: "add",
+            stepName: "remote1",
+            step: {
+                id: "remote1",
+                with: {
+                    "github-actions-managed": true
+                }
+            }
+        }
     ]);
 
     localJob.steps = [
