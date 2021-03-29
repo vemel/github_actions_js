@@ -39,6 +39,7 @@
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.1",
     "deep-equal": "^2.0.5",
+    "diff": "^5.0.0",
     "download": "^8.0.0",
     "js-yaml": "^4.0.0"
   },
@@ -46,6 +47,7 @@
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
     "@types/deep-equal": "^1.0.1",
+    "@types/diff": "^5.0.0",
     "@types/download": "^6.2.4",
     "@types/jest": "^26.0.22",
     "@types/js-yaml": "^4.0.0",

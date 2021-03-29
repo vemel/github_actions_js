@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- `--version` CLI flag now shows package version
+- `--version` CLI flag to show package version
+- `--diff` CLI flag to output diff on check/update
 
 ### Changed
 - sync `jobs.*.runs-on` from remote with `--force`

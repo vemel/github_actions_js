@@ -1,10 +1,12 @@
 import chalk from "chalk";
 
+import { logDiff } from "./differ";
 import {
     getLocalPath,
     readLocalWorkflows,
     readRemoteWorkflows
 } from "./manager";
+import { mergeWorkflowContent } from "./merger";
 import { getCheckIcon, getWorkflowChecks, WorkflowCheck } from "./sanitizer";
 import { WorkflowIndexItem } from "./workflow";
 
@@ -31,7 +33,8 @@ function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
 
 export async function runCheckAll(
     items: Array<WorkflowIndexItem>,
-    forceUpdate: boolean
+    forceUpdate: boolean,
+    showDiff: boolean
 ): Promise<boolean> {
     const remoteContents = await readRemoteWorkflows(items);
     const localContents = new Map(await readLocalWorkflows(items));
@@ -48,10 +51,10 @@ export async function runCheckAll(
         if (noChecks) {
             workflowChecks.push({
                 level: "success",
-                item: "action",
-                checkMessage: "is up-to-date",
-                updateMessage: "is up-to-date",
-                highlight: "up-to-date"
+                item: "workflow",
+                checkMessage: "is up to date",
+                updateMessage: "is up to date",
+                highlight: "up to date"
             });
         }
         if (!noErrorChecks) {
@@ -66,6 +69,14 @@ export async function runCheckAll(
         workflowChecks.forEach(check =>
             console.log(renderCheck(check, forceUpdate))
         );
+        if (showDiff && remoteContent && localContent) {
+            const newContent = mergeWorkflowContent(
+                localContent,
+                remoteContent,
+                forceUpdate
+            );
+            logDiff(localContent, newContent);
+        }
         noErrors = noErrors && noErrorChecks;
     });
     return noErrors;

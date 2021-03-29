@@ -9,6 +9,7 @@
 > -- GitHub Actions Manager 😎
 
 Nice and a bit shy CLI tool to install and update [GitHub Actions](https://github.com/features/actions).
+
 Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./workflows_py/README.md) projects.
 
 - [GitHub Actions Manager](#github-actions-manager)

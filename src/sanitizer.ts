@@ -187,7 +187,7 @@ function checkJobs(local: Workflow, remote: Workflow): Array<WorkflowCheck> {
     if (!remoteJob) {
         result.push({
             level: "error",
-            item: "remote action",
+            item: "remote workflow",
             highlight: "jobs",
             checkMessage: "are not set remotely",
             updateMessage: "does not have jobs"
@@ -197,7 +197,7 @@ function checkJobs(local: Workflow, remote: Workflow): Array<WorkflowCheck> {
     if (!localJob) {
         result.push({
             level: "error",
-            item: "action",
+            item: "workflow",
             highlight: "jobs",
             checkMessage: "does not have jobs",
             updateMessage: "does not have jobs"
@@ -354,7 +354,7 @@ export function getWorkflowChecks(
     if (!remoteContent) {
         result.push({
             level: "error",
-            item: "action",
+            item: "workflow",
             highlight: "failed",
             checkMessage: "download failed",
             updateMessage: "download failed"
@@ -366,7 +366,7 @@ export function getWorkflowChecks(
     if (!localContent) {
         result.push({
             level: "info",
-            item: "action",
+            item: "workflow",
             highlight: workflowPurpose,
             checkMessage: `will be created to ${workflowPurpose}`,
             updateMessage: `created to ${workflowPurpose}`

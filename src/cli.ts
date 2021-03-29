@@ -11,6 +11,7 @@ export interface Namespace {
     force: boolean;
     check: boolean;
     list: boolean;
+    diff: boolean;
     index?: string;
 }
 
@@ -30,13 +31,13 @@ export function getHelp(): string {
                     alias: "u",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Create or update action .github/workflows/<name>.yml, or {bold all} to update all`
+                    description: `Create or update workflow .github/workflows/<name>.yml, or {bold all} to update all`
                 },
                 {
                     name: "ref",
                     alias: "r",
                     typeLabel: "version",
-                    description: "Update actions to a specific tag/version"
+                    description: "Update workflows to a specific tag/version"
                 },
                 {
                     name: "force",
@@ -54,7 +55,7 @@ export function getHelp(): string {
                     name: "check",
                     alias: "c",
                     description:
-                        "Check if actions are are update-friendly, does not update actions",
+                        "Check if workflows are are update-friendly, does not update files",
                     type: Boolean
                 },
                 {
@@ -62,13 +63,19 @@ export function getHelp(): string {
                     alias: "i",
                     typeLabel: "URL",
                     description:
-                        "Link to actions index YAML file, supports {bold ref} placeholder",
+                        "Link to workflows index YAML file, supports {bold ref} placeholder",
                     type: String
                 },
                 {
                     name: "list",
                     alias: "l",
-                    description: "List available actions",
+                    description: "List available workflows",
+                    type: Boolean
+                },
+                {
+                    name: "diff",
+                    alias: "d",
+                    description: "Show diff for update and check runs",
                     type: Boolean
                 },
                 {
@@ -86,6 +93,7 @@ export function parseArgs(): Namespace {
     const result = <Namespace>commandLineArgs([
         { name: "version", alias: "v", type: Boolean },
         { name: "list", alias: "l", type: Boolean },
+        { name: "diff", alias: "d", type: Boolean },
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
         { name: "check", alias: "c", type: Boolean },

@@ -55,7 +55,7 @@ async function main(indexURL: string): Promise<void> {
         workflowIndex = await readWorkflowIndex(indexURL, args.update);
         console.log(
             chalk.grey(
-                `✓  getting actions from ${chalk.bold(workflowIndex.name)}`
+                `✓  getting workflows from ${chalk.bold(workflowIndex.name)}`
             )
         );
     } catch (e) {
@@ -68,7 +68,11 @@ async function main(indexURL: string): Promise<void> {
         process.exit(0);
     }
     if (args.check) {
-        const result = await runCheckAll(workflowIndex.workflows, args.force);
+        const result = await runCheckAll(
+            workflowIndex.workflows,
+            args.force,
+            args.diff
+        );
         if (result) {
             console.log(
                 chalk.green(
@@ -81,7 +85,7 @@ async function main(indexURL: string): Promise<void> {
             console.log(chalk.red("✗  Found errors that prevent update"));
             console.log(
                 chalk.grey(
-                    "✎  Delete invalid actions, update all, and merge your changes"
+                    "✎  Delete invalid workflows, update all, and merge your changes"
                 )
             );
             console.log(chalk.grey(`✎  Check for updates: ${DOCS_URL}`));
@@ -94,7 +98,7 @@ async function main(indexURL: string): Promise<void> {
         process.exit(0);
     }
 
-    await runUpdateAll(workflowIndex.workflows, args.force);
+    await runUpdateAll(workflowIndex.workflows, args.force, args.diff);
 }
 
 if (typeof require !== "undefined" && require.main === module) {
