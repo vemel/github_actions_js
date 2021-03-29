@@ -16,8 +16,10 @@ export interface Namespace {
 export function getHelp(): string {
     return commandLineUsage([
         {
-            header: "GitHubActions",
-            content: "GitHub Actions manager\n\n" + `Documentation: ${DOCS_URL}`
+            header: "GitHub Actions Manager",
+            content:
+                "CLI tool to install and update GitHub Actions\n\n" +
+                `Documentation: ${DOCS_URL}\n`
         },
         {
             header: "Options",

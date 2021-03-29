@@ -2,7 +2,7 @@
   "name": "github-actions",
   "version": "0.2.0",
   "private": false,
-  "description": "GitHub Actions manager",
+  "description": "CLI tool to install and update GitHub Actions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
