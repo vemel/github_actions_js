@@ -58,7 +58,7 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_push_check
+ghactions_py on_push_check
 ```
 
 ### Update Pull Request labels
@@ -74,7 +74,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_pull_opened_or_edited
+ghactions_py on_pull_opened_or_edited
 ```
 
 ### Update Release from Pull Request
@@ -89,7 +89,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_pull_merged
+ghactions_py on_pull_merged
 ```
 
 ### Create Release Pull Request
@@ -104,7 +104,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_release_published
+ghactions_py on_release_published
 ```
 
 ### Publish to NPM
@@ -119,7 +119,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_release_pull_merged
+ghactions_py on_release_pull_merged
 ```
 
 ### Create Release draft
@@ -135,5 +135,5 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-npx ghactions on_demand_create_release_draft
+ghactions_py on_demand_create_release_draft
 ```
