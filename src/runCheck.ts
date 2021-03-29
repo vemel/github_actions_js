@@ -52,15 +52,8 @@ export async function runCheckAll(
                 updateMessage: "is up-to-date",
                 highlight: "up-to-date"
             });
-        } else if (noErrorChecks) {
-            workflowChecks.push({
-                level: "info",
-                item: "workflow",
-                checkMessage: "can be safely updated",
-                updateMessage: "updated",
-                highlight: "updated"
-            });
-        } else {
+        }
+        if (!noErrorChecks) {
             workflowChecks.push({
                 level: "error",
                 item: "workflow",
