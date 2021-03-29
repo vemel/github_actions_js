@@ -76,7 +76,7 @@ jobs:
           github-actions-managed: true
           github-actions-comment: Change path here if version is stored in another file
           path: ./setup.cfg
-          type: semver
+          type: pep440
           result: ${{ steps.release.outputs.tag }}
           update: |
             ./setup.cfg
