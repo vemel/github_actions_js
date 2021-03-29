@@ -1,4 +1,8 @@
-import { mergeWorkflows } from "../src/sanitizer";
+import {
+    isStepManaged,
+    makeStepManaged,
+    mergeWorkflows
+} from "../src/sanitizer";
 import { Job, Workflow } from "../src/workflow";
 
 test("merge workflows", async () => {
@@ -161,4 +165,77 @@ test("merge workflows", async () => {
             }
         }
     ]);
+});
+
+test("is step managed", () => {
+    expect(isStepManaged({ id: "remote1" })).toBeFalsy();
+    expect(
+        isStepManaged({
+            id: "remote1",
+            run: "\n# github-actions-managed: false"
+        })
+    ).toBeFalsy();
+    expect(
+        isStepManaged({
+            id: "remote1",
+            run: "\ntest\n# github-actions-managed: true"
+        })
+    ).toBeTruthy();
+    expect(
+        isStepManaged({
+            id: "remote1",
+            with: { script: "\n// github-actions-managed: true\ntest" }
+        })
+    ).toBeTruthy();
+    expect(
+        isStepManaged({
+            id: "remote1",
+            with: {
+                "github-actions-managed": true
+            }
+        })
+    ).toBeTruthy();
+});
+
+test("make step managed", () => {
+    expect(makeStepManaged({ id: "remote1" })).toEqual({
+        id: "remote1",
+        with: { "github-actions-managed": true }
+    });
+    expect(
+        makeStepManaged({
+            id: "remote1",
+            run: "\n# github-actions-managed: false"
+        })
+    ).toEqual({
+        id: "remote1",
+        run: "\n# github-actions-managed: true\n# github-actions-managed: false"
+    });
+    expect(
+        makeStepManaged({
+            id: "remote1",
+            run: "test"
+        })
+    ).toEqual({
+        id: "remote1",
+        run: "\n# github-actions-managed: true\ntest"
+    });
+    expect(
+        makeStepManaged({
+            id: "remote1",
+            with: { script: "\ntest" }
+        })
+    ).toEqual({
+        id: "remote1",
+        with: { script: "\n// github-actions-managed: true\ntest" }
+    });
+    expect(
+        makeStepManaged({
+            id: "remote1",
+            with: { script: "\n// github-actions-managed: true\ntest" }
+        })
+    ).toEqual({
+        id: "remote1",
+        with: { script: "\n// github-actions-managed: true\ntest" }
+    });
 });

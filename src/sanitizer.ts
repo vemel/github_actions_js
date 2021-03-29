@@ -65,6 +65,37 @@ export function isStepManaged(step: Step): boolean {
     return false;
 }
 
+export function makeStepManaged(step: Step): Step {
+    if (isStepManaged(step)) return step;
+    if (step.run) {
+        if (step.run.includes("\n")) {
+            step.run = [
+                "",
+                "# github-actions-managed: true",
+                step.run.split(/\r?\n/).filter((l, i) => i || l.trim())
+            ].join("\n");
+        } else {
+            step.run = `\n# github-actions-managed: true\n${step.run}`;
+        }
+        return step;
+    }
+    if (step.with?.script) {
+        if (step.with.script.includes("\n")) {
+            step.with.script = [
+                "",
+                "// github-actions-managed: true",
+                step.with.script.split(/\r?\n/).filter((l, i) => i || l.trim())
+            ].join("\n");
+        } else {
+            step.with.script = `\n// github-actions-managed: true\n${step.with.script}`;
+        }
+        return step;
+    }
+    if (!step.with) step.with = {};
+    step.with["github-actions-managed"] = true;
+    return step;
+}
+
 function getSteps(workflow: Workflow): Array<Step> {
     const jobs = Object.values(workflow.jobs || {});
     if (!jobs.length) return [];
@@ -77,7 +108,9 @@ export function mergeWorkflows(
 ): Array<StepMerge> {
     const result: Array<StepMerge> = [];
     const localSteps = getSteps(localWorkflow);
-    const remoteSteps = getSteps(remoteWorkflow);
+    const remoteSteps = getSteps(remoteWorkflow).map(step =>
+        makeStepManaged(step)
+    );
     remoteSteps.reverse().forEach((remoteStep, remoteIndex) => {
         const localStepIndex = findStepIndex(remoteStep, localSteps);
         if (localStepIndex < 0) {

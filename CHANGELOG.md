@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `[cli]` removed hardcoded workflow names
+- `[cli]` remote workflow steps are always marked as managed
 
 ### Fixed
 - `[on_release_published.py]` uses `setup.cfg` file as a source of truth for version
