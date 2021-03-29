@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- `[on_release_published.py]` use `setup.cfg` file as a source of trith for version
+- `[on_release_published.py]` uses `setup.cfg` file as a source of truth for version
+- `[on_pull_opened_or_edited]` is triggered on Pull Request ropen as well
+- `[on_release_published]` assigns labels to created Pull Request
+- `[on_demand_create_release_draft]` sets `release.is_prerelease` flag correctly
+- `[on_pull_merged]` sets `release.is_prerelease` flag correctly
 
 ## [0.2.0]
 ### Added
