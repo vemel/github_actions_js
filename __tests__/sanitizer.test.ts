@@ -1,4 +1,7 @@
+import yaml from "js-yaml";
+
 import {
+    getWorkflowChecks,
     isStepManaged,
     makeStepManaged,
     mergeWorkflows
@@ -181,6 +184,55 @@ test("merge workflows", async () => {
                     key: "remote"
                 }
             }
+        }
+    ]);
+});
+
+test("get workflow checks env", async () => {
+    const localJob: Job = {
+        "runs-on": "localrunner",
+        env: { key: "local" },
+        steps: []
+    };
+    const remoteJob: Job = {
+        "runs-on": "remoterunner",
+        env: { key: "remote" },
+        steps: []
+    };
+    const local: Workflow = {
+        name: "local",
+        jobs: { test: localJob }
+    };
+    const remote: Workflow = {
+        name: "remote",
+        jobs: { test: remoteJob }
+    };
+
+    expect(getWorkflowChecks(yaml.dump(local), yaml.dump(local))).toEqual([]);
+    expect(getWorkflowChecks(yaml.dump(local), yaml.dump(remote))).toEqual([
+        {
+            checkMessage: "will be updated to remote",
+            highlight: "remote",
+            item: "name",
+            level: "update",
+            noForceMessage: "is different from remote",
+            updateMessage: "updated to remote"
+        },
+        {
+            checkMessage: "will be updated",
+            highlight: "updated",
+            item: "job environment",
+            level: "update",
+            noForceMessage: "is different from remote",
+            updateMessage: "updated"
+        },
+        {
+            checkMessage: "will be updated",
+            highlight: "updated",
+            item: "runner",
+            level: "update",
+            noForceMessage: "is different from remote",
+            updateMessage: "updated"
         }
     ]);
 });

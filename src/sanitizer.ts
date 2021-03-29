@@ -2,7 +2,7 @@ import equal from "deep-equal";
 
 import { getTopCommentLines, getWorkflowData } from "./manager";
 import { decapitalize } from "./utils";
-import { Step, Workflow } from "./workflow";
+import { Job, Step, Workflow } from "./workflow";
 
 export interface WorkflowCheck {
     highlight?: string;
@@ -39,17 +39,9 @@ function findStepIndex(step: Step, steps: Array<Step>): number {
 }
 
 export function mergesToSteps(merges: Array<StepMerge>): Array<Step> {
-    const result: Array<Step> = [];
-    merges.forEach(stepMerge => {
-        if (
-            ["same", "keep", "update", "add", "local"].includes(
-                stepMerge.action
-            )
-        ) {
-            result.push(stepMerge.step);
-        }
-    });
-    return result;
+    return merges
+        .filter(stepMerge => stepMerge.action !== "delete")
+        .map(stepMerge => stepMerge.step);
 }
 
 export function isStepManaged(step: Step): boolean {
@@ -96,10 +88,14 @@ export function makeStepManaged(step: Step): Step {
     return step;
 }
 
-function getSteps(workflow: Workflow): Array<Step> {
+export function getFirstJob(workflow: Workflow): Job | null {
     const jobs = Object.values(workflow.jobs || {});
-    if (!jobs.length) return [];
-    return jobs[0].steps || [];
+    if (!jobs.length) return null;
+    return jobs[0];
+}
+
+function getSteps(workflow: Workflow): Array<Step> {
+    return getFirstJob(workflow)?.steps || [];
 }
 
 export function mergeWorkflows(
@@ -184,6 +180,54 @@ export function mergeWorkflows(
     return result.reverse();
 }
 
+function checkJobs(local: Workflow, remote: Workflow): Array<WorkflowCheck> {
+    const result: Array<WorkflowCheck> = [];
+    const localJob = getFirstJob(local);
+    const remoteJob = getFirstJob(remote);
+    if (!remoteJob) {
+        result.push({
+            level: "error",
+            item: "remote action",
+            highlight: "jobs",
+            checkMessage: "are not set remotely",
+            updateMessage: "does not have jobs"
+        });
+        return result;
+    }
+    if (!localJob) {
+        result.push({
+            level: "error",
+            item: "action",
+            highlight: "jobs",
+            checkMessage: "does not have jobs",
+            updateMessage: "does not have jobs"
+        });
+        return result;
+    }
+
+    if (!equal(localJob.env, remoteJob.env)) {
+        result.push({
+            level: "update",
+            item: "job environment",
+            highlight: "updated",
+            noForceMessage: "is different from remote",
+            checkMessage: "will be updated",
+            updateMessage: "updated"
+        });
+    }
+    if (localJob["runs-on"] !== remoteJob["runs-on"]) {
+        result.push({
+            level: "update",
+            item: "runner",
+            highlight: "updated",
+            noForceMessage: "is different from remote",
+            checkMessage: "will be updated",
+            updateMessage: "updated"
+        });
+    }
+    return result;
+}
+
 export function checkWorkflowRemote(
     local: Workflow,
     remote: Workflow
@@ -209,6 +253,7 @@ export function checkWorkflowRemote(
             updateMessage: "updated"
         });
     }
+    result.push(...checkJobs(local, remote));
     const stepMerges = mergeWorkflows(local, remote);
     stepMerges.forEach(stepMerge => {
         if (stepMerge.action === "update") {

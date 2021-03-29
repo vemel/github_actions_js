@@ -12,6 +12,7 @@ import {
 } from "./manager";
 import {
     getCheckIcon,
+    getFirstJob,
     getWorkflowChecks,
     mergesToSteps,
     mergeWorkflows,
@@ -87,6 +88,17 @@ export function runUpdate(
     }
     if (forceUpdate && !equal(localWorkflow.on, remoteWorkflow.on)) {
         localWorkflow.on = remoteWorkflow.on;
+    }
+    const localJob = getFirstJob(localWorkflow);
+    const remoteJob = getFirstJob(remoteWorkflow);
+    if (forceUpdate && localJob && remoteJob) {
+        if (!equal(localJob.env, remoteJob.env)) {
+            if (remoteJob.env) localJob.env = remoteJob.env;
+            else delete localJob.env;
+        }
+        if (localJob["runs-on"] !== remoteJob["runs-on"]) {
+            localJob["runs-on"] = remoteJob["runs-on"];
+        }
     }
     const stepMerges = mergeWorkflows(localWorkflow, remoteWorkflow);
     localWorkflow.jobs = localWorkflow.jobs || remoteWorkflow.jobs || {};
