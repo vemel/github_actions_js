@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `[cli]` `--index` argument to support custom workflow packs
+
+### Changed
+- `[cli]` removed hardcoded workflow names
+
 ### Fixed
 - `[on_release_published.py]` uses `setup.cfg` file as a source of truth for version
 - `[on_pull_opened_or_edited]` is triggered on Pull Request ropen as well

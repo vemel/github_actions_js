@@ -1,26 +1,14 @@
-# GitHubActions
+# GitHub Actions Manager
 
 > Who will automate our automation?
 
-Nice and a bit shy CLI tool that provides hackable an universal [GitHub Actions](https://github.com/features/actions) for [Node.js](https://nodejs.org/) and [Python](https://www.python.org/) projects.
+Nice and a bit shy CLI tool to get and update [GitHub Actions](https://github.com/features/actions) packs.
+Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./workflows_py/README.md) projects.
 
-- [GitHubActions](#githubactions)
+- [GitHub Actions Manager](#github-actions-manager)
   - [Usage](#usage)
-  - [Description](#description)
-    - [What it does for Node.js projects](#what-it-does-for-nodejs-projects)
-    - [And for Python](#and-for-python)
-    - [What it does not do](#what-it-does-not-do)
-    - [GitHubActions Zen](#githubactions-zen)
-    - [How to modify workflows and keep updated](#how-to-modify-workflows-and-keep-updated)
-  - [Secrets](#secrets)
-  - [Workflows](#workflows)
-    - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
-    - [Update Pull Request labels](#update-pull-request-labels)
-    - [Update Release from Pull Request](#update-release-from-pull-request)
-    - [Create Release Pull Request](#create-release-pull-request)
-    - [Publish to NPM](#publish-to-npm)
-    - [Create Release draft](#create-release-draft)
-  - [TODO](#todo)
+  - [Automated automation?](#automated-automation)
+  - [Version 1.0.0 checklist](#version-100-checklist)
 
 ## Usage
 
@@ -29,198 +17,43 @@ Nice and a bit shy CLI tool that provides hackable an universal [GitHub Actions]
 npm i --save-dev github-actions
 mkdir -p .github/workflows
 
-# list available workflows
-npx ghactions --help
-
-# add or update all workflows
-npx ghactions all
-
-# force update all workflows
-npx ghactions all --force
-
-# check if workflows can be safely updated
+# check if actions can be installed or updated
 npx ghactions --check
 
-# for python use ghactions_py instead of ghactions
+# add or update all workflows for Node.js projects
+npx ghactions all
+
+# for Python projects use
+npx ghactions_py all
 ```
 
-## Description
+## Automated automation?
 
-### What it does for Node.js projects
+Yes, why not! Even small projects nowadays have at least simple CI/CD to enforce best practices
+or just to avoid boring release management. Thanks to [GitHub Actions](https://github.com/features/actions),
+it is super easy to kickstart an automation for a new project in minutes.
 
-- Enforces [SemVer](https://semver.org/) versioning schema
-- Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Supports publishing new versions to [npm](https://www.npmjs.com/)
-- Automatically bumps version in `package.json` and adds published Release notes to `CHANGELOG.md`
-- Releases are build in `release/*` branches to prevent unwanted changes
+However, every project CI/CD has to be set up and updated separately, even though they have a lot in common.
+So, instead of making our life easier, CI/CD just adds a new folder in project to keep an eye on.
 
-### And for Python
-- Enforces [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
-- Release and Pull Request notes follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Supports publishing new versions to [PyPI](https://pypi.org/)
-- Automatically bumps version in `setup.cfg`, `pyproject.toml`, and adds published Release notes to `CHANGELOG.md`
-- Releases are build in `release/*` branches to prevent unwanted changes
+But imagine, what if...
 
-### What it does not do
-- Does not update files in your branches, all updates happen in newly created `release/*` branch,
-  so you can always check that automation does exactly what you want
-- Does not analyze your project files to suggest versions, all suggested versions are based
-  only on Release/Pull Request notes
+What if we could manage our GitHub Actions the same way we manage npm dependencies?
+What if we could adapt CI/CD for different projects to our needs and still keep them in sync?
+What if we could share best CI/CD practices and collaborate to raise the bar even higher?
+And finally, what if we could adapt these best practices for a new project with a single command?
 
-### GitHubActions Zen
+Let's start today:
+- CI/CD for Node.js projects [installation guide](./workflows/README.md)
+- CI/CD for Python projects [installation guide](./workflows_py/README.md)
+- Create and manage your own Actions pack [guide](./CUSTOM.md)
 
-- Enforce best practices for versioning and changelog in a passive-aggressive way
-- Write Release and Pull Request notes in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Follow [SemVer](https://semver.org/) or [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
-- Noone likes to write and assemble Release notes, so leave it to automation
-- Always leave a final decision to a human in case automation goes crazy
-- All actions use only Node.js 12 for speed and stability
-- Every action should have an additional manual trigger in case of trouble
-- Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
-- Do not try to build one-fits-all soultion, provide customization instead
+## Version 1.0.0 checklist
 
-### How to modify workflows and keep updated
-- Set `github-actions-managed: false` on manual edit to prevent step overwrite on update
-- User-added steps survive update as well
-- Deleted steps are restored on update, so make them empty instead of removing
-- YAML comments are preserved as well, but will be moved to the top
-
-## Secrets
-
-List of optional secrets to unleash secret techniques
-
-- `NPM_TOKEN` - If set, new releases are published to [npm](https://www.npmjs.com/) on Release Pull Request merge
-- `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
-
-## Workflows
-
-### Run style checks and unit tests
-
-Node.js workflow: [on_push_check.yml](./workflows/on_push_check.yml)
-Python workflow: [on_push_check.yml](./workflows_py/on_push_check.yml)
-
-- Starts on push to any branch
-- Runs linting if `lint` script is available in `package.json`
-- Runs unit tests if `test` script is available in `package.json`
-- Uses `npm` cache to improve performance
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_push_check
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_push_check
-```
-
-### Update Pull Request labels
-
-Node.js workflow: [on_pull_opened_or_edited.yml](./workflows/on_pull_opened_or_edited.yml)
-Python workflow: [on_pull_opened_or_edited.yml](./workflows_py/on_pull_opened_or_edited.yml)
-
-- Starts on Pull Request opened or edited event
-- Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- If Pull Request branch name is `release/*`, adds `release` label
-- If Pull Request notes has `Removed` section, adds `major` label
-- If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
-- Otherwise adds `patch` label
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_pull_opened_or_edited
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_pull_opened_or_edited
-```
-
-### Update Release from Pull Request
-
-Node.js workflow: [on_pull_merged.yml](./workflows/on_pull_merged.yml)
-Python workflow: [on_pull_merged.yml](./workflows_py/on_pull_merged.yml)
-
-- Starts on Pull Request merge for non-`release/*` branch
-- Creates or updates a Release draft for Pull Request base branch
-- Release draft notes are merged from existing notes and Pull Request notes
-- Each entry added from Pull Request notes contains a link to the Pull Request
-- Release draft suggested version is based on Release notes
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_pull_merged
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_pull_merged
-```
-
-### Create Release Pull Request
-
-Node.js workflow: [on_release_published.yml](./workflows/on_release_published.yml)
-Python workflow: [on_release_published.yml](./workflows_py/on_release_published.yml)
-
-- Starts on Release published
-- Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Creates a Release Pull Request from Release target branch with `release` label
-- Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
-- Release Pull Request uses branch `release/<version>`
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_release_published
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_release_published
-```
-
-### Publish to NPM
-
-Node.js workflow: [on_release_pull_merged.yml](./workflows/on_release_pull_merged.yml)
-Python workflow: [on_release_pull_merged.yml](./workflows_py/on_release_pull_merged.yml)
-
-- Starts on Pull Request merge for `release/*` branch
-- Uses Pull Request branch for deployment, so released version contains only changes
-  from base branch when Release had been published
-- Builds package if `build` script is available in `package.json`
-- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set (`javascript`)
-- Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD` secret is set (`python`)
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_release_pull_merged
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_release_pull_merged
-```
-
-### Create Release draft
-
-Node.js workflow: [on_demand_create_release_draft.yml](./workflows/on_demand_create_release_draft.yml)
-Python workflow: [on_demand_create_release_draft.yml](./workflows_py/on_demand_create_release_draft.yml)
-
-- Starts only manually
-- Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
-- Creates or updates a release draft for `target` branch
-- Release notes are populated from `Unreleased` section of `CHANGELOG.md`
-- Sets suggested version as `name` and `tag` of the Release
-
-
-```bash
-# install this action to .github/workflows for Node.js projects
-npx ghactions on_demand_create_release_draft
-
-# install this action to .github/workflows for Python projects
-npx ghactions_py on_demand_create_release_draft
-```
-
-## TODO
-
-- [ ] Add `npm run coverage` support
-- [ ] Add `flake8` support
-- [ ] Add `pylint` support
-- [ ] Add `pytest` support
-- [ ] Add `pytest-cov` support
-- [ ] Add `mypy` support
-- [ ] Add `pyright` support
+- [x] Unify `--check` and `update` reports
+- [x] Support user top comment in workflows
+- [ ] Add custom indexes support
+- [ ] Add `--list` argument to list workflows in index
+- [ ] external `scripts` support
 - [ ] Add `latest` ref support
 - [ ] Use `latest` tag for updates by default instead of `main`
-- [ ] Publish to GitHub Packages
-- [ ] Mark prereleases correctly
-- [ ] Assign labels to Release Pull Request

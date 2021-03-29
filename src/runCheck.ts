@@ -6,6 +6,7 @@ import {
     readRemoteWorkflows
 } from "./manager";
 import { getCheckIcon, getWorkflowChecks, WorkflowCheck } from "./sanitizer";
+import { WorkflowIndexItem } from "./workflow";
 
 function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
     const icon = getCheckIcon(check);
@@ -29,17 +30,17 @@ function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
 }
 
 export async function runCheckAll(
-    names: Array<string>,
-    ref: string,
-    remotePath: string,
+    items: Array<WorkflowIndexItem>,
     forceUpdate: boolean
 ): Promise<boolean> {
-    const remoteContents = await readRemoteWorkflows(names, ref, remotePath);
-    const localContents = new Map(await readLocalWorkflows(names));
+    const remoteContents = await readRemoteWorkflows(items);
+    const localContents = new Map(await readLocalWorkflows(items));
     let noErrors = true;
-    remoteContents.forEach(([name, remoteContent]) => {
-        const localContent = localContents.get(name) || null;
-        console.log(`${chalk.bold(getLocalPath(name))} : `);
+    remoteContents.forEach(([workflowItem, remoteContent]) => {
+        const localContent = localContents.get(workflowItem) || null;
+        const localPath = getLocalPath(workflowItem.name);
+        const title = workflowItem.title || workflowItem.name;
+        console.log(`${chalk.bold(title)} ${chalk.grey(localPath)}`);
         const workflowChecks = getWorkflowChecks(localContent, remoteContent);
         const noChecks = !workflowChecks.length;
         const noErrorChecks = !workflowChecks.filter(c => c.level === "error")
@@ -56,8 +57,8 @@ export async function runCheckAll(
         if (!noErrorChecks) {
             workflowChecks.push({
                 level: "error",
-                item: "workflow",
-                checkMessage: "has errors that need to be fixed before update",
+                item: "",
+                checkMessage: "found errors",
                 updateMessage: "updated, even though it had errors",
                 highlight: "errors"
             });

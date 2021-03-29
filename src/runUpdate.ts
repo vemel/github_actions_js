@@ -2,8 +2,11 @@ import chalk from "chalk";
 import equal from "deep-equal";
 
 import {
+    getLocalPath,
     getTopCommentLines,
     getWorkflowData,
+    readLocalWorkflows,
+    readRemoteWorkflows,
     renderWorkflow,
     updateWorkflow
 } from "./manager";
@@ -15,6 +18,7 @@ import {
     WorkflowCheck
 } from "./sanitizer";
 import { decapitalize } from "./utils";
+import { WorkflowIndexItem } from "./workflow";
 
 function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
     const icon = getCheckIcon(check);
@@ -41,7 +45,7 @@ function logChecks(checks: Array<WorkflowCheck>, forceUpdate: boolean): void {
     checks.forEach(check => console.log(renderCheck(check, forceUpdate)));
 }
 
-export default function runUpdate(
+export function runUpdate(
     name: string,
     localContent: string | null,
     remoteContent: string | null,
@@ -111,4 +115,19 @@ export default function runUpdate(
     logChecks(workflowChecks, forceUpdate);
     updateWorkflow(name, renderedWorkflow);
     return true;
+}
+
+export async function runUpdateAll(
+    items: Array<WorkflowIndexItem>,
+    forceUpdate: boolean
+): Promise<void> {
+    const remoteContents = await readRemoteWorkflows(items);
+    const localContents = new Map(await readLocalWorkflows(items));
+    remoteContents.forEach(([workflowItem, remoteContent]) => {
+        const localContent = localContents.get(workflowItem) || null;
+        const localPath = getLocalPath(workflowItem.name);
+        const title = workflowItem.title || workflowItem.name;
+        console.log(`${chalk.bold(title)} ${chalk.grey(localPath)}`);
+        runUpdate(workflowItem.name, localContent, remoteContent, forceUpdate);
+    });
 }

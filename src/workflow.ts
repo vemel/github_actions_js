@@ -1,3 +1,15 @@
+export interface WorkflowIndexItem {
+    name: string;
+    url: string;
+    title?: string;
+}
+
+export interface WorkflowIndex {
+    workflows: Array<WorkflowIndexItem>;
+    name: string;
+    url: string;
+}
+
 export interface StepWith {
     "github-actions-managed"?: boolean;
     "github-actions-comment"?: string;

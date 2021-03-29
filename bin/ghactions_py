@@ -1,4 +1,5 @@
 #!/usr/bin/env node
 const main = require("./../lib/index").default;
+const url = require("./../lib/constants").PY_INDEX_URL;
 
-main("python");
+main(url);

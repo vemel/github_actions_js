@@ -1,7 +1,7 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
-import { HELP_WORKFLOW_NAMES, WORKFLOW_NAMES } from "./constants";
+import { DOCS_URL } from "./constants";
 
 export interface Namespace {
     help: boolean;
@@ -9,16 +9,14 @@ export interface Namespace {
     ref: string;
     force: boolean;
     check: boolean;
-    language: "python" | "javascript" | null;
+    index?: string;
 }
 
 export function getHelp(): string {
     return commandLineUsage([
         {
             header: "GitHubActions",
-            content:
-                "Universal GitHub Actions pack for JavaScript/TypeScript projects\n\n" +
-                "Documentation: https://github.com/vemel/github_actions_js"
+            content: "GitHub Actions manager\n\n" + `Documentation: ${DOCS_URL}`
         },
         {
             header: "Options",
@@ -28,9 +26,7 @@ export function getHelp(): string {
                     alias: "u",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Create or update workflow .github/workflows/<name>.yml. Choices: ${HELP_WORKFLOW_NAMES.map(
-                        x => `\n- ${x}`
-                    ).join("")}`
+                    description: `Create or update workflow .github/workflows/<name>.yml, or {bold all} to update all`
                 },
                 {
                     name: "ref",
@@ -58,10 +54,11 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
-                    name: "language",
-                    alias: "l",
-                    typeLabel: "lang",
-                    description: "Project language: python or javascript",
+                    name: "index",
+                    alias: "i",
+                    typeLabel: "URL",
+                    description:
+                        "Link to workflows index YAML file. Supports {bold ref} placeholder.",
                     type: String
                 }
             ]
@@ -69,26 +66,12 @@ export function getHelp(): string {
     ]);
 }
 
-function getWorkflowNames(names: Array<string> | null): Array<string> {
-    let result = names || [];
-    if (result.includes("all")) result = [...WORKFLOW_NAMES];
-    result.forEach(name => {
-        if (!WORKFLOW_NAMES.includes(name))
-            throw new Error(
-                `Unknown workflow name: ${name}, choices are: ${HELP_WORKFLOW_NAMES.map(
-                    x => `\n  ${x}`
-                ).join("")}`
-            );
-    });
-    return result;
-}
-
 export function parseArgs(): Namespace {
     const result = <Namespace>commandLineArgs([
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
         { name: "check", alias: "c", type: Boolean },
-        { name: "language", alias: "l", type: String },
+        { name: "index", alias: "i", type: String },
         {
             name: "update",
             alias: "u",
@@ -105,12 +88,6 @@ export function parseArgs(): Namespace {
     result.help = result.help || false;
     result.force = result.force || false;
     result.ref = result.ref || "main";
-    result.update = getWorkflowNames(result.update);
-    if (
-        result.language &&
-        !["python", "javascript"].includes(result.language)
-    ) {
-        throw new Error(`Unsupported language: ${result.language}`);
-    }
+    result.update = result.update || [];
     return result;
 }

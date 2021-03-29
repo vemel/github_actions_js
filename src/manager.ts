@@ -6,7 +6,8 @@ import path from "path";
 import { promisify } from "util";
 
 import { LOCAL_WORKFLOWS_PATH, REPO_URL, UTF8 } from "./constants";
-import { Workflow } from "./workflow";
+import { joinURL } from "./utils";
+import { Workflow, WorkflowIndex, WorkflowIndexItem } from "./workflow";
 
 function getTempDir(): string {
     return fs.mkdtempSync(path.join(os.tmpdir(), "ghactions-"));
@@ -21,7 +22,7 @@ export function updateWorkflow(name: string, content: string): void {
 }
 
 export function getWorkflowData(content: string): Workflow {
-    return <Workflow>yaml.load(content);
+    return yaml.load(content) as Workflow;
 }
 
 export function renderWorkflow(
@@ -43,6 +44,45 @@ export function getRemoteURL(name: string, ref: string, path: string): string {
     return `${REPO_URL}/${ref}/${path}/${name}.yml`;
 }
 
+export async function readWorkflowIndex(
+    indexURL: string,
+    names: Array<string>
+): Promise<WorkflowIndex> {
+    const tempPath = getTempDir();
+    const downloadPath = path.join(tempPath, "index.yml");
+    await download(indexURL, tempPath, { filename: "index.yml" });
+    const content = await promisify(fs.readFile)(downloadPath, {
+        encoding: "utf-8"
+    });
+    const data = yaml.load(content) as WorkflowIndex;
+    if (names.includes("all")) names = [];
+    const result: WorkflowIndex = {
+        url: indexURL,
+        name: data.name,
+        workflows: data.workflows
+            .filter(x => names.length === 0 || names.includes(x.name))
+            .map(({ name, url }) => {
+                if (url.startsWith("./")) {
+                    url = joinURL(indexURL, url);
+                }
+                return {
+                    name,
+                    url
+                };
+            })
+    };
+    const foundNames = data.workflows.map(x => x.name);
+    names.forEach(name => {
+        if (!foundNames.includes(name))
+            throw new Error(
+                `workflow ${name} not found, choices are: ${foundNames.join(
+                    ", "
+                )}`
+            );
+    });
+    return result;
+}
+
 export function getTopCommentLines(content: string): Array<string> {
     return content
         .split(/\r?\n/)
@@ -51,26 +91,23 @@ export function getTopCommentLines(content: string): Array<string> {
 }
 
 export async function readRemoteWorkflows(
-    names: Array<string>,
-    ref: string,
-    remotePath: string
-): Promise<Array<[string, string | null]>> {
+    items: Array<WorkflowIndexItem>
+): Promise<Array<[WorkflowIndexItem, string | null]>> {
     const tempPath = getTempDir();
-    const results: Array<Promise<[string, string | null]>> = names.map(
-        async name => {
-            const filePath = path.join(tempPath, `${name}.yml`);
-            const url = getRemoteURL(name, ref, remotePath);
-            try {
-                await download(url, tempPath);
-            } catch (e) {
-                return <[string, null]>[name, null];
-            }
-            const content = await promisify(fs.readFile)(filePath, {
-                encoding: UTF8
-            });
-            return <[string, string]>[name, content];
+    const results: Array<
+        Promise<[WorkflowIndexItem, string | null]>
+    > = items.map(async item => {
+        const filePath = path.join(tempPath, `${item.name}.yml`);
+        try {
+            await download(item.url, tempPath);
+        } catch (e) {
+            return <[WorkflowIndexItem, null]>[item, null];
         }
-    );
+        const content = await promisify(fs.readFile)(filePath, {
+            encoding: UTF8
+        });
+        return <[WorkflowIndexItem, string]>[item, content];
+    });
     return Promise.all(results).then(async data => {
         await promisify(fs.rmdir)(tempPath, { recursive: true });
         return data;
@@ -78,20 +115,20 @@ export async function readRemoteWorkflows(
 }
 
 export async function readLocalWorkflows(
-    names: Array<string>
-): Promise<Array<[string, string | null]>> {
-    const results: Array<Promise<[string, string | null]>> = names.map(
-        async name => {
-            const filePath = getLocalPath(name);
-            try {
-                const content = await promisify(fs.readFile)(filePath, {
-                    encoding: UTF8
-                });
-                return <[string, string]>[name, content];
-            } catch {
-                return <[string, null]>[name, null];
-            }
+    items: Array<WorkflowIndexItem>
+): Promise<Array<[WorkflowIndexItem, string | null]>> {
+    const results: Array<
+        Promise<[WorkflowIndexItem, string | null]>
+    > = items.map(async item => {
+        const filePath = getLocalPath(item.name);
+        try {
+            const content = await promisify(fs.readFile)(filePath, {
+                encoding: UTF8
+            });
+            return <[WorkflowIndexItem, string]>[item, content];
+        } catch {
+            return <[WorkflowIndexItem, null]>[item, null];
         }
-    );
+    });
     return Promise.all(results);
 }

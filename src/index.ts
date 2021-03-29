@@ -2,18 +2,13 @@ import chalk from "chalk";
 import fs from "fs";
 
 import { getHelp, Namespace, parseArgs } from "./cli";
-import { WORKFLOW_NAMES } from "./constants";
-import {
-    getLocalPath,
-    readLocalWorkflows,
-    readRemoteWorkflows
-} from "./manager";
+import { DOCS_URL, JS_INDEX_URL } from "./constants";
+import { readWorkflowIndex } from "./manager";
 import { runCheckAll } from "./runCheck";
-import runUpdate from "./runUpdate";
+import { runUpdateAll } from "./runUpdate";
+import { WorkflowIndex } from "./workflow";
 
-async function main(
-    language: "python" | "javascript" = "javascript"
-): Promise<void> {
+async function main(indexURL: string): Promise<void> {
     let args: Namespace;
     const commandName = process.argv[1]
         ? process.argv[1].split("/").pop()
@@ -50,20 +45,22 @@ async function main(
         process.exit(1);
     }
 
-    language = args.language || language;
-    const remotePath = {
-        javascript: "workflows",
-        python: "py_workflows"
-    }[language];
+    indexURL = (args.index || indexURL).replace("{ref}", args.ref);
+    let workflowIndex: WorkflowIndex;
+    try {
+        workflowIndex = await readWorkflowIndex(indexURL, args.update);
+        console.log(
+            chalk.grey(
+                `✓  checking workflows from ${chalk.bold(workflowIndex.name)}`
+            )
+        );
+    } catch (e) {
+        console.log(chalk.red(`✗  ${e.message}`));
+        process.exit(1);
+    }
 
     if (args.check) {
-        const names = args.update.length ? args.update : WORKFLOW_NAMES;
-        const result = await runCheckAll(
-            names,
-            args.ref,
-            remotePath,
-            args.force
-        );
+        const result = await runCheckAll(workflowIndex.workflows, args.force);
         if (result) {
             console.log(
                 chalk.green(
@@ -73,15 +70,13 @@ async function main(
                 )
             );
         } else {
+            console.log(chalk.red("✗  Found errors that prevent update"));
             console.log(
-                chalk.red("✗  Workflows have errors that prevent updates")
+                chalk.grey(
+                    "✎  Delete invalid workflows, update all, and merge your changes"
+                )
             );
-            console.log(
-                "✎  Delete invalid workflows, update all, and merge your changes"
-            );
-            console.log(
-                "✎  Check for updates: https://github.com/vemel/github_actions_js"
-            );
+            console.log(chalk.grey(`✎  Check for updates: ${DOCS_URL}`));
         }
         process.exit(result ? 0 : 1);
     }
@@ -91,28 +86,11 @@ async function main(
         process.exit(0);
     }
 
-    console.log(
-        chalk.grey(
-            `Checking https://github.com/vemel/github_actions_js for workflow updates`
-        )
-    );
-
-    const remoteContents = await readRemoteWorkflows(
-        args.update,
-        args.ref,
-        remotePath
-    );
-    const localContents = new Map(await readLocalWorkflows(args.update));
-    remoteContents.forEach(([name, remoteContent]) => {
-        const localContent = localContents.get(name) || null;
-        const localPath = getLocalPath(name);
-        console.log(`${localPath} : `);
-        runUpdate(name, localContent, remoteContent, args.force);
-    });
+    await runUpdateAll(workflowIndex.workflows, args.force);
 }
 
 if (typeof require !== "undefined" && require.main === module) {
-    main();
+    main(JS_INDEX_URL);
 }
 
 export default main;

@@ -1,14 +1,25 @@
-name: Universal GitHub Actions for Node.js projects
+name: GitHub Actions for Node.js projects
 workflows:
   - name: on_demand_create_release_draft
+    title: Create Release draft
     url: ./on_demand_create_release_draft.yml
+
   - name: on_pull_merged
+    title: Update Release from Pull Request
     url: ./on_pull_merged.yml
+
   - name: on_pull_opened_or_edited
+    title: Update Pull Request labels
     url: ./on_pull_opened_or_edited.yml
+
   - name: on_push_check
+    title: Run style checks and unit tests
     url: ./on_push_check.yml
+
   - name: on_release_published
+    title: Create Release Pull Request
     url: ./on_release_published.yml
+
   - name: on_release_pull_merged
+    title: Publish to NPM
     url: ./on_release_pull_merged.yml

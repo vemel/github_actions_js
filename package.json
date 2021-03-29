@@ -2,7 +2,7 @@
   "name": "github-actions",
   "version": "0.2.0",
   "private": false,
-  "description": "Universal GitHub Actions pack for JavaScript/TypeScript projects",
+  "description": "GitHub Actions manager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
