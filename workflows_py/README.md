@@ -17,11 +17,11 @@
 
 ```bash
 # in a GitHub repository root
-npm i --save-dev github-actions
+npm i -g github-actions
 mkdir -p .github/workflows
 
-# install all actions to .github/workflows
-ghactions all
+# install all workflows to .github/workflows
+ghactions_py all
 ```
 
 Index: [index.yml](./index.yml)
@@ -44,7 +44,6 @@ List of optional secrets to unleash secret techniques
 - `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
 
 ## TODO
-- [ ] Add `npm run coverage` support
 - [ ] Add `flake8`/`pylint` support 
 - [ ] Add `mypy`/`pyright` support
 - [ ] Add `pytest`/`pytest-cov` support

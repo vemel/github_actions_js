@@ -20,7 +20,7 @@
 npm i --save-dev github-actions
 mkdir -p .github/workflows
 
-# install all actions to .github/workflows
+# install all workflows to .github/workflows
 ghactions all
 ```
 
