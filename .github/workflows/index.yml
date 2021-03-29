@@ -1,0 +1,14 @@
+name: Universal GitHub Actions for Node.js projects
+workflows:
+  - name: on_demand_create_release_draft
+    url: ./on_demand_create_release_draft.yml
+  - name: on_pull_merged
+    url: ./on_pull_merged.yml
+  - name: on_pull_opened_or_edited
+    url: ./on_pull_opened_or_edited.yml
+  - name: on_push_check
+    url: ./on_push_check.yml
+  - name: on_release_published
+    url: ./on_release_published.yml
+  - name: on_release_pull_merged
+    url: ./on_release_pull_merged.yml
