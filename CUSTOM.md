@@ -1,5 +1,21 @@
 # Create and manage your own GitHub Actions pack
 
+## Easy way
+
+- [Fork](https://github.com/vemel/github_actions_js/fork) this repo
+- Change files in [workflows](./workflows/) or [py_workflows](./py_workflows/)
+- And there you go:
+
+```bash
+# install your Node.js workflows
+ghactions all -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/workflows/index.yml
+
+# install your Python workflows
+ghactions all -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/py_workflows/index.yml
+```
+
+## Start from scratch
+
 Create a folder (e.g. `workflows`) in a public GitHub repository.
 
 Create `workflows/index.yml` file with the following content:
@@ -15,7 +31,7 @@ workflows:
 Create `workflows/label_pull_request.yml`
 
 ```yaml
-# Motivate our developers 
+# Motivate our developers
 name: Label Pull Request
 "on":
   pull_request:
@@ -48,5 +64,5 @@ GITHUB_OWNER=creator
 GITHUB_REPO=my_actions
 GITHUB_REF=main
 
-ghactions -i https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_REF}/workflows/index.yml all 
+ghactions -i https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_REF}/workflows/index.yml all
 ```
