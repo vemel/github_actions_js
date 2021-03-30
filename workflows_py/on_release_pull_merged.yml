@@ -100,8 +100,8 @@ jobs:
         id: publish
         if: steps.pull-request.outputs.result
         env:
-          TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: "${{ secrets.PYPI_PASSWORD }}"
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           # github-actions-managed: true
           python -m pip install wheel
