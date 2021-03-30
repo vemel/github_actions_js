@@ -21,6 +21,8 @@ name: Publish to NPM
 jobs:
   publish-to-npm:
     runs-on: ubuntu-latest
+    env:
+      BUILD_SCRIPT: build
     steps:
       - name: Check Secrets
         id: secrets
@@ -99,15 +101,14 @@ jobs:
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
 
-            // Script to build package
-            const buildScript = 'build';
-
             const output = (await exec('npm run')).stdout;
             const scripts = output.split(/\r?\n/)
               .filter(line => line.startsWith('  ') && !line.startsWith('   '))
               .map(line => line.trim());
 
-            core.setOutput('build', scripts.includes(buildScript) ? buildScript : '');
+            if (scripts.includes(process.env.BUILD_SCRIPT)) {
+              core.setOutput('build', process.env.BUILD_SCRIPT);
+            }
             return true;
       - name: Set up Node.js
         uses: actions/setup-node@v2

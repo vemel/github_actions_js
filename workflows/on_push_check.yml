@@ -15,6 +15,9 @@ name: Run style checks and unit tests
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      LINT_SCRIPT: lint
+      TEST_SCRIPT: test
     strategy:
       matrix:
         node-version:
@@ -34,24 +37,18 @@ jobs:
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
 
-            // Script to run linting
-            const lintScript = 'lint';
-
-            // Script to run unit tests
-            const testScript = 'test';
-
             const output = (await exec('npm run')).stdout;
             const scripts = output.split(/\r?\n/)
               .filter(line => line.startsWith('  ') && !line.startsWith('   '))
               .map(line => line.trim());
 
             let result = undefined;
-            if (scripts.includes(lintScript)) {
-              core.setOutput('lint', lintScript);
+            if (scripts.includes(process.env.LINT_SCRIPT)) {
+              core.setOutput('lint', process.env.LINT_SCRIPT);
               result = true;
             }
-            if (scripts.includes(testScript)) {
-              core.setOutput('test', testScript);
+            if (scripts.includes(process.env.TEST_SCRIPT)) {
+              core.setOutput('test', process.env.TEST_SCRIPT);
               result = true;
             }
             return result;
