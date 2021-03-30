@@ -6,7 +6,12 @@ workflows:
     description: |
       - Starts on push to any branch
       - Installs package with `poetry`, `pipenv` or `requirements[-dev].txt`
-      - No actual checks were added yet, WIP
+      - Caches installed Python dependencies
+      - Runs `flake8` if it is installed
+      - Runs `pylint` if it is installed
+      - Runs `mypy` if it is installed
+      - Runs `pyright` if `pyrightconfig.json` file exists
+      - Runs `pytest` if it is installed
 
   - name: on_pull_opened_or_edited
     title: Update Pull Request labels
@@ -40,7 +45,7 @@ workflows:
       - Release Pull Request uses branch `release/<version>`
 
   - name: on_release_pull_merged
-    title: Publish to NPM
+    title: Publish to PyPI
     url: ./on_release_pull_merged.yml
     description: |
       - Starts on Pull Request merge for `release/*` branch

@@ -10,7 +10,7 @@
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
     - [Create Release Pull Request](#create-release-pull-request)
-    - [Publish to NPM](#publish-to-npm)
+    - [Publish to PyPI](#publish-to-pypi)
     - [Create Release draft](#create-release-draft)
 
 ## Installation
@@ -110,7 +110,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 ghactions_py on_release_published
 ```
 
-### Publish to NPM
+### Publish to PyPI
 
 Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
