@@ -4,7 +4,7 @@
   - [Installation](#installation)
   - [Zen](#zen)
   - [Secrets](#secrets)
-  - [TODO](#todo)
+  - [TODOx](#todox)
   - [Actions](#actions)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
@@ -43,10 +43,8 @@ List of optional secrets to unleash secret techniques
 
 - `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
 
-## TODO
-- [ ] Add `flake8`/`pylint` support 
-- [ ] Add `mypy`/`pyright` support
-- [ ] Add `pytest`/`pytest-cov` support
+## TODOx
+- [ ] Add `pytest-cov` support
 
 ## Actions
 ### Run style checks and unit tests
@@ -54,7 +52,12 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 - Starts on push to any branch
 - Installs package with `poetry`, `pipenv` or `requirements[-dev].txt`
-- No actual checks were added yet, WIP
+- Caches installed Python dependencies
+- Runs [flake8](https://flake8.pycqa.org/) if it is installed
+- Runs [pylint](https://www.pylint.org/) if it is installed
+- Runs [mypy](http://mypy-lang.org/) if it is installed
+- Runs [pyright](https://github.com/microsoft/pyright) if `pyrightconfig.json` file exists
+- Runs [pytest](https://pytest.org/) if it is installed
 
 ```bash
 # install this action to .github/workflows
