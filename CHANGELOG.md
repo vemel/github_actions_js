@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - sync `jobs.*.runs-on` from remote with `--force`
 - sync `jobs.*.env` from remote with `--force`
+- `[on_push_check.py]` run `pylint`, `flake8`, `pytest`, `mypy`, `pyright` if available
+
+### Fixed
+- `[on_push_check.js]` move script names to `env` for easier changing
 
 ## [0.3.0]
 ### Added
