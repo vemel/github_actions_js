@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 
 export function decapitalize(s: string): string {
@@ -18,12 +19,10 @@ export function getCommandName(): string {
 }
 
 export function getVersionString(): string {
-    const version = process.env.npm_package_version;
-    if (version) return version;
-    try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        return require("../package.json").version || "unknown";
-    } catch {
-        return "unknown";
-    }
+    const rootPath = path.dirname(path.dirname(__filename));
+    const packageJSONPath = path.join(rootPath, "package.json");
+    if (!fs.existsSync(packageJSONPath)) return "unknown";
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require(packageJSONPath).version || "unknown";
 }

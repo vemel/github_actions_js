@@ -1,4 +1,4 @@
-import { decapitalize, joinURL } from "../src/utils";
+import { decapitalize, getVersionString, joinURL } from "../src/utils";
 
 test("decapitalize", async () => {
     expect(decapitalize("")).toBe("");
@@ -16,4 +16,8 @@ test("join url", async () => {
     expect(joinURL("https://example.com/test/", "new")).toBe(
         "https://example.com/test/new"
     );
+});
+
+test("get version string", () => {
+    expect(getVersionString() === "unknown").toBeFalsy();
 });
