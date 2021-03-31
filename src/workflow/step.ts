@@ -68,7 +68,7 @@ export class Step {
                 this.data.with.script = [
                     "",
                     "// github-actions-managed: true",
-                    this.data.with.script
+                    ...this.data.with.script
                         .split(/\r?\n/)
                         .filter((l, i) => i || l.trim())
                 ].join("\n");
