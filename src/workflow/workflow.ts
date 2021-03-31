@@ -59,9 +59,7 @@ export class Workflow {
             lineWidth: 999,
             quotingType: '"'
         });
-        let data = [comment, body].filter(x => x).join("\n\n");
-        if (!data.endsWith("\n")) data = `${data}\n`;
-        return data;
+        return [comment, body].filter(x => x).join("\n\n");
     }
 
     static fromString(content: string): Workflow {

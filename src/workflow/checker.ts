@@ -1,6 +1,7 @@
 import equal from "deep-equal";
 
 import { Check, TAction } from "./check";
+import { Step } from "./step";
 import { Workflow } from "./workflow";
 
 export class Checker {
@@ -50,7 +51,7 @@ export class Checker {
     ): Check | null {
         const action = Checker.getAction(oldValue, newValue);
         if (!action) return null;
-        return new Check(item, action, force);
+        return new Check(item, action, force, oldValue, newValue);
     }
 
     getWorkflowChecks(update: Workflow): Array<Check> {
@@ -61,17 +62,23 @@ export class Checker {
                     this.current.commentLines,
                     update.commentLines
                 ),
-                true
+                true,
+                this.current.commentLines.join("\n"),
+                update.commentLines.join("\n")
             ),
             new Check(
                 "workflow name",
                 Checker.getAction(this.current.name, update.name),
-                true
+                true,
+                this.current.name,
+                update.name
             ),
             new Check(
                 "triggers",
                 Checker.getAction(this.current.triggers, update.triggers),
-                true
+                true,
+                this.current.triggers,
+                update.triggers
             )
         ];
     }
@@ -81,24 +88,32 @@ export class Checker {
         const updateJob = update.job;
         return [
             new Check(
-                "environment",
+                "job environment",
                 Checker.getAction(currentJob.env, updateJob.env),
-                true
+                true,
+                currentJob.env,
+                updateJob.env
             ),
             new Check(
-                "runner",
+                "job runner",
                 Checker.getAction(currentJob.runsOn, updateJob.runsOn),
-                true
+                true,
+                currentJob.runsOn,
+                updateJob.runsOn
             ),
             new Check(
-                "strategy",
+                "job strategy",
                 Checker.getAction(currentJob.strategy, updateJob.strategy),
-                true
+                true,
+                currentJob.strategy,
+                updateJob.strategy
             ),
             new Check(
-                "run condition",
+                "job run condition",
                 Checker.getAction(currentJob.runsIf, updateJob.runsIf),
-                true
+                true,
+                currentJob.runsIf,
+                updateJob.runsIf
             )
         ];
     }
@@ -110,20 +125,22 @@ export class Checker {
             ...currentSteps
                 .filter(step => step.findIndex(updateSteps) < 0)
                 .map(step => new Check(`${step.name} step`, "deleted")),
-            ...updateSteps.map(
-                step =>
-                    new Check(
-                        `${step.name} step`,
-                        (() => {
-                            const stepIndex = step.findIndex(currentSteps);
-                            if (stepIndex < 0) return "added";
-                            const localStep = currentSteps[stepIndex];
-                            if (!step.isManaged()) return "kept";
-                            if (step.equals(localStep)) return "equal";
-                            return "updated";
-                        })() as TAction
-                    )
-            )
+            ...updateSteps.map(step => {
+                const stepIndex = step.findIndex(currentSteps);
+                const localStep = currentSteps[stepIndex] || new Step({});
+                return new Check(
+                    `${step.name} step`,
+                    (() => {
+                        if (stepIndex < 0) return "added";
+                        if (!step.isManaged()) return "kept";
+                        if (step.equals(localStep)) return "equal";
+                        return "updated";
+                    })() as TAction,
+                    false,
+                    localStep,
+                    step
+                );
+            })
         ];
     }
 }

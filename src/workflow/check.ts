@@ -1,15 +1,40 @@
 import chalk from "chalk";
 
+import { yamlDump } from "./../utils";
+
 export type TAction = "updated" | "deleted" | "added" | "equal" | "kept";
 
 export class Check {
     action: TAction;
     item: string;
     force?: boolean;
-    constructor(item: string, action: TAction, force = false) {
+    private _oldValue: unknown;
+    private _newValue: unknown;
+
+    constructor(
+        item: string,
+        action: TAction,
+        force = false,
+        oldValue: unknown = null,
+        newValue: unknown = null
+    ) {
         this.action = action;
         this.item = item;
         this.force = force;
+        this._oldValue = oldValue;
+        this._newValue = newValue;
+    }
+
+    get oldValue(): string {
+        if (typeof this._oldValue === "string") return this._oldValue;
+        if (this._oldValue === null) return "";
+        return yamlDump(this._oldValue);
+    }
+
+    get newValue(): string {
+        if (typeof this._newValue === "string") return this._newValue;
+        if (this._newValue === null) return "";
+        return yamlDump(this._newValue);
     }
 
     get color(): chalk.Chalk {

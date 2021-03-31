@@ -1,6 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import yaml from "js-yaml";
 
 import { UTF8 } from "./constants";
 
@@ -33,4 +34,11 @@ export function getVersionString(): string {
 
 export function getTempDir(): string {
     return fs.mkdtempSync(path.join(os.tmpdir(), "ghactions-"));
+}
+
+export function yamlDump(data: unknown): string {
+    return yaml.dump(data, {
+        lineWidth: 999,
+        quotingType: '"'
+    });
 }

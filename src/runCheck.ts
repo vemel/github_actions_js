@@ -7,13 +7,13 @@ import { Merger } from "./workflow/merger";
 import { WorkflowResource } from "./workflow/resource";
 import { Workflow } from "./workflow/workflow";
 
-function logCheck(check: Check, forceUpdate: boolean) {
+function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
     if (check.action === "equal") return;
-    if (!check.force || forceUpdate) {
-        console.log(check.color(`  ${check.checkMessage}`));
-        return;
+    if (!forceUpdate && check.force) {
+        return console.log(chalk.grey(`  ${check.noForceMessage}`));
     }
-    console.log(chalk.grey(`  ${check.noForceMessage}`));
+    console.log(check.color(`  ${check.checkMessage}`));
+    if (showDiff) logDiff(check.oldValue, check.newValue);
 }
 
 export function runCheck(
@@ -38,18 +38,12 @@ export function runCheck(
     const checks = checker.getChecks(newWorkflow);
     const applyChecks = checks.filter(check => check.isApplied(forceUpdate));
 
-    checks.forEach(check => logCheck(check, forceUpdate));
+    checks.forEach(check => logCheck(check, forceUpdate, showDiff));
     if (!applyChecks.length) {
         console.log(chalk.grey("  ✓  is up to date"));
         return true;
     }
     console.log(chalk.green("  ✓  can be updated"));
-    if (showDiff && remoteContent && localContent) {
-        const newContent = new Merger(forceUpdate)
-            .merge(localWorkflow, remoteWorkflow)
-            .render();
-        logDiff(localContent, newContent);
-    }
     return true;
 }
 

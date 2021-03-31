@@ -11,13 +11,13 @@ export function logDiff(oldContent: string, newContent: string): void {
             part.value
                 .split(/\r?\n/)
                 .filter(line => line.trim())
-                .map(line => console.log(chalk.green(`  +  ${line}`)));
+                .map(line => console.log(chalk.green(`    +  ${line}`)));
         }
         if (part.removed) {
             part.value
                 .split(/\r?\n/)
                 .filter(line => line.trim())
-                .map(line => console.log(chalk.red(`  -  ${line}`)));
+                .map(line => console.log(chalk.red(`    -  ${line}`)));
         }
     });
 }

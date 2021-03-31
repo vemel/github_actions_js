@@ -15,9 +15,7 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
 - [GitHub Actions Manager](#github-actions-manager)
   - [Usage](#usage)
   - [Automated automation?](#automated-automation)
-  - [Checklist](#checklist)
-    - [Version 1.0.0](#version-100)
-    - [Further](#further)
+  - [Version 1.0.0 checklist](#version-100-checklist)
 
 ## Usage
 
@@ -57,14 +55,11 @@ Let's start today:
 - CI/CD for Python projects [installation guide](./workflows_py/README.md)
 - Create and manage your own Actions pack [guide](./CUSTOM.md)
 
-## Checklist
-### Version 1.0.0
+## Version 1.0.0 checklist
 - [x] Unify `check` and `update` reports
 - [x] Support user top comment in workflows
 - [x] Add custom indexes support
 - [x] Add `--list` argument to list workflows in index
 - [x] Add `--path` argument to allow running not for a repository root
-
-### Further
+- [x] Smart diff
 - [ ] External `scripts` support
-- [ ] Smart diff

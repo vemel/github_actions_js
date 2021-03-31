@@ -4,6 +4,7 @@ import { Step } from "../../src/workflow/step";
 describe("job", () => {
     const job = new Job({
         "runs-on": "runner",
+        strategy: { matrix: [1, 2, 3] },
         env: { key: "value" },
         if: "cond",
         steps: [{}]
@@ -11,9 +12,19 @@ describe("job", () => {
 
     test("create", () => {
         expect(job.runsOn).toBe("runner");
+        job.runsOn = job.runsOn;
+
         expect(job.runsIf).toBe("cond");
+        job.runsIf = job.runsIf;
+
         expect(job.env).toEqual({ key: "value" });
+        job.env = job.env;
+
+        expect(job.strategy).toEqual({ matrix: [1, 2, 3] });
+        job.strategy = job.strategy;
+
         expect(job.steps.length).toBe(1);
+        job.steps = job.steps;
     });
 
     test("merge steps", () => {

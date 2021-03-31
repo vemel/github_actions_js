@@ -4,7 +4,7 @@ interface IEnv {
     [index: string]: string;
 }
 interface IStrategy {
-    [index: string]: string;
+    [index: string]: unknown;
 }
 
 export interface IJobData {
