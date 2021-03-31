@@ -25,13 +25,13 @@ npm i --save-dev github-actions
 mkdir -p .github/workflows
 
 # check if actions can be installed or updated
-npx ghactions --check
-
-# add or update all workflows for Node.js projects
 npx ghactions all
 
+# add or update all workflows for Node.js projects
+npx ghactions -u all
+
 # for Python projects use
-npx ghactions_py all
+npx ghactions_py -u all
 ```
 
 ## Automated automation?

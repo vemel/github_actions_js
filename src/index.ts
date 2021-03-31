@@ -46,20 +46,35 @@ async function main(indexURL: string): Promise<void> {
     }
 
     indexURL = (args.index || indexURL).replace("{ref}", args.ref);
+    let workflowIndex: WorkflowIndex;
     let workflows: Array<WorkflowResource>;
     try {
-        const workflowIndex = await WorkflowIndex.download(indexURL);
-        workflows = workflowIndex.getWorkflows(args.update, args.path);
+        workflowIndex = await WorkflowIndex.download(indexURL, args.path);
+        workflows = workflowIndex.getWorkflows(args.names);
     } catch (e) {
-        console.log(chalk.red(`✗  ${e}`));
+        console.log(chalk.red(`✗  ${e.message}`));
         process.exit(1);
     }
-
+    if (workflows.length === 0) {
+        const commandList = `${getCommandName()} --list`;
+        console.log(
+            `✎  No workflows found, run ${chalk.bold(
+                commandList
+            )} for full info`
+        );
+        workflowIndex.getAllWorkflows().map(workflow => {
+            const command = `${getCommandName()} -u ${workflow.name}`;
+            console.log(
+                `${chalk.bold(chalk.blue(command))} : ${workflow.title}`
+            );
+        });
+        process.exit(0);
+    }
     if (args.list) {
         runList(workflows);
         process.exit(0);
     }
-    if (args.check) {
+    if (!args.update) {
         const result = await runCheckAll(workflows, args.force, args.diff);
         if (result) {
             console.log(
@@ -71,11 +86,6 @@ async function main(indexURL: string): Promise<void> {
             );
         } else logUpdateError();
         process.exit(result ? 0 : 1);
-    }
-
-    if (!args.update.length) {
-        console.log(getHelp());
-        process.exit(0);
     }
 
     await runUpdateAll(workflows, args.force, args.diff);

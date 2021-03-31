@@ -14,7 +14,7 @@ export function runList(workflows: Array<WorkflowResource>): void {
                 .split(/\r?\n/)
                 .filter(line => line.trim())
                 .forEach(line => {
-                    console.log(`  ${line}`);
+                    console.log(chalk.grey(`  ${line}`));
                 });
             console.log("");
         }

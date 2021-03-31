@@ -17,11 +17,13 @@ export class WorkflowIndex {
     url: string;
     data: IWorkflowIndex;
     name: string;
+    workflowsPath: string;
 
-    constructor(url: string, data: IWorkflowIndex) {
+    constructor(url: string, data: IWorkflowIndex, workflowsPath: string) {
         this.data = data;
         this.url = url;
         this.name = this.data.name;
+        this.workflowsPath = workflowsPath;
     }
 
     get names(): Array<string> {
@@ -35,21 +37,46 @@ export class WorkflowIndex {
         return url;
     }
 
-    getWorkflow(name: string, workflowsPath: string): WorkflowResource {
+    getWorkflow(name: string): WorkflowResource {
         const data = this.data.workflows.find(w => w.name === name);
         if (!data) throw new Error(`Workflow ${name} does not exist in index`);
-        return new WorkflowResource(data, workflowsPath, this.getURL(data.url));
+        return new WorkflowResource(
+            data,
+            this.workflowsPath,
+            this.getURL(data.url)
+        );
     }
 
-    getWorkflows(
-        names: Array<string>,
+    getAllWorkflows(): Array<WorkflowResource> {
+        return this.names.map(name => this.getWorkflow(name));
+    }
+
+    getExistingWorkflows(): Array<WorkflowResource> {
+        return this.getAllWorkflows().filter(workflow =>
+            workflow.existsLocally()
+        );
+    }
+
+    getWorkflows(names: Array<string>): Array<WorkflowResource> {
+        const result: Array<WorkflowResource> = [];
+        names.forEach(name => {
+            const workflows: Array<WorkflowResource> = {
+                all: this.getAllWorkflows(),
+                existing: this.getExistingWorkflows()
+            }[name] || [this.getWorkflow(name)];
+            result.push(
+                ...workflows.filter(
+                    w => !result.map(x => x.name).includes(w.name)
+                )
+            );
+        });
+        return result;
+    }
+
+    static async download(
+        url: string,
         workflowsPath: string
-    ): Array<WorkflowResource> {
-        if (!names.length || names.includes("all")) names = this.names;
-        return names.map(name => this.getWorkflow(name, workflowsPath));
-    }
-
-    static async download(url: string): Promise<WorkflowIndex> {
+    ): Promise<WorkflowIndex> {
         const tempPath = getTempDir();
         const downloadPath = path.join(tempPath, "index.yml");
         await download(url, tempPath, { filename: "index.yml" });
@@ -58,6 +85,6 @@ export class WorkflowIndex {
         });
         await promisify(fs.rmdir)(tempPath, { recursive: true });
         const data = yaml.load(content) as IWorkflowIndex;
-        return new WorkflowIndex(url, data);
+        return new WorkflowIndex(url, data, workflowsPath);
     }
 }

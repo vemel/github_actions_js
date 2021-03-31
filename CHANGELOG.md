@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `--path` CLI argument to specify local path to workflows
+- `--update` CLI argument to create/update workflows
 
 ### Changed
 - sync `jobs.*.strategy` from remote with `--force`
-- logs format
+- logs cleaned up
+- `--update` CLI argument renamed to `--names`
 
 ### Fixed
 - `--version` reports a correct version

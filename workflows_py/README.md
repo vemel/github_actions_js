@@ -4,7 +4,7 @@
   - [Installation](#installation)
   - [Zen](#zen)
   - [Secrets](#secrets)
-  - [TODOx](#todox)
+  - [TODO](#todo)
   - [Actions](#actions)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
@@ -20,8 +20,11 @@
 npm i -g github-actions
 mkdir -p .github/workflows
 
+# list available workflows
+ghactions_py --list
+
 # install all workflows to .github/workflows
-ghactions_py all
+ghactions_py -u all
 ```
 
 Index: [index.yml](./index.yml)
@@ -43,7 +46,7 @@ List of optional secrets to unleash secret techniques
 
 - `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
 
-## TODOx
+## TODO
 - [ ] Add `pytest-cov` support
 
 ## Actions
@@ -61,7 +64,7 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_push_check
+ghactions_py -u on_push_check
 ```
 
 ### Update Pull Request labels
@@ -77,7 +80,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_pull_opened_or_edited
+ghactions_py -u on_pull_opened_or_edited
 ```
 
 ### Update Release from Pull Request
@@ -92,7 +95,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_pull_merged
+ghactions_py -u on_pull_merged
 ```
 
 ### Create Release Pull Request
@@ -107,7 +110,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_release_published
+ghactions_py -u on_release_published
 ```
 
 ### Publish to PyPI
@@ -122,7 +125,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_release_pull_merged
+ghactions_py -u on_release_pull_merged
 ```
 
 ### Create Release draft
@@ -138,5 +141,5 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-ghactions_py on_demand_create_release_draft
+ghactions_py -u on_demand_create_release_draft
 ```

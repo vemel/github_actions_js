@@ -6,11 +6,11 @@ import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants";
 export interface Namespace {
     help: boolean;
     version: boolean;
-    update: Array<string>;
+    names: Array<string>;
     ref: string;
     path: string;
     force: boolean;
-    check: boolean;
+    update: boolean;
     list: boolean;
     diff: boolean;
     index?: string;
@@ -28,11 +28,11 @@ export function getHelp(): string {
             header: "Options",
             optionList: [
                 {
-                    name: "update",
-                    alias: "u",
+                    name: "names",
+                    alias: "n",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Create or update workflow .github/workflows/<name>.yml, or {bold all} to update all`
+                    description: `Workflow file name {bold <name>}.yml, {bold all}, or {bold existing}`
                 },
                 {
                     name: "ref",
@@ -53,10 +53,9 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
-                    name: "check",
-                    alias: "c",
-                    description:
-                        "Check if workflows are are update-friendly, does not update files",
+                    name: "update",
+                    alias: "u",
+                    description: "Apply suggested updates",
                     type: Boolean
                 },
                 {
@@ -103,12 +102,12 @@ export function parseArgs(): Namespace {
         { name: "diff", alias: "d", type: Boolean },
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
-        { name: "check", alias: "c", type: Boolean },
+        { name: "update", alias: "u", type: Boolean },
         { name: "index", alias: "i", type: String },
         { name: "path", alias: "p", type: String },
         {
-            name: "update",
-            alias: "u",
+            name: "names",
+            alias: "n",
             type: String,
             multiple: true,
             defaultOption: true
@@ -119,10 +118,11 @@ export function parseArgs(): Namespace {
             type: String
         }
     ]);
+    result.names = result.names || ["existing"];
     result.help = result.help || false;
     result.force = result.force || false;
+    result.update = result.update || false;
     result.ref = result.ref || "main";
     result.path = result.path || LOCAL_WORKFLOWS_PATH;
-    result.update = result.update || [];
     return result;
 }

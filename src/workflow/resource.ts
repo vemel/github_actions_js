@@ -40,6 +40,10 @@ export class WorkflowResource {
         return `${this.name}.yml`;
     }
 
+    existsLocally(): boolean {
+        return fs.existsSync(this.path);
+    }
+
     async getLocal(): Promise<string | null> {
         try {
             return await promisify(fs.readFile)(this.path, {
