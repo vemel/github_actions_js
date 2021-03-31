@@ -79,7 +79,11 @@ export class WorkflowIndex {
     ): Promise<WorkflowIndex> {
         const tempPath = getTempDir();
         const downloadPath = path.join(tempPath, "index.yml");
-        await download(url, tempPath, { filename: "index.yml" });
+        try {
+            await download(url, tempPath, { filename: "index.yml" });
+        } catch (e) {
+            throw new Error(`index download failed: ${e.message}`);
+        }
         const content = await promisify(fs.readFile)(downloadPath, {
             encoding: UTF8
         });

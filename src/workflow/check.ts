@@ -34,7 +34,7 @@ export class Check {
     }
 
     get noForceMessage(): string {
-        return `  ${this.icon}  ${chalk.bold(this.item)} can be ${
+        return `${this.icon}  ${chalk.bold(this.item)} can be ${
             this.action
         }, use ${chalk.bold("--force")} flag to apply`;
     }

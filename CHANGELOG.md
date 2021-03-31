@@ -10,13 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--update` CLI argument to create/update workflows
 
 ### Changed
-- sync `jobs.*.strategy` from remote with `--force`
-- logs cleaned up
+- Sync `jobs.*.strategy` from remote with `--force`
+- Logs cleaned up
 - `--update` CLI argument renamed to `--names`
 
 ### Fixed
 - `--version` reports a correct version
 - `--diff` shows changes between local and updated version instead of remote
+- Removed extra empty line in renedered workflows
 
 ## [0.4.0]
 ### Added

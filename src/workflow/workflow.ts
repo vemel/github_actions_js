@@ -1,7 +1,5 @@
-import fs from "fs";
 import yaml from "js-yaml";
 
-import { UTF8 } from "./../constants";
 import { IJobData, Job } from "./job";
 
 interface Jobs {
@@ -61,13 +59,9 @@ export class Workflow {
             lineWidth: 999,
             quotingType: '"'
         });
-        return [comment, body].filter(x => x).join("\n\n") + "\n";
-    }
-
-    static fromFile(filePath: string): Workflow {
-        return Workflow.fromString(
-            fs.readFileSync(filePath, { encoding: UTF8 })
-        );
+        let data = [comment, body].filter(x => x).join("\n\n");
+        if (!data.endsWith("\n")) data = `${data}\n`;
+        return data;
     }
 
     static fromString(content: string): Workflow {
@@ -77,10 +71,6 @@ export class Workflow {
             .filter(line => line.startsWith("#"))
             .map(line => line.substr(1).trim());
         return new Workflow(data, commentLines);
-    }
-
-    toFile(filePath: string): void {
-        fs.writeFileSync(filePath, this.render(), { encoding: UTF8 });
     }
 
     clone(): Workflow {

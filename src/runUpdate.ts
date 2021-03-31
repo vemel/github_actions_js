@@ -13,7 +13,7 @@ function logCheck(check: Check, forceUpdate: boolean) {
         console.log(check.color(`  ${check.updateMessage}`));
         return;
     }
-    console.log(check.color(`  ${check.noForceMessage}`));
+    console.log(chalk.grey(`  ${check.noForceMessage}`));
 }
 
 function runUpdate(
@@ -25,7 +25,7 @@ function runUpdate(
 ): void {
     const remoteWorkflow = Workflow.fromString(remoteContent);
     if (!localContent) {
-        remoteWorkflow.toFile(workflowItem.path);
+        workflowItem.setLocal(remoteContent);
         console.log(chalk.green("  ✓  created"));
         return;
     }
@@ -55,7 +55,7 @@ function runUpdate(
             remoteWorkflow
         );
 
-    newWorkflow.toFile(workflowItem.path);
+    workflowItem.setLocal(newWorkflow.render());
     if (showDiff && localContent) {
         logDiff(localContent, newWorkflow.render());
     }

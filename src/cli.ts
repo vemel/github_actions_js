@@ -20,9 +20,14 @@ export function getHelp(): string {
     return commandLineUsage([
         {
             header: "GitHub Actions Manager",
-            content:
-                "CLI tool to install and update GitHub Actions\n\n" +
-                `Documentation: ${DOCS_URL}\n`
+            content: [
+                "CLI tool to install and update GitHub Actions",
+                "",
+                `Documentation: ${DOCS_URL}`,
+                "",
+                "{bold ghactions} - Manage workflows for Node.js projects",
+                "{bold ghactions_py} - Manage workflows for Python projects"
+            ].join("\n")
         },
         {
             header: "Options",
@@ -32,13 +37,14 @@ export function getHelp(): string {
                     alias: "n",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Workflow file name {bold <name>}.yml, {bold all}, or {bold existing}`
+                    description: `Workflow file names: {bold <name>}.yml, {bold all}, or {bold existing}, default: {bold existing}`
                 },
                 {
                     name: "ref",
                     alias: "r",
                     typeLabel: "version",
-                    description: "Update workflows to a specific tag/version"
+                    description:
+                        "Update workflows to a specific tag/branch, default: {bold main}"
                 },
                 {
                     name: "force",
@@ -55,7 +61,7 @@ export function getHelp(): string {
                 {
                     name: "update",
                     alias: "u",
-                    description: "Apply suggested updates",
+                    description: "Apply suggested changes",
                     type: Boolean
                 },
                 {
