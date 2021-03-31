@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sync `jobs.*.strategy` from remote with `--force`
 - Logs cleaned up
 - `--update` CLI argument renamed to `--names`
+- `--diff` is shown for each change separately
 
 ### Fixed
 - `--version` reports a correct version
 - `--diff` shows changes between local and updated version instead of remote
 - Removed extra empty line in renedered workflows
+- Support basicauth in index URL
 
 ## [0.4.0]
 ### Added
