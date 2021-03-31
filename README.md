@@ -57,8 +57,9 @@ Let's start today:
 
 ## Version 1.0.0 checklist
 
-- [x] Unify `--check` and `update` reports
+- [x] Unify `check` and `update` reports
 - [x] Support user top comment in workflows
 - [x] Add custom indexes support
 - [x] Add `--list` argument to list workflows in index
-- [ ] external `scripts` support
+- [x] Add `--path` argument to allow running not for a repository root
+- [ ] External `scripts` support
