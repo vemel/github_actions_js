@@ -1,112 +1,100 @@
 import chalk from "chalk";
 
 import { logDiff } from "./differ";
-import {
-    getLocalPath,
-    readLocalWorkflows,
-    readRemoteWorkflows,
-    updateWorkflow
-} from "./manager";
-import { mergeWorkflowContent } from "./merger";
-import { getCheckIcon, getWorkflowChecks, WorkflowCheck } from "./sanitizer";
-import { WorkflowIndexItem } from "./workflow";
+import { Checker, ICheck } from "./workflow/checker";
+import { Merger } from "./workflow/merger";
+import { WorkflowResource } from "./workflow/resource";
+import { Workflow } from "./workflow/workflow";
 
-function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
-    const icon = getCheckIcon(check);
-    const color =
-        {
-            info: chalk.grey,
-            success: chalk.green,
-            delete: chalk.yellow,
-            error: chalk.red
-        }[check.level] || chalk.blue;
-    let message = check.updateMessage;
-    if (check.noForceMessage && !forceUpdate) message = check.noForceMessage;
-    if (check.highlight)
-        message = message.replace(check.highlight, chalk.bold(check.highlight));
-
-    if (check.noForceMessage && !forceUpdate) {
-        message = `${message}, use ${chalk.bold("--force")} flag to update`;
+function logCheck(check: ICheck, forceUpdate: boolean) {
+    if (check.action === "equal") return;
+    const icon = Checker.getCheckIcon(check);
+    const color = {
+        added: chalk.green,
+        updated: chalk.blue,
+        deleted: chalk.yellow
+    }[check.action];
+    if (!check.force || forceUpdate) {
+        console.log(
+            color(`  ${icon}  ${chalk.bold(check.item)} ${check.action}`)
+        );
+        return;
     }
-    if (!check.item) return color(`  ${icon}  ${message}`);
-    return color(`  ${icon}  ${chalk.bold(check.item)} ${message}`);
-}
-
-function logChecks(checks: Array<WorkflowCheck>, forceUpdate: boolean): void {
-    const errors = checks.filter(c => c.level === "error");
-    if (errors.length) {
-        checks = errors;
-    }
-    checks.forEach(check => console.log(renderCheck(check, forceUpdate)));
+    console.log(
+        chalk.grey(
+            `  ${icon}  ${chalk.bold(check.item)} can be ${
+                check.action
+            }, use ${chalk.bold("--force")} flag to apply`
+        )
+    );
 }
 
 function runUpdate(
-    workflowItem: WorkflowIndexItem,
+    workflowItem: WorkflowResource,
     localContent: string | null,
     remoteContent: string | null,
     forceUpdate: boolean,
     showDiff: boolean
 ): void {
-    const workflowChecks = getWorkflowChecks(localContent, remoteContent);
-    const hasErrors =
-        workflowChecks.filter(c => c.level === "error").length > 0;
-    if (hasErrors || !remoteContent) {
-        workflowChecks.push({
-            item: "workflow",
-            level: "error",
-            highlight: "errors",
-            checkMessage: "",
-            updateMessage: "has errors that have to be fixed before update"
-        });
-        logChecks(workflowChecks, forceUpdate);
+    if (!remoteContent) {
+        console.log(chalk.red("  ✗  download failed"));
         return;
     }
-    const renderedWorkflow = mergeWorkflowContent(
-        localContent,
-        remoteContent,
-        forceUpdate
-    );
-    if (renderedWorkflow === localContent) {
-        workflowChecks.push({
-            level: "info",
-            item: "workflow",
-            checkMessage: "",
-            updateMessage: "is up to date"
-        });
-        logChecks(workflowChecks, forceUpdate);
+    const remoteWorkflow = Workflow.fromString(remoteContent);
+    if (!localContent) {
+        remoteWorkflow.toFile(workflowItem.path);
+        console.log(chalk.green("  ✓  created"));
         return;
     }
-    updateWorkflow(workflowItem.name, renderedWorkflow);
-    workflowChecks.push({
-        level: "success",
-        item: "workflow",
-        checkMessage: "",
-        updateMessage: `updated`
-    });
-    logChecks(workflowChecks, forceUpdate);
+    const localWorkflow = Workflow.fromString(localContent);
+    const checker = new Checker(forceUpdate, localWorkflow);
+
+    const errors = checker.getErrors();
+    if (errors.length) {
+        errors.forEach(error => console.log(chalk.red(`  ✗  ${error}`)));
+        console.log(
+            chalk.red(`  ✗  has ${chalk.bold("errors")} that prevent update`)
+        );
+        return;
+    }
+    let newWorkflow = new Merger(true).merge(localWorkflow, remoteWorkflow);
+    const checks = checker
+        .getChecks(newWorkflow)
+        .filter(check => check.action !== "equal");
+    const applyChecks = checks.filter(({ force }) => !force || forceUpdate);
+    checks.forEach(check => logCheck(check, forceUpdate));
+    if (!applyChecks.length) {
+        console.log(chalk.grey("  ✓  is up to date"));
+        return;
+    }
+    console.log(chalk.green("  ✓  updated successfully"));
+    if (!forceUpdate)
+        newWorkflow = new Merger(forceUpdate).merge(
+            localWorkflow,
+            remoteWorkflow
+        );
+
+    newWorkflow.toFile(workflowItem.path);
     if (showDiff && localContent) {
-        logDiff(localContent, renderedWorkflow);
+        logDiff(localContent, newWorkflow.render());
     }
 }
 
 export async function runUpdateAll(
-    items: Array<WorkflowIndexItem>,
+    items: Array<WorkflowResource>,
     forceUpdate: boolean,
     showDiff: boolean
 ): Promise<void> {
-    const remoteContents = await readRemoteWorkflows(items);
-    const localContents = new Map(await readLocalWorkflows(items));
-    remoteContents.forEach(([workflowItem, remoteContent]) => {
-        const localContent = localContents.get(workflowItem) || null;
-        const localPath = getLocalPath(workflowItem.name);
-        const title = workflowItem.title || workflowItem.name;
-        console.log(`${chalk.bold(title)} ${chalk.grey(localPath)}`);
-        runUpdate(
-            workflowItem,
-            localContent,
-            remoteContent,
-            forceUpdate,
-            showDiff
-        );
+    const remoteContents = await Promise.all(
+        items.map(item => item.getRemote())
+    );
+    const localContents = await Promise.all(items.map(item => item.getLocal()));
+    items.forEach((item, index) => {
+        const remoteContent = remoteContents[index];
+        const localContent = localContents[index];
+
+        const title = item.title || item.name;
+        console.log(`${chalk.bold(title)} ${chalk.grey(item.path)}`);
+        runUpdate(item, localContent, remoteContent, forceUpdate, showDiff);
     });
 }

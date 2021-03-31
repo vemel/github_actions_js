@@ -1,83 +1,98 @@
 import chalk from "chalk";
 
 import { logDiff } from "./differ";
-import {
-    getLocalPath,
-    readLocalWorkflows,
-    readRemoteWorkflows
-} from "./manager";
-import { mergeWorkflowContent } from "./merger";
-import { getCheckIcon, getWorkflowChecks, WorkflowCheck } from "./sanitizer";
-import { WorkflowIndexItem } from "./workflow";
+import { Checker, ICheck } from "./workflow/checker";
+import { Merger } from "./workflow/merger";
+import { WorkflowResource } from "./workflow/resource";
+import { Workflow } from "./workflow/workflow";
 
-function renderCheck(check: WorkflowCheck, forceUpdate: boolean): string {
-    const icon = getCheckIcon(check);
-    const color =
-        {
-            info: chalk.grey,
-            success: chalk.green,
-            delete: chalk.yellow,
-            error: chalk.red
-        }[check.level] || chalk.blue;
-    let message = check.checkMessage;
-    if (check.noForceMessage && !forceUpdate) message = check.noForceMessage;
-    if (check.highlight)
-        message = message.replace(check.highlight, chalk.bold(check.highlight));
-
-    if (check.noForceMessage && !forceUpdate) {
-        message = `${message}, use ${chalk.bold("--force")} flag to update`;
+function logCheck(check: ICheck, forceUpdate: boolean) {
+    if (check.action === "equal") return;
+    const icon = Checker.getCheckIcon(check);
+    const color = {
+        added: chalk.green,
+        updated: chalk.blue,
+        deleted: chalk.yellow
+    }[check.action];
+    if (!check.force || forceUpdate) {
+        console.log(
+            color(
+                `  ${icon}  ${chalk.bold(check.item)} will be ${chalk.bold(
+                    check.action
+                )}`
+            )
+        );
+        return;
     }
-    if (!check.item) return color(`  ${icon}  ${message}`);
-    return color(`  ${icon}  ${chalk.bold(check.item)} ${message}`);
+    console.log(
+        chalk.grey(
+            `  ${icon}  ${chalk.bold(check.item)} can be ${
+                check.action
+            }, use ${chalk.bold("--force")} flag to apply`
+        )
+    );
 }
 
 export async function runCheckAll(
-    items: Array<WorkflowIndexItem>,
+    items: Array<WorkflowResource>,
     forceUpdate: boolean,
     showDiff: boolean
 ): Promise<boolean> {
-    const remoteContents = await readRemoteWorkflows(items);
-    const localContents = new Map(await readLocalWorkflows(items));
+    const remoteContents = await Promise.all(
+        items.map(item => item.getRemote())
+    );
+    const localContents = await Promise.all(items.map(item => item.getLocal()));
     let noErrors = true;
-    remoteContents.forEach(([workflowItem, remoteContent]) => {
-        const localContent = localContents.get(workflowItem) || null;
-        const localPath = getLocalPath(workflowItem.name);
-        const title = workflowItem.title || workflowItem.name;
-        console.log(`${chalk.bold(title)} ${chalk.grey(localPath)}`);
-        const workflowChecks = getWorkflowChecks(localContent, remoteContent);
-        const noChecks = !workflowChecks.length;
-        const noErrorChecks = !workflowChecks.filter(c => c.level === "error")
-            .length;
-        if (noChecks) {
-            workflowChecks.push({
-                level: "success",
-                item: "workflow",
-                checkMessage: "is up to date",
-                updateMessage: "is up to date",
-                highlight: "up to date"
-            });
+    items.forEach((item, index) => {
+        const remoteContent = remoteContents[index];
+        const localContent = localContents[index];
+        if (!remoteContent) {
+            console.log(chalk.red("  ✗  download failed"));
+            return;
         }
-        if (!noErrorChecks) {
-            workflowChecks.push({
-                level: "error",
-                item: "",
-                checkMessage: "found errors",
-                updateMessage: "updated, even though it had errors",
-                highlight: "errors"
-            });
+        if (!localContent) {
+            console.log(chalk.green("  ✓  will be created"));
+            return;
         }
-        workflowChecks.forEach(check =>
-            console.log(renderCheck(check, forceUpdate))
-        );
-        if (showDiff && remoteContent && localContent) {
-            const newContent = mergeWorkflowContent(
-                localContent,
-                remoteContent,
-                forceUpdate
+        const title = item.title || item.name;
+        console.log(`${chalk.bold(title)} ${chalk.grey(item.path)}`);
+
+        const localWorkflow = Workflow.fromString(localContent);
+        const remoteWorkflow = Workflow.fromString(remoteContent);
+        const checker = new Checker(forceUpdate, localWorkflow);
+
+        const errors = checker.getErrors();
+        if (errors.length) {
+            errors.forEach(error => console.log(chalk.red(`  ✗  ${error}`)));
+            console.log(
+                chalk.red(
+                    `  ✗  has ${chalk.bold("errors")} that prevent update`
+                )
             );
+            return;
+        }
+        const newWorkflow = new Merger(true).merge(
+            localWorkflow,
+            remoteWorkflow
+        );
+        const checks = checker
+            .getChecks(newWorkflow)
+            .filter(check => check.action !== "equal");
+        const applyChecks = checks.filter(({ force }) => !force || forceUpdate);
+
+        checks.forEach(check => logCheck(check, forceUpdate));
+        if (!applyChecks.length) {
+            console.log(chalk.grey("  ✓  is up to date"));
+            return;
+        }
+        console.log(chalk.green("  ✓  can be updated"));
+        if (showDiff && remoteContent && localContent) {
+            const newContent = new Merger(forceUpdate)
+                .merge(localWorkflow, remoteWorkflow)
+                .render();
             logDiff(localContent, newContent);
         }
-        noErrors = noErrors && noErrorChecks;
+        noErrors = noErrors && errors.length === 0;
     });
     return noErrors;
 }

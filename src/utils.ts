@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 export function decapitalize(s: string): string {
@@ -25,4 +26,8 @@ export function getVersionString(): string {
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(packageJSONPath).version || "unknown";
+}
+
+export function getTempDir(): string {
+    return fs.mkdtempSync(path.join(os.tmpdir(), "ghactions-"));
 }

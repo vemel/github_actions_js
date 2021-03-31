@@ -1,9 +1,9 @@
 import chalk from "chalk";
 
-import { WorkflowIndex } from "./workflow";
+import { WorkflowResource } from "./workflow/resource";
 
-export function runList(index: WorkflowIndex): void {
-    index.workflows.forEach(item => {
+export function runList(workflows: Array<WorkflowResource>): void {
+    workflows.forEach(item => {
         if (item.title) {
             console.log(`${chalk.bold(chalk.blue(item.name))} : ${item.title}`);
         } else {

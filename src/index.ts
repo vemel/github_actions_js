@@ -3,12 +3,12 @@ import fs from "fs";
 
 import { getHelp, Namespace, parseArgs } from "./cli";
 import { DOCS_URL, JS_INDEX_URL } from "./constants";
-import { readWorkflowIndex } from "./manager";
 import { runCheckAll } from "./runCheck";
 import { runList } from "./runList";
 import { runUpdateAll } from "./runUpdate";
 import { getCommandName, getVersionString } from "./utils";
-import { WorkflowIndex } from "./workflow";
+import { WorkflowResource } from "./workflow/resource";
+import { WorkflowIndex } from "./workflow/workflowIndex";
 
 async function main(indexURL: string): Promise<void> {
     let args: Namespace;
@@ -50,29 +50,24 @@ async function main(indexURL: string): Promise<void> {
     }
 
     indexURL = (args.index || indexURL).replace("{ref}", args.ref);
-    let workflowIndex: WorkflowIndex;
+    let workflows: Array<WorkflowResource>;
     try {
-        workflowIndex = await readWorkflowIndex(indexURL, args.update);
-        console.log(
-            chalk.grey(
-                `✓  getting workflows from ${chalk.bold(workflowIndex.name)}`
-            )
+        const workflowIndex = await WorkflowIndex.download(indexURL);
+        workflows = workflowIndex.getWorkflows(
+            args.update,
+            ".github/workflows"
         );
     } catch (e) {
-        console.log(chalk.red(`✗  ${e.message}`));
+        console.log(chalk.red(`✗  ${e}`));
         process.exit(1);
     }
 
     if (args.list) {
-        runList(workflowIndex);
+        runList(workflows);
         process.exit(0);
     }
     if (args.check) {
-        const result = await runCheckAll(
-            workflowIndex.workflows,
-            args.force,
-            args.diff
-        );
+        const result = await runCheckAll(workflows, args.force, args.diff);
         if (result) {
             console.log(
                 chalk.green(
@@ -98,7 +93,7 @@ async function main(indexURL: string): Promise<void> {
         process.exit(0);
     }
 
-    await runUpdateAll(workflowIndex.workflows, args.force, args.diff);
+    await runUpdateAll(workflows, args.force, args.diff);
 }
 
 if (typeof require !== "undefined" && require.main === module) {
