@@ -13,9 +13,10 @@ export function decapitalize(s: string): string {
 export function joinURL(base: string, newPath: string): string {
     const url = new URL(base);
     let oldPathname = url.pathname;
+    const origin = base.substr(0, base.length - url.pathname.length);
     if (!base.endsWith("/")) oldPathname = path.dirname(oldPathname);
     const pathname = path.join(oldPathname, newPath);
-    return new URL(pathname, url.origin).href;
+    return `${origin}${pathname}`;
 }
 
 export function getCommandName(): string {

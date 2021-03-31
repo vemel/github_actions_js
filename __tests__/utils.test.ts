@@ -16,6 +16,9 @@ test("join url", async () => {
     expect(joinURL("https://example.com/test/", "new")).toBe(
         "https://example.com/test/new"
     );
+    expect(joinURL("https://username:password@example.com/test/", "new")).toBe(
+        "https://username:password@example.com/test/new"
+    );
 });
 
 test("get version string", () => {
