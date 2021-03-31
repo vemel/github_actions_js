@@ -8,10 +8,10 @@
 
 ```bash
 # install your Node.js workflows
-ghactions all -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/workflows/index.yml
+ghactions -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/workflows/index.yml -u all
 
 # install your Python workflows
-ghactions all -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/py_workflows/index.yml
+ghactions -i https://raw.githubusercontent.com/yournickname/github_actions_js/{ref}/py_workflows/index.yml -u all
 ```
 
 ## Start from scratch
@@ -64,5 +64,5 @@ GITHUB_OWNER=creator
 GITHUB_REPO=my_actions
 GITHUB_REF=main
 
-ghactions -i https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_REF}/workflows/index.yml all
+ghactions -i https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_REF}/workflows/index.yml -u all
 ```
