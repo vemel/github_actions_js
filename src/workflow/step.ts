@@ -87,7 +87,7 @@ export class Step {
         return false;
     }
 
-    isEqual(step: Step): boolean {
+    equals(step: Step): boolean {
         return equal(this.data, step.data);
     }
 

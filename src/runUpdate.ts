@@ -1,45 +1,28 @@
 import chalk from "chalk";
 
 import { logDiff } from "./differ";
-import { Checker, ICheck } from "./workflow/checker";
+import { Check } from "./workflow/check";
+import { Checker } from "./workflow/checker";
 import { Merger } from "./workflow/merger";
 import { WorkflowResource } from "./workflow/resource";
 import { Workflow } from "./workflow/workflow";
 
-function logCheck(check: ICheck, forceUpdate: boolean) {
+function logCheck(check: Check, forceUpdate: boolean) {
     if (check.action === "equal") return;
-    const icon = Checker.getCheckIcon(check);
-    const color = {
-        added: chalk.green,
-        updated: chalk.blue,
-        deleted: chalk.yellow
-    }[check.action];
     if (!check.force || forceUpdate) {
-        console.log(
-            color(`  ${icon}  ${chalk.bold(check.item)} ${check.action}`)
-        );
+        console.log(check.color(`  ${check.updateMessage}`));
         return;
     }
-    console.log(
-        chalk.grey(
-            `  ${icon}  ${chalk.bold(check.item)} can be ${
-                check.action
-            }, use ${chalk.bold("--force")} flag to apply`
-        )
-    );
+    console.log(check.color(`  ${check.noForceMessage}`));
 }
 
 function runUpdate(
     workflowItem: WorkflowResource,
     localContent: string | null,
-    remoteContent: string | null,
+    remoteContent: string,
     forceUpdate: boolean,
     showDiff: boolean
 ): void {
-    if (!remoteContent) {
-        console.log(chalk.red("  ✗  download failed"));
-        return;
-    }
     const remoteWorkflow = Workflow.fromString(remoteContent);
     if (!localContent) {
         remoteWorkflow.toFile(workflowItem.path);
@@ -58,10 +41,8 @@ function runUpdate(
         return;
     }
     let newWorkflow = new Merger(true).merge(localWorkflow, remoteWorkflow);
-    const checks = checker
-        .getChecks(newWorkflow)
-        .filter(check => check.action !== "equal");
-    const applyChecks = checks.filter(({ force }) => !force || forceUpdate);
+    const checks = checker.getChecks(newWorkflow);
+    const applyChecks = checks.filter(check => check.isApplied(forceUpdate));
     checks.forEach(check => logCheck(check, forceUpdate));
     if (!applyChecks.length) {
         console.log(chalk.grey("  ✓  is up to date"));
@@ -95,6 +76,10 @@ export async function runUpdateAll(
 
         const title = item.title || item.name;
         console.log(`${chalk.bold(title)} ${chalk.grey(item.path)}`);
+        if (!remoteContent) {
+            console.log(chalk.red(`  ✗  download failed: ${item.url}`));
+            return;
+        }
         runUpdate(item, localContent, remoteContent, forceUpdate, showDiff);
     });
 }

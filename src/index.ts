@@ -25,16 +25,12 @@ async function main(indexURL: string): Promise<void> {
         process.exit(0);
     }
     if (args.version) {
-        console.log(`${getCommandName()} ${getVersionString()}`);
+        console.log(getVersionString());
         process.exit(0);
     }
-    if (!fs.existsSync("./.github/workflows")) {
+    if (!fs.existsSync(args.path)) {
         console.warn(
-            chalk.red(
-                `✗  ${chalk.bold(
-                    ".github/workflows"
-                )} directory does not exist in current path`
-            )
+            chalk.red(`✗  ${chalk.bold(args.path)} directory does not exist`)
         );
         console.warn(
             chalk.yellow("✎  Probably this is not a GitHub repository root")
@@ -42,7 +38,7 @@ async function main(indexURL: string): Promise<void> {
         console.warn(
             chalk.yellow(
                 `✎  If it is, create this directory with: ${chalk.bold(
-                    "mkdir -p .github/workflows"
+                    `mkdir -p ${args.path}`
                 )}`
             )
         );
@@ -53,10 +49,7 @@ async function main(indexURL: string): Promise<void> {
     let workflows: Array<WorkflowResource>;
     try {
         const workflowIndex = await WorkflowIndex.download(indexURL);
-        workflows = workflowIndex.getWorkflows(
-            args.update,
-            ".github/workflows"
-        );
+        workflows = workflowIndex.getWorkflows(args.update, args.path);
     } catch (e) {
         console.log(chalk.red(`✗  ${e}`));
         process.exit(1);
@@ -76,15 +69,7 @@ async function main(indexURL: string): Promise<void> {
                     )} any time you want!`
                 )
             );
-        } else {
-            console.log(chalk.red("✗  Found errors that prevent update"));
-            console.log(
-                chalk.grey(
-                    "✎  Delete invalid workflows, update all, and merge your changes"
-                )
-            );
-            console.log(chalk.grey(`✎  Check for updates: ${DOCS_URL}`));
-        }
+        } else logUpdateError();
         process.exit(result ? 0 : 1);
     }
 
@@ -94,6 +79,16 @@ async function main(indexURL: string): Promise<void> {
     }
 
     await runUpdateAll(workflows, args.force, args.diff);
+}
+
+function logUpdateError(): void {
+    console.log(chalk.red("✗  Found errors that prevent update"));
+    console.log(
+        chalk.grey(
+            "✎  Delete invalid workflows, update all, and merge your changes"
+        )
+    );
+    console.log(chalk.grey(`✎  Check for updates: ${DOCS_URL}`));
 }
 
 if (typeof require !== "undefined" && require.main === module) {

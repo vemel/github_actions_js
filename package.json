@@ -9,7 +9,7 @@
     "build": "rm -rf dist/* lib/* && tsc",
     "dev": "ts-node src/index.ts",
     "test": "jest",
-    "lint": "eslint src/*.ts --cache",
+    "lint": "eslint src/**/*.ts --cache",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"

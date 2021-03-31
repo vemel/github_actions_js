@@ -2,6 +2,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
+import { UTF8 } from "./constants";
+
 export function decapitalize(s: string): string {
     if (!s) return s;
     return `${s[0].toLowerCase()}${s.substr(1)}`;
@@ -23,9 +25,10 @@ export function getVersionString(): string {
     const rootPath = path.dirname(path.dirname(__filename));
     const packageJSONPath = path.join(rootPath, "package.json");
     if (!fs.existsSync(packageJSONPath)) return "unknown";
-
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(packageJSONPath).version || "unknown";
+    const packageJSON = JSON.parse(
+        fs.readFileSync(packageJSONPath, { encoding: UTF8 })
+    );
+    return `${packageJSON.name} ${packageJSON.version}`;
 }
 
 export function getTempDir(): string {

@@ -1,13 +1,14 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
-import { DOCS_URL } from "./constants";
+import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants";
 
 export interface Namespace {
     help: boolean;
     version: boolean;
     update: Array<string>;
     ref: string;
+    path: string;
     force: boolean;
     check: boolean;
     list: boolean;
@@ -73,6 +74,12 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
+                    name: "path",
+                    alias: "p",
+                    description: `Path to workflows, default {bold ${LOCAL_WORKFLOWS_PATH}}`,
+                    type: Boolean
+                },
+                {
                     name: "diff",
                     alias: "d",
                     description: "Show diff for update and check runs",
@@ -98,6 +105,7 @@ export function parseArgs(): Namespace {
         { name: "force", alias: "f", type: Boolean },
         { name: "check", alias: "c", type: Boolean },
         { name: "index", alias: "i", type: String },
+        { name: "path", alias: "p", type: String },
         {
             name: "update",
             alias: "u",
@@ -114,6 +122,7 @@ export function parseArgs(): Namespace {
     result.help = result.help || false;
     result.force = result.force || false;
     result.ref = result.ref || "main";
+    result.path = result.path || LOCAL_WORKFLOWS_PATH;
     result.update = result.update || [];
     return result;
 }

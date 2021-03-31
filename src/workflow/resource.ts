@@ -15,12 +15,12 @@ export interface IWorkflow {
 
 export class WorkflowResource {
     data: IWorkflow;
-    localPath: string;
+    path: string;
     url: string;
 
     constructor(data: IWorkflow, workflowsPath: string, url: string) {
         this.data = data;
-        this.localPath = path.join(workflowsPath, `${this.name}.yml`);
+        this.path = path.join(workflowsPath, this.fileName);
         this.url = url;
     }
 
@@ -40,13 +40,9 @@ export class WorkflowResource {
         return `${this.name}.yml`;
     }
 
-    get path(): string {
-        return path.join(this.localPath, `${this.name}.yml`);
-    }
-
     async getLocal(): Promise<string | null> {
         try {
-            return await promisify(fs.readFile)(this.localPath, {
+            return await promisify(fs.readFile)(this.path, {
                 encoding: UTF8
             });
         } catch {
@@ -55,7 +51,7 @@ export class WorkflowResource {
     }
 
     async setLocal(data: string): Promise<void> {
-        return await promisify(fs.writeFile)(this.localPath, data, {
+        return await promisify(fs.writeFile)(this.path, data, {
             encoding: UTF8
         });
     }
