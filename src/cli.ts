@@ -47,15 +47,18 @@ export function getHelp(): string {
                         "Update workflows to a specific tag/branch, default: {bold main}"
                 },
                 {
-                    name: "force",
-                    alias: "f",
-                    description: "Update user-managed workflow parts",
-                    type: Boolean
+                    name: "index",
+                    alias: "i",
+                    typeLabel: "url",
+                    description:
+                        "Link to workflows index YAML file, supports {bold ref} placeholder",
+                    type: String
                 },
                 {
-                    name: "help",
-                    alias: "h",
-                    description: "Print this usage guide",
+                    name: "path",
+                    alias: "p",
+                    typeLabel: "path",
+                    description: `Path to workflows, default {bold ${LOCAL_WORKFLOWS_PATH}}`,
                     type: Boolean
                 },
                 {
@@ -65,12 +68,10 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
-                    name: "index",
-                    alias: "i",
-                    typeLabel: "URL",
-                    description:
-                        "Link to workflows index YAML file, supports {bold ref} placeholder",
-                    type: String
+                    name: "force",
+                    alias: "f",
+                    description: "Update user-managed workflow parts",
+                    type: Boolean
                 },
                 {
                     name: "list",
@@ -79,15 +80,15 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
-                    name: "path",
-                    alias: "p",
-                    description: `Path to workflows, default {bold ${LOCAL_WORKFLOWS_PATH}}`,
-                    type: Boolean
-                },
-                {
                     name: "diff",
                     alias: "d",
                     description: "Show diff for update and check runs",
+                    type: Boolean
+                },
+                {
+                    name: "help",
+                    alias: "h",
+                    description: "Print this usage guide",
                     type: Boolean
                 },
                 {
