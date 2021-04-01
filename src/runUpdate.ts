@@ -25,8 +25,8 @@ export async function runUpdate(
 ): Promise<void> {
     const remoteWorkflow = Workflow.fromString(remoteContent);
     if (!localContent) {
-        await workflowItem.setLocal(remoteContent);
         console.log(chalk.green("  ✓  created"));
+        await workflowItem.setLocal(remoteContent);
         return;
     }
 
