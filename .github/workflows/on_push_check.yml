@@ -18,7 +18,7 @@ jobs:
     env:
       LINT_SCRIPT: lint
       TEST_SCRIPT: test
-      TEST_COvERAGE_SCRIPT: test-cov
+      TEST_COVERAGE_SCRIPT: test-cov
     strategy:
       matrix:
         node-version:
