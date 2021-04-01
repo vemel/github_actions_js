@@ -16,16 +16,16 @@ function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
     if (showDiff) logDiff(check.oldValue, check.newValue);
 }
 
-function runUpdate(
+export async function runUpdate(
     workflowItem: WorkflowResource,
     localContent: string | null,
     remoteContent: string,
     forceUpdate: boolean,
     showDiff: boolean
-): void {
+): Promise<void> {
     const remoteWorkflow = Workflow.fromString(remoteContent);
     if (!localContent) {
-        workflowItem.setLocal(remoteContent);
+        await workflowItem.setLocal(remoteContent);
         console.log(chalk.green("  ✓  created"));
         return;
     }
@@ -55,7 +55,7 @@ function runUpdate(
             remoteWorkflow
         );
 
-    workflowItem.setLocal(newWorkflow.render());
+    await workflowItem.setLocal(newWorkflow.render());
 }
 
 export async function runUpdateAll(
@@ -63,20 +63,21 @@ export async function runUpdateAll(
     forceUpdate: boolean,
     showDiff: boolean
 ): Promise<void> {
-    const remoteContents = await Promise.all(
-        items.map(item => item.getRemote())
-    );
-    const localContents = await Promise.all(items.map(item => item.getLocal()));
-    items.forEach((item, index) => {
-        const remoteContent = remoteContents[index];
-        const localContent = localContents[index];
-
-        const title = item.title || item.name;
-        console.log(`${chalk.bold(title)} ${chalk.grey(item.path)}`);
+    const results: Array<Promise<void>> = items.map(async item => {
+        const remoteContent = await item.getRemote();
+        const localContent = await item.getLocal();
+        console.log(item.getTitle());
         if (!remoteContent) {
             console.log(chalk.red(`  ✗  download failed: ${item.url}`));
             return;
         }
-        runUpdate(item, localContent, remoteContent, forceUpdate, showDiff);
+        await runUpdate(
+            item,
+            localContent,
+            remoteContent,
+            forceUpdate,
+            showDiff
+        );
     });
+    return Promise.all(results).then(() => undefined);
 }

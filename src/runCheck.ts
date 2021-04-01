@@ -7,6 +7,8 @@ import { Merger } from "./workflow/merger";
 import { WorkflowResource } from "./workflow/resource";
 import { Workflow } from "./workflow/workflow";
 
+type TCheckStatus = "error" | "hasupdates" | "updated";
+
 function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
     if (check.action === "equal") return;
     if (!forceUpdate && check.force) {
@@ -21,7 +23,7 @@ export function runCheck(
     remoteContent: string,
     forceUpdate: boolean,
     showDiff: boolean
-): boolean {
+): TCheckStatus {
     const localWorkflow = Workflow.fromString(localContent);
     const remoteWorkflow = Workflow.fromString(remoteContent);
     const checker = new Checker(forceUpdate, localWorkflow);
@@ -32,7 +34,7 @@ export function runCheck(
         console.log(
             chalk.red(`  ✗  has ${chalk.bold("errors")} that prevent update`)
         );
-        return false;
+        return "error";
     }
     const newWorkflow = new Merger(true).merge(localWorkflow, remoteWorkflow);
     const checks = checker.getChecks(newWorkflow);
@@ -41,10 +43,10 @@ export function runCheck(
     checks.forEach(check => logCheck(check, forceUpdate, showDiff));
     if (!applyChecks.length) {
         console.log(chalk.grey("  ✓  is up to date"));
-        return true;
+        return "updated";
     }
     console.log(chalk.green("  ✓  can be updated"));
-    return true;
+    return "hasupdates";
 }
 
 export async function runCheckAll(
@@ -52,26 +54,22 @@ export async function runCheckAll(
     forceUpdate: boolean,
     showDiff: boolean
 ): Promise<boolean> {
-    const remoteContents = await Promise.all(
-        items.map(item => item.getRemote())
-    );
-    const localContents = await Promise.all(items.map(item => item.getLocal()));
-    const statuses: Array<boolean> = items.map((item, index) => {
-        const title = item.title || item.name;
-        console.log(`${chalk.bold(title)} ${chalk.grey(item.path)}`);
-
-        const remoteContent = remoteContents[index];
-        const localContent = localContents[index];
+    const results: Array<Promise<TCheckStatus>> = items.map(async item => {
+        const remoteContent = await item.getRemote();
+        const localContent = await item.getLocal();
+        console.log(item.getTitle());
         if (!remoteContent) {
             console.log(chalk.red(`  ✗  download failed: ${item.url}`));
-            return true;
+            return "error";
         }
         if (!localContent) {
             console.log(chalk.green("  ✓  will be created"));
-            return true;
+            return "hasupdates";
         }
 
         return runCheck(localContent, remoteContent, forceUpdate, showDiff);
     });
-    return statuses.filter(x => !x).length === 0;
+    return Promise.all(results).then(
+        results => results.filter(x => x === "error").length === 0
+    );
 }

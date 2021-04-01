@@ -1,10 +1,13 @@
 import chalk from "chalk";
 import fs from "fs";
+import path from "path";
 
+import { LOCAL_WORKFLOWS_PATH } from "../lib/constants";
 import { getHelp, Namespace, parseArgs } from "./cli";
 import { DOCS_URL, JS_INDEX_URL } from "./constants";
 import { runCheckAll } from "./runCheck";
-import { runList } from "./runList";
+import { runInteractive } from "./runInteractive";
+import { runListAll } from "./runList";
 import { runUpdateAll } from "./runUpdate";
 import { decapitalize, getCommandName, getVersionString } from "./utils";
 import { WorkflowResource } from "./workflow/resource";
@@ -28,6 +31,12 @@ async function main(indexURL: string): Promise<void> {
         console.log(getVersionString());
         process.exit(0);
     }
+
+    if (args.names.length === 0) {
+        await runInteractive(args);
+        process.exit(0);
+    }
+
     if (!fs.existsSync(args.path)) {
         console.warn(
             chalk.red(`✗  ${chalk.bold(args.path)} directory does not exist`)
@@ -49,7 +58,10 @@ async function main(indexURL: string): Promise<void> {
     let workflowIndex: WorkflowIndex;
     let workflows: Array<WorkflowResource>;
     try {
-        workflowIndex = await WorkflowIndex.download(indexURL, args.path);
+        workflowIndex = await WorkflowIndex.download(
+            indexURL,
+            path.join(args.path, LOCAL_WORKFLOWS_PATH)
+        );
         workflows = workflowIndex.getWorkflows(args.names);
     } catch (e) {
         console.log(chalk.red(`✗  ${e.message}`));
@@ -80,7 +92,7 @@ async function main(indexURL: string): Promise<void> {
         process.exit(0);
     }
     if (args.list) {
-        runList(workflows);
+        runListAll(workflows);
         process.exit(0);
     }
     if (!args.update) {

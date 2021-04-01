@@ -1,7 +1,7 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
-import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants";
+import { DOCS_URL } from "./constants";
 
 export interface Namespace {
     help: boolean;
@@ -58,7 +58,7 @@ export function getHelp(): string {
                     name: "path",
                     alias: "p",
                     typeLabel: "path",
-                    description: `Path to workflows, default {bold ${LOCAL_WORKFLOWS_PATH}}`,
+                    description: `Path to GitHUb project root, default {bold CWD}`,
                     type: Boolean
                 },
                 {
@@ -125,11 +125,11 @@ export function parseArgs(): Namespace {
             type: String
         }
     ]);
-    result.names = result.names || ["installed"];
+    result.names = result.names || [];
     result.help = result.help || false;
     result.force = result.force || false;
     result.update = result.update || false;
     result.ref = result.ref || "main";
-    result.path = result.path || LOCAL_WORKFLOWS_PATH;
+    result.path = result.path || ".";
     return result;
 }

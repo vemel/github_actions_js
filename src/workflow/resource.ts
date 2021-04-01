@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import download from "download";
 import fs from "fs";
 import path from "path";
@@ -9,7 +10,7 @@ import { getTempDir } from "../utils";
 export interface IWorkflow {
     name: string;
     url: string;
-    title?: string;
+    title: string;
     description?: string;
 }
 
@@ -30,6 +31,12 @@ export class WorkflowResource {
 
     get title(): string | null {
         return this.data.title || null;
+    }
+
+    getTitle(action = "in"): string {
+        return `${this.title} (${chalk.bold(
+            chalk.blue(this.name)
+        )}) ${chalk.grey(action)} ${this.path}`;
     }
 
     get description(): string | null {
