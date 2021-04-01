@@ -13,7 +13,7 @@ Nice and a bit shy CLI tool to install and update [GitHub Actions](https://githu
 Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./workflows_py/README.md) projects.
 
 - [GitHub Actions Manager](#github-actions-manager)
-  - [Usage](#usage)
+  - [Basic usage](#basic-usage)
   - [Automated automation?](#automated-automation)
   - [Advanced usage](#advanced-usage)
     - [Simple, no-force update](#simple-no-force-update)
@@ -22,7 +22,7 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
   - [Example](#example)
   - [Version 1.0.0 checklist](#version-100-checklist)
 
-## Usage
+## Basic usage
 
 ```bash
 # in a GitHub repository root
@@ -88,7 +88,7 @@ Let's start today:
 
 | Short | Long | Default | Description |
 | - | - | - | - |
-| `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | `existing` | Workflow file names: `<name>.yml`, `all`, or `existing` |
+| `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | `installed` | Workflow name `<name>.yml`, `all`, or `installed` |
 | `-r <version>` | `--ref <version>` | `main` | Update workflows to a specific tag/branch |
 | `-i <url>` | `--index <url>` | | Link to workflows index YAML file, supports `{ref}` placeholder |
 | `-p <path>` | `--path <path>` | `.github/workflows` | Path to workflows |

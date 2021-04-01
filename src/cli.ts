@@ -37,7 +37,7 @@ export function getHelp(): string {
                     alias: "n",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Workflow file names: {bold <name>}.yml, {bold all}, or {bold existing}, default: {bold existing}`
+                    description: `Workflow name {bold <name>}.yml, {bold all}, or {bold installed}, default: {bold installed}`
                 },
                 {
                     name: "ref",
@@ -125,7 +125,7 @@ export function parseArgs(): Namespace {
             type: String
         }
     ]);
-    result.names = result.names || ["existing"];
+    result.names = result.names || ["installed"];
     result.help = result.help || false;
     result.force = result.force || false;
     result.update = result.update || false;

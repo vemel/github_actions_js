@@ -51,7 +51,7 @@ export class WorkflowIndex {
         return this.names.map(name => this.getWorkflow(name));
     }
 
-    getExistingWorkflows(): Array<WorkflowResource> {
+    getInstalledWorkflows(): Array<WorkflowResource> {
         return this.getAllWorkflows().filter(workflow =>
             workflow.existsLocally()
         );
@@ -62,7 +62,7 @@ export class WorkflowIndex {
         names.forEach(name => {
             const workflows: Array<WorkflowResource> = {
                 all: this.getAllWorkflows(),
-                existing: this.getExistingWorkflows()
+                installed: this.getInstalledWorkflows()
             }[name] || [this.getWorkflow(name)];
             result.push(
                 ...workflows.filter(

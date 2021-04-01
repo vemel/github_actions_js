@@ -6,7 +6,7 @@ import { DOCS_URL, JS_INDEX_URL } from "./constants";
 import { runCheckAll } from "./runCheck";
 import { runList } from "./runList";
 import { runUpdateAll } from "./runUpdate";
-import { getCommandName, getVersionString } from "./utils";
+import { decapitalize, getCommandName, getVersionString } from "./utils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
@@ -58,14 +58,23 @@ async function main(indexURL: string): Promise<void> {
     if (workflows.length === 0) {
         const commandList = `${getCommandName()} --list`;
         console.log(
-            `✎  No workflows found, run ${chalk.bold(
+            `✎  No workflows found, install them first, or check ${chalk.bold(
                 commandList
-            )} for full info`
+            )}`
+        );
+        const command = `${getCommandName()} -u all`;
+        console.log(
+            `${chalk.bold(chalk.blue(command))} ${chalk.grey(
+                "// install all workflows below"
+            )}`
         );
         workflowIndex.getAllWorkflows().map(workflow => {
             const command = `${getCommandName()} -u ${workflow.name}`;
+            const description = workflow.title
+                ? `// install to ${decapitalize(workflow.title)}`
+                : "";
             console.log(
-                `${chalk.bold(chalk.blue(command))} : ${workflow.title}`
+                `${chalk.bold(chalk.blue(command))} ${chalk.grey(description)}`
             );
         });
         process.exit(0);
