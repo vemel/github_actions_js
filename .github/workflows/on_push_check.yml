@@ -99,7 +99,7 @@ jobs:
         id: test-coverage
         if: steps.scripts.outputs.test
         env:
-          RUN_SCRIPT: ${{ steps.stripts.outputs.test-cov }}
+          RUN_SCRIPT: ${{ steps.scripts.outputs.test-cov }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           if [[ ! -z ${RUN_SCRIPT} ]]; then
