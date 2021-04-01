@@ -29,7 +29,14 @@ export async function runUpdate(
         console.log(chalk.green("  ✓  created"));
         return;
     }
-    const localWorkflow = Workflow.fromString(localContent);
+
+    let localWorkflow: Workflow;
+    try {
+        localWorkflow = Workflow.fromString(localContent);
+    } catch (e) {
+        console.log(chalk.red(`  ✗  ${e}`));
+        return;
+    }
     const checker = new Checker(forceUpdate, localWorkflow);
 
     const errors = checker.getErrors();

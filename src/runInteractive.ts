@@ -6,7 +6,7 @@ import { Namespace } from "./cli";
 import { LOCAL_WORKFLOWS_PATH } from "./constants";
 import {
     chooseIndex,
-    confirmProceed,
+    confirmApply,
     createWorkflowsDir,
     selectWorkflows
 } from "./inquire";
@@ -51,9 +51,9 @@ async function getWorkflowResources(
         if (hasChanges) result.push(workflow);
     }
     if (!result.length) return result;
-    if (!(await confirmProceed())) {
-        console.log("Okay, makes sense!");
-        console.log("Start me again any time. Bye for now!");
+    if (!(await confirmApply())) {
+        console.log("");
+        console.log("Okay, makes sense. Start me again any time. Bye for now!");
         return [];
     }
 
@@ -66,21 +66,24 @@ async function checkLocalPath(localPath: string): Promise<boolean> {
         `Let's set up some ${chalk.bold("GitHub Actions")} for this project!\n`
     );
     if (!(await createWorkflowsDir(localPath))) {
-        console.log("Okay, looks like I was in a wrong directory.");
+        console.log("Okay, looks like that was a wrong directory.");
         console.log(
-            `Restart me where I should be, or specify ${chalk.bold("--path")}`
+            `Restart me where I should be, or just use ${chalk.blue(
+                "--path <path>"
+            )}`
         );
         console.log("Bye for now!");
         return false;
     }
     fs.mkdirSync(localPath, { recursive: true });
     console.log(
-        `Awesome, we have just created ${chalk.bold(localPath)} directory!`
+        `Awesome, we have just created ${chalk.bold(localPath)} directory!\n`
     );
     return true;
 }
 
 export async function runInteractive(args: Namespace): Promise<void> {
+    console.clear();
     console.log("Hi there!\n");
     console.log(
         `I am ${chalk.bold(
@@ -120,5 +123,8 @@ export async function runInteractive(args: Namespace): Promise<void> {
     // ]);
     const workflows = await getWorkflowResources(workflowIndex, args);
     await runUpdateAll(workflows, args.force, args.diff);
-    console.log("That's all for now! Bye!");
+    console.log("");
+    console.log(
+        "My job here is done! Start me from time to time. Bye for now!"
+    );
 }

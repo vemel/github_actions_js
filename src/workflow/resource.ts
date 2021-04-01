@@ -38,7 +38,7 @@ export class WorkflowResource {
     getTitle(action = "in"): string {
         return `${this.title} (${chalk.bold(
             chalk.blue(this.name)
-        )}) ${chalk.grey(action)} ${this.path}`;
+        )}) ${chalk.grey(`${action} ${this.path}`)}`;
     }
 
     get description(): string | null {

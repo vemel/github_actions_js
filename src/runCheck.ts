@@ -24,7 +24,13 @@ export function runCheck(
     forceUpdate: boolean,
     showDiff: boolean
 ): TCheckStatus {
-    const localWorkflow = Workflow.fromString(localContent);
+    let localWorkflow: Workflow;
+    try {
+        localWorkflow = Workflow.fromString(localContent);
+    } catch (e) {
+        console.log(chalk.red(`  ✗  ${e}`));
+        return "error";
+    }
     const remoteWorkflow = Workflow.fromString(remoteContent);
     const checker = new Checker(forceUpdate, localWorkflow);
 

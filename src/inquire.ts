@@ -61,7 +61,7 @@ export async function createWorkflowsDir(path: string): Promise<boolean> {
                 type: "confirm",
                 message: `It looks like we do not have ${chalk.blue(
                     path
-                )} directory to store workflows. Do you want me to create it?`,
+                )} directory to store workflows. Create it?`,
                 choices: INDEXES.map(index => index.name)
             }
         ])
@@ -85,12 +85,14 @@ export async function selectWorkflows(
                   )} ${chalk.grey("installed")}`
               ]
             : []),
-        ` All listed workflows ${chalk.grey("all")}`,
+        ` All workflows below ${chalk.grey("all")}`,
         ...workflowIndex.getAllWorkflows().map(w => {
             if (w.existsLocally()) {
-                return ` ${chalk.green(w.title)} ${chalk.grey(w.name)}`;
+                return ` ${chalk.green(w.title)} ${chalk.grey(
+                    ` in ${w.path}`
+                )}`;
             }
-            return ` ${w.title} ${chalk.grey(w.name)}`;
+            return ` ${w.title} ${chalk.grey(` in ${w.path}`)}`;
         })
     ];
     const message = hasInstalled
@@ -101,6 +103,7 @@ export async function selectWorkflows(
             {
                 name: "names",
                 type: "checkbox",
+                default: hasInstalled ? ["installed"] : [],
                 message: message,
                 pageSize: 30,
                 choices: choices.map(choice => ({
@@ -114,13 +117,13 @@ export async function selectWorkflows(
         });
 }
 
-export async function confirmProceed(): Promise<boolean> {
+export async function confirmApply(): Promise<boolean> {
     return inquirer
         .prompt([
             {
                 name: "confirm",
                 type: "confirm",
-                message: `Do you want to proceed?`
+                message: `Apply updates?`
             }
         ])
         .then(({ confirm }) => confirm);

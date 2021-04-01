@@ -5,8 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Interactive run when no `--names` are specified
+- Insdex can be selected with a short id: `-i node`, `-i python`
+
 ### Changed
-- `--names existing` replaced with `--names installed`, still a default option
+- `--names existing` replaced with `--names installed`
+
+### Fixed
+- Handle invalid user YAML in workflow
 
 ## [0.5.0]
 ### Added
