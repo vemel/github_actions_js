@@ -21,6 +21,9 @@ name: Create Release Pull Request
 jobs:
   release-new-version:
     runs-on: ubuntu-latest
+    env:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
     steps:
       - name: Get Release
         uses: actions/github-script@v3
@@ -97,6 +100,23 @@ jobs:
           github-actions-managed: true
           release: Unreleased
           clear: true
+      - name: Setup git credentials
+        id: setup-git
+        if: steps.release.outputs.result
+        run: |
+          # github-actions-managed: true
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Import GPG key
+        id: import-gpg
+        if: steps.release.outputs.result && env.GPG_PRIVATE_KEY
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          github-actions-managed: true
+          gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
+          passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
+          git-user-signingkey: true
+          git-commit-gpgsign: true
       - name: Commit changes
         id: commit
         if: steps.release.outputs.result
@@ -104,8 +124,6 @@ jobs:
           # github-actions-managed: true
           VERSION=${{ toJSON(steps.version.outputs.result) }}
           BRANCH=${{ toJSON(steps.release.outputs.branch) }}
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git checkout -b $BRANCH
           git commit -am "Bump version to $VERSION"
           git push --set-upstream origin $BRANCH
