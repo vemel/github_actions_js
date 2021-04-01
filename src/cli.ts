@@ -2,6 +2,7 @@ import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
 import { DOCS_URL } from "./constants";
+import { INDEXES, IndexResource } from "./indexes";
 
 export interface Namespace {
     help: boolean;
@@ -13,7 +14,8 @@ export interface Namespace {
     update: boolean;
     list: boolean;
     diff: boolean;
-    index?: string;
+    index: string;
+    indexResource: IndexResource;
 }
 
 export function getHelp(): string {
@@ -131,5 +133,9 @@ export function parseArgs(): Namespace {
     result.update = result.update || false;
     result.ref = result.ref || "main";
     result.path = result.path || ".";
+    result.index = INDEXES.find(i => i.id === result.index)?.url || "";
+    result.indexResource =
+        INDEXES.find(i => i.id === result.index || i.url === result.index) ||
+        new IndexResource(result.index, result.index, result.index);
     return result;
 }

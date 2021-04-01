@@ -16,8 +16,7 @@
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"
   },
   "bin": {
-    "ghactions": "bin/ghactions",
-    "ghactions_py": "bin/ghactions_py"
+    "ghactions": "bin/ghactions"
   },
   "files": [
     "lib/*"

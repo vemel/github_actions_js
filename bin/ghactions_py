@@ -1,5 +1,0 @@
-#!/usr/bin/env node
-const main = require("./../lib/index").default;
-const url = require("./../lib/indexes").PY_INDEX_URL;
-
-main(url);

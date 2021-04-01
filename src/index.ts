@@ -14,7 +14,7 @@ import { decapitalize, getCommandName, getVersionString } from "./utils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-async function main(indexURL: string): Promise<void> {
+async function main(): Promise<void> {
     let args: Namespace;
     const commandName = getCommandName();
     try {
@@ -55,12 +55,13 @@ async function main(indexURL: string): Promise<void> {
         process.exit(1);
     }
 
-    indexURL = (args.index || indexURL).replace("{ref}", args.ref);
+    const indexURL = args.index || JS_INDEX_URL;
     let workflowIndex: WorkflowIndex;
     let workflows: Array<WorkflowResource>;
     try {
         workflowIndex = await WorkflowIndex.download(
             indexURL,
+            args.ref,
             path.join(args.path, LOCAL_WORKFLOWS_PATH)
         );
         workflows = workflowIndex.getWorkflows(args.names);
@@ -124,7 +125,7 @@ function logUpdateError(): void {
 }
 
 if (typeof require !== "undefined" && require.main === module) {
-    main(JS_INDEX_URL);
+    main();
 }
 
 export default main;

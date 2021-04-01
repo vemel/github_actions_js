@@ -18,6 +18,8 @@ export class WorkflowResource {
     data: IWorkflow;
     path: string;
     url: string;
+    private _local?: string | null;
+    private _remote?: string | null;
 
     constructor(data: IWorkflow, workflowsPath: string, url: string) {
         this.data = data;
@@ -52,13 +54,18 @@ export class WorkflowResource {
     }
 
     async getLocal(): Promise<string | null> {
+        if (this._local !== undefined) return this._local;
+        let result: string | null;
         try {
-            return await promisify(fs.readFile)(this.path, {
+            result = await promisify(fs.readFile)(this.path, {
                 encoding: UTF8
             });
+            this._local = result;
         } catch {
-            return null;
+            result = null;
         }
+        this._local = result;
+        return result;
     }
 
     async setLocal(data: string): Promise<void> {
@@ -67,18 +74,26 @@ export class WorkflowResource {
         });
     }
 
+    reset(): void {
+        this._local = null;
+        this._remote = null;
+    }
+
     async getRemote(): Promise<string | null> {
+        if (this._remote !== undefined) return this._remote;
+        let result: string | null;
         const tempPath = getTempDir();
         const downloadPath = path.join(tempPath, this.fileName);
         try {
             await download(this.url, tempPath, { filename: this.fileName });
+            result = await promisify(fs.readFile)(downloadPath, {
+                encoding: UTF8
+            });
         } catch {
-            return null;
+            result = null;
         }
-        const content = await promisify(fs.readFile)(downloadPath, {
-            encoding: UTF8
-        });
         await promisify(fs.rmdir)(tempPath, { recursive: true });
-        return content;
+        this._remote = result;
+        return result;
     }
 }

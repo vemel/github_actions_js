@@ -90,9 +90,9 @@ Let's start today:
 
 | Short | Long | Default | Description |
 | - | - | - | - |
-| `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | `installed` | Workflow name `<name>.yml`, `all`, or `installed` |
+| `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | interactive mode | Workflow name `<name>.yml`, `all`, or `installed` |
 | `-r <version>` | `--ref <version>` | `main` | Update workflows to a specific tag/branch |
-| `-i <url>` | `--index <url>` | | Link to workflows index YAML file, supports `{ref}` placeholder |
+| `-i <url>` | `--index <url>` | `node`/`python`/`<url>` | Link to workflows index YAML file, supports `{ref}` placeholder |
 | `-p <path>` | `--path <path>` | `.github/workflows` | Path to workflows |
 | `-u` | `--update` | | Apply suggested changes |
 | `-f` | `--force` | | Update user-managed workflow parts |

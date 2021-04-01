@@ -45,13 +45,15 @@ async function getWorkflowResources(
     }
 
     const result: Array<WorkflowResource> = [];
+    console.log("");
     for (const workflow of workflows) {
         const hasChanges = await logChecks(workflow, args);
         if (hasChanges) result.push(workflow);
     }
     if (!result.length) return result;
     if (!(await confirmProceed())) {
-        console.log("Bye then!");
+        console.log("Okay, makes sense!");
+        console.log("Start me again any time. Bye for now!");
         return [];
     }
 
@@ -86,16 +88,37 @@ export async function runInteractive(args: Namespace): Promise<void> {
         )}, as you probably know already.\n`
     );
     const localPath = path.join(args.path, LOCAL_WORKFLOWS_PATH);
-    if (!checkLocalPath(localPath)) {
+    if (!(await checkLocalPath(localPath))) {
         return;
     }
 
-    if (!args.index) {
-        args.index = await chooseIndex(args.path);
+    if (!args.indexResource.url) {
+        args.indexResource = await chooseIndex(args.path);
+        console.log("");
+        console.log(
+            `Next time run me with ${chalk.blue(
+                `-i ${args.indexResource.id}`
+            )} to skip this question`
+        );
+        console.log("");
     }
-    const indexURL = args.index.replace("{ref}", args.ref);
-    console.log(`Downloading index from ${indexURL} ...`);
-    const workflowIndex = await WorkflowIndex.download(indexURL, localPath);
+    console.log(`Downloading index ${chalk.blue(args.indexResource.name)} ...`);
+    console.log("");
+
+    const workflowIndex = await WorkflowIndex.download(
+        args.indexResource.url,
+        args.ref,
+        localPath
+    );
+    // await Promise.all([
+    //     ...workflowIndex
+    //         .getInstalledWorkflows()
+    //         .map(worklfow => worklfow.getLocal()),
+    //     ...workflowIndex
+    //         .getInstalledWorkflows()
+    //         .map(worklfow => worklfow.getRemote())
+    // ]);
     const workflows = await getWorkflowResources(workflowIndex, args);
     await runUpdateAll(workflows, args.force, args.diff);
+    console.log("That's all for now! Bye!");
 }

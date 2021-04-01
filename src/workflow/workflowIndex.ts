@@ -18,12 +18,21 @@ export class WorkflowIndex {
     data: IWorkflowIndex;
     name: string;
     workflowsPath: string;
+    private _workflows: Array<WorkflowResource>;
 
     constructor(url: string, data: IWorkflowIndex, workflowsPath: string) {
         this.data = data;
         this.url = url;
         this.name = this.data.name;
         this.workflowsPath = workflowsPath;
+        this._workflows = this.data.workflows.map(
+            data =>
+                new WorkflowResource(
+                    data,
+                    this.workflowsPath,
+                    this.getURL(data.url)
+                )
+        );
     }
 
     get names(): Array<string> {
@@ -38,13 +47,10 @@ export class WorkflowIndex {
     }
 
     getWorkflow(name: string): WorkflowResource {
-        const data = this.data.workflows.find(w => w.name === name);
-        if (!data) throw new Error(`Workflow ${name} does not exist in index`);
-        return new WorkflowResource(
-            data,
-            this.workflowsPath,
-            this.getURL(data.url)
-        );
+        const workflow = this._workflows.find(w => w.name === name);
+        if (!workflow)
+            throw new Error(`Workflow ${name} does not exist in index`);
+        return workflow;
     }
 
     getAllWorkflows(): Array<WorkflowResource> {
@@ -75,8 +81,10 @@ export class WorkflowIndex {
 
     static async download(
         url: string,
+        ref: string,
         workflowsPath: string
     ): Promise<WorkflowIndex> {
+        url = url.replace("{ref}", ref);
         const tempPath = getTempDir();
         const downloadPath = path.join(tempPath, "index.yml");
         try {

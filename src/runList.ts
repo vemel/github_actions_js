@@ -12,11 +12,12 @@ export function runList(workflow: WorkflowResource): void {
         )}) ${chalk.grey(state)} ${chalk.bold(workflow.path)}`
     );
     if (workflow.description) {
+        console.log("");
         workflow.description
             .split(/\r?\n/)
             .filter(line => line.trim())
             .forEach(line => {
-                console.log(chalk.grey(`  ${line}`));
+                console.log(`  ${line}`);
             });
         console.log("");
     }

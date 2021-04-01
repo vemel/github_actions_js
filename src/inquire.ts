@@ -1,11 +1,11 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
 
-import { INDEXES } from "./indexes";
+import { INDEXES, IndexResource } from "./indexes";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-export async function chooseIndex(localPath: string): Promise<string> {
+export async function chooseIndex(localPath: string): Promise<IndexResource> {
     const defaultIndex = INDEXES.find(index =>
         index.markerFileExists(localPath)
     );
@@ -20,18 +20,23 @@ export async function chooseIndex(localPath: string): Promise<string> {
                     ...INDEXES.map(index => {
                         let name = `${index.name} ${chalk.grey(index.id)}`;
                         if (index === defaultIndex)
-                            name = `${name} (looks like you have ${index.markerFilePath})`;
+                            name = `${name} (looks like you have ${chalk.bold(
+                                index.markerFilePath
+                            )})`;
                         return {
                             name: name,
-                            value: index.url
+                            value: index
                         };
                     }),
-                    { name: "Enter URL manually", value: "" }
+                    { name: "Enter URL manually", value: null }
                 ]
             }
         ])
         .then(async ({ index }) => {
-            if (!index) return await inputIndex();
+            if (!index) {
+                const url = await inputIndex();
+                return new IndexResource(url, url, url);
+            }
             return index;
         });
 }
@@ -82,8 +87,9 @@ export async function selectWorkflows(
             : []),
         ` All listed workflows ${chalk.grey("all")}`,
         ...workflowIndex.getAllWorkflows().map(w => {
-            if (w.existsLocally())
+            if (w.existsLocally()) {
                 return ` ${chalk.green(w.title)} ${chalk.grey(w.name)}`;
+            }
             return ` ${w.title} ${chalk.grey(w.name)}`;
         })
     ];
@@ -104,8 +110,7 @@ export async function selectWorkflows(
             }
         ])
         .then(({ names }) => {
-            const workflows = workflowIndex.getWorkflows(names);
-            return workflows;
+            return workflowIndex.getWorkflows(names);
         });
 }
 

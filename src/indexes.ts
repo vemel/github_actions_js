@@ -10,7 +10,7 @@ export class IndexResource {
         name: string,
         url: string,
         id: string,
-        markerFilePath: string | null
+        markerFilePath?: string
     ) {
         this.name = name;
         this.url = url;
