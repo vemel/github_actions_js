@@ -1,5 +1,7 @@
 # GitHub Actions Manager
 
+[![npm](https://img.shields.io/npm/v/github-actions?color=blue&label=github-actions&style=flat-square)](https://www.npmjs.com/package/github-actions)
+
 > -- Who will test our unit tests?
 >
 > -- I have no idea 🤨
@@ -51,15 +53,13 @@ it is super easy to kickstart an automation for a new project in minutes.
 However, every project CI/CD has to be set up and updated separately, even though they have a lot in common.
 So, instead of making our life easier, CI/CD just adds a new folder in project to keep an eye on.
 
-But imagine, what if...
+But imagine, what if we could ...
 
-What if we could manage our GitHub Actions the same way we manage npm dependencies?
+- manage our GitHub Actions the same way we manage npm dependencies
+- adapt CI/CD for different projects to our needs and still keep them in sync
+- share the best CI/CD practices and collaborate to raise the bar even higher
 
-What if we could adapt CI/CD for different projects to our needs and still keep them in sync?
-
-What if we could share best CI/CD practices and collaborate to raise the bar even higher?
-
-And finally, what if we could adapt these best practices for a new project with a single command?
+And finally, what if we could add these best practices for a new project with a single command.
 
 Let's start today:
 - CI/CD for Node.js projects [installation guide](./workflows/README.md)

@@ -18,6 +18,7 @@ jobs:
     env:
       LINT_SCRIPT: lint
       TEST_SCRIPT: test
+      TEST_COvERAGE_SCRIPT: test-cov
     strategy:
       matrix:
         node-version:
@@ -49,6 +50,10 @@ jobs:
             }
             if (scripts.includes(process.env.TEST_SCRIPT)) {
               core.setOutput('test', process.env.TEST_SCRIPT);
+              result = true;
+            }
+            if (scripts.includes(process.env.TEST_COVERAGE_SCRIPT)) {
+              core.setOutput('test-cov', process.env.TEST_COVERAGE_SCRIPT);
               result = true;
             }
             return result;
@@ -90,3 +95,16 @@ jobs:
           # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.test }}"
           npm run ${{ steps.scripts.outputs.test }}
+      - name: Send test coverage report
+        id: test-coverage
+        if: steps.scripts.outputs.test
+        env:
+          RUN_SCRIPT: ${{ steps.stripts.outputs.test-cov }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          if [[ ! -z ${RUN_SCRIPT} ]]; then
+            npm run ${RUN_SCRIPT}
+          fi
+          if [[ ! -z ${CODECOV_TOKEN} ]]; then
+            bash <(curl -s https://codecov.io/bash)
+          fi
