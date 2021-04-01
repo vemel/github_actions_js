@@ -1,23 +1,51 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
 
-import { INDEXES } from "./constants";
+import { INDEXES } from "./indexes";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-export async function chooseIndex(): Promise<string> {
+export async function chooseIndex(localPath: string): Promise<string> {
+    const defaultIndex = INDEXES.find(index =>
+        index.markerFileExists(localPath)
+    );
     return inquirer
         .prompt([
             {
                 name: "index",
                 type: "list",
+                default: defaultIndex?.url,
                 message: "What Workflows should we use here?",
-                choices: INDEXES.map(index => index.name)
+                choices: [
+                    ...INDEXES.map(index => {
+                        let name = `${index.name} ${chalk.grey(index.id)}`;
+                        if (index === defaultIndex)
+                            name = `${name} (looks like you have ${index.markerFilePath})`;
+                        return {
+                            name: name,
+                            value: index.url
+                        };
+                    }),
+                    { name: "Enter URL manually", value: "" }
+                ]
             }
         ])
-        .then(({ index }) => {
-            return INDEXES.find(x => x.name === index)?.url || index;
+        .then(async ({ index }) => {
+            if (!index) return await inputIndex();
+            return index;
         });
+}
+
+async function inputIndex(): Promise<string> {
+    return inquirer
+        .prompt([
+            {
+                name: "input",
+                type: "input",
+                message: `Enter full URL to ${chalk.bold("index.yml")}`
+            }
+        ])
+        .then(({ input }) => input);
 }
 
 export async function createWorkflowsDir(path: string): Promise<boolean> {

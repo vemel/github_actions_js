@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 const main = require("./../lib/index").default;
-const url = require("./../lib/constants").JS_INDEX_URL;
+const url = require("./../lib/indexes").JS_INDEX_URL;
 
 main(url);

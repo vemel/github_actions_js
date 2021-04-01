@@ -4,7 +4,8 @@ import path from "path";
 
 import { LOCAL_WORKFLOWS_PATH } from "../lib/constants";
 import { getHelp, Namespace, parseArgs } from "./cli";
-import { DOCS_URL, JS_INDEX_URL } from "./constants";
+import { DOCS_URL } from "./constants";
+import { JS_INDEX_URL } from "./indexes";
 import { runCheckAll } from "./runCheck";
 import { runInteractive } from "./runInteractive";
 import { runListAll } from "./runList";

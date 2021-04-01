@@ -91,10 +91,10 @@ export async function runInteractive(args: Namespace): Promise<void> {
     }
 
     if (!args.index) {
-        args.index = await chooseIndex();
+        args.index = await chooseIndex(args.path);
     }
     const indexURL = args.index.replace("{ref}", args.ref);
-    console.log(`Downloading index...`);
+    console.log(`Downloading index from ${indexURL} ...`);
     const workflowIndex = await WorkflowIndex.download(indexURL, localPath);
     const workflows = await getWorkflowResources(workflowIndex, args);
     await runUpdateAll(workflows, args.force, args.diff);
