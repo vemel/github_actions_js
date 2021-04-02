@@ -18,13 +18,9 @@
 ```bash
 # in a GitHub repository root
 npm i --save-dev github-actions
-mkdir -p .github/workflows
 
-# list available workflows
-ghactions --list
-
-# install all workflows to .github/workflows
-ghactions -u all
+# run interactive manager
+npx ghactions -i node
 ```
 
 Index: [index.yml](./index.yml)
@@ -62,7 +58,7 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_push_check
+npx ghactions -i node -u on_push_check
 ```
 
 ### Update Pull Request labels
@@ -78,7 +74,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_pull_opened_or_edited
+npx ghactions -i node -u on_pull_opened_or_edited
 ```
 
 ### Update Release from Pull Request
@@ -93,7 +89,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_pull_merged
+npx ghactions -i node -u on_pull_merged
 ```
 
 ### Create Release Pull Request
@@ -108,7 +104,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_release_published
+npx ghactions -i node -u on_release_published
 ```
 
 ### Publish to NPM
@@ -123,7 +119,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_release_pull_merged
+npx ghactions -i node -u on_release_pull_merged
 ```
 
 ### Create Release draft
@@ -139,5 +135,5 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -u on_demand_create_release_draft
+npx ghactions -i node -u on_demand_create_release_draft
 ```

@@ -69,7 +69,7 @@ async function checkLocalPath(localPath: string): Promise<boolean> {
         console.log("Okay, looks like that was a wrong directory.");
         console.log(
             `Restart me where I should be, or just use ${chalk.blue(
-                "--path <path>"
+                "--path <github repo path>"
             )}`
         );
         console.log("Bye for now!");

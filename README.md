@@ -31,19 +31,12 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
 ```bash
 # in a GitHub repository root
 npm i --save-dev github-actions
-mkdir -p .github/workflows
 
-# check if actions can be installed or updated
-npx ghactions all
+# run interactive manager
+npx ghactions
 
-# add or update all workflows for Node.js projects
-npx ghactions -u all
-
-# force update to be as close to remote workflow as possible
-npx ghactions -u all --force
-
-# for Python projects use
-npx ghactions_py -u all
+# or check how to run non-interactively
+npx ghactions --help
 ```
 
 ## Automated automation?
@@ -189,4 +182,5 @@ And if there are remote changes other than steps that we want to apply, we can u
 - [x] Add `--list` argument to list workflows in index
 - [x] Add `--path` argument to allow running not for a repository root
 - [x] Smart diff
+- [x] Interactive CLI
 - [ ] External `scripts` support

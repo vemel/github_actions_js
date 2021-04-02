@@ -16,15 +16,12 @@
 ## Installation
 
 ```bash
-# in a GitHub repository root
+# install package globally
 npm i -g github-actions
-mkdir -p .github/workflows
 
-# list available workflows
-ghactions_py --list
-
-# install all workflows to .github/workflows
-ghactions_py -u all
+# in a GitHub repository root
+# run interactive manager
+ghactions -i python
 ```
 
 Index: [index.yml](./index.yml)
@@ -64,7 +61,7 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_push_check
+ghactions -i python -u on_push_check
 ```
 
 ### Update Pull Request labels
@@ -80,7 +77,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_pull_opened_or_edited
+ghactions -i python -u on_pull_opened_or_edited
 ```
 
 ### Update Release from Pull Request
@@ -95,7 +92,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_pull_merged
+ghactions -i python -u on_pull_merged
 ```
 
 ### Create Release Pull Request
@@ -110,7 +107,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_release_published
+ghactions -i python -u on_release_published
 ```
 
 ### Publish to PyPI
@@ -125,7 +122,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_release_pull_merged
+ghactions -i python -u on_release_pull_merged
 ```
 
 ### Create Release draft
@@ -141,5 +138,5 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-ghactions_py -u on_demand_create_release_draft
+ghactions -i python -u on_demand_create_release_draft
 ```
