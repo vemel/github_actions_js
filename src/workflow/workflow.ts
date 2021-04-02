@@ -66,7 +66,7 @@ export class Workflow {
         const data = yaml.load(content) as IWorkflowData;
         const commentLines = content
             .split(/\r?\n/)
-            .filter(line => line.startsWith("# "))
+            .filter(line => line.startsWith("# ") || line === "#")
             .map(line => line.substr(2));
         return new Workflow(data, commentLines);
     }
