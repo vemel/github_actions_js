@@ -21,6 +21,9 @@ name: Create Release Pull Request
 jobs:
   release-new-version:
     runs-on: ubuntu-latest
+    env:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
     steps:
       - name: Get Release
         uses: actions/github-script@v3
@@ -49,8 +52,7 @@ jobs:
             }
 
             if (!release) {
-              core.error(`Cannot find Release`);
-              return;
+              throw new Error(`Cannot find Release`);
             }
 
             core.setOutput('target', release.target_commitish);
@@ -63,14 +65,12 @@ jobs:
             return true;
       - name: Checkout Release target branch
         id: checkout
-        if: steps.release.outputs.result
         uses: actions/checkout@v2
         with:
           github-actions-managed: true
           ref: ${{ steps.release.outputs.target }}
-      - name: Update version
+      - name: Get new version
         id: version
-        if: steps.release.outputs.result
         uses: vemel/nextversion@main
         with:
           github-actions-managed: true
@@ -78,11 +78,14 @@ jobs:
           path: ./package.json
           type: semver
           result: ${{ steps.release.outputs.tag }}
-          update: |
-            ./package.json
+      - name: Set version
+        id: set-version
+        run: |
+          # github-actions-managed: true
+          npm config set git-tag-version false
+          npm version ${{ steps.version.outputs.result }}
       - name: Add new release to CHANGELOG.md
         id: changelog
-        if: steps.release.outputs.result
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
@@ -91,28 +94,40 @@ jobs:
           set: ${{ steps.release.outputs.body }}
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
-        if: steps.release.outputs.result
+        if: ${{ ! steps.version.outputs.is-prerelease }}
         uses: vemel/nextchange@main
         with:
           github-actions-managed: true
           release: Unreleased
           clear: true
+      - name: Setup git credentials
+        id: setup-git
+        run: |
+          # github-actions-managed: true
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Import GPG key
+        id: import-gpg
+        if: env.GPG_PRIVATE_KEY
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          github-actions-managed: true
+          gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
+          passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
+          git-user-signingkey: true
+          git-commit-gpgsign: true
       - name: Commit changes
         id: commit
-        if: steps.release.outputs.result
         run: |
           # github-actions-managed: true
           VERSION=${{ toJSON(steps.version.outputs.result) }}
           BRANCH=${{ toJSON(steps.release.outputs.branch) }}
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git checkout -b $BRANCH
           git commit -am "Bump version to $VERSION"
           git push --set-upstream origin $BRANCH
       - name: Create Pull Request
         id: create-pull-request
         uses: actions/github-script@v3
-        if: steps.release.outputs.result
         with:
           github-actions-managed: true
           script: |

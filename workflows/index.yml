@@ -3,6 +3,9 @@ workflows:
   - name: on_push_check
     title: Run style checks and unit tests
     url: ./on_push_check.yml
+    secrets:
+      - name: CODECOV_TOKEN
+        description: Token for https://codecov.io/ coverage report
     description: |
       - Starts on push to any branch
       - Runs linting if `lint` script is available in `npm run`
@@ -33,6 +36,11 @@ workflows:
   - name: on_release_published
     title: Create Release Pull Request
     url: ./on_release_published.yml
+    secrets:
+      - name: GPG_PRIVATE_KEY
+        description: Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+      - name: GPG_PRIVATE_KEY_PASSPHRASE
+        description: Passphrase for GPG key
     description: |
       - Starts on Release published
       - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -43,6 +51,9 @@ workflows:
   - name: on_release_pull_merged
     title: Publish to NPM
     url: ./on_release_pull_merged.yml
+    secrets:
+      - name: NPM_TOKEN
+        escription: Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
     description: |
       - Starts on Pull Request merge for `release/*` branch
       - Uses Pull Request branch for deployment, so released version contains only changes

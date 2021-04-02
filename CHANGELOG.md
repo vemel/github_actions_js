@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Interactive run when no `--names` are specified
-- Insdex can be selected with a short id: `-i node`, `-i python`
+- Index can be selected with a short id: `-i node`, `-i python`
 
 ### Changed
 - `--names existing` replaced with `--names installed`
