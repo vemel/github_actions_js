@@ -54,7 +54,6 @@ export class Step {
         if (this.data.run) {
             if (this.data.run.includes("\n")) {
                 const lines: Array<string> = [
-                    "",
                     "# github-actions-managed: true",
                     ...this.data.run
                         .split(/\r?\n/)
@@ -62,14 +61,13 @@ export class Step {
                 ];
                 this.data.run = lines.join("\n");
             } else {
-                this.data.run = `\n# github-actions-managed: true\n${this.data.run}`;
+                this.data.run = `# github-actions-managed: true\n${this.data.run}`;
             }
             return this;
         }
         if (this.data.with?.script) {
             if (this.data.with.script.includes("\n")) {
                 const lines: Array<string> = [
-                    "",
                     "// github-actions-managed: true",
                     ...this.data.with.script
                         .split(/\r?\n/)
@@ -77,7 +75,7 @@ export class Step {
                 ];
                 this.data.with.script = lines.join("\n");
             } else {
-                this.data.with.script = `\n// github-actions-managed: true\n${this.data.with.script}`;
+                this.data.with.script = `// github-actions-managed: true\n${this.data.with.script}`;
             }
             return this;
         }
