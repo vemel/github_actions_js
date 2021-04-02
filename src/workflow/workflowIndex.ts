@@ -10,6 +10,7 @@ import { IWorkflow, WorkflowResource } from "./resource";
 
 export interface IWorkflowIndex {
     name: string;
+    id: string;
     documentation?: string;
     workflows: Array<IWorkflow>;
 }

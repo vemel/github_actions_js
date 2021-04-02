@@ -8,7 +8,7 @@ import { UTF8 } from "../constants";
 import { getTempDir } from "../utils";
 import { IWorkflowIndex } from "./workflowIndex";
 
-interface ISecret {
+export interface ISecret {
     name: string;
     description?: string;
 }

@@ -45,10 +45,11 @@ Yes, why not! Even small projects nowadays have at least simple CI/CD to enforce
 or just to avoid boring release management. Thanks to [GitHub Actions](https://github.com/features/actions),
 it is super easy to kickstart an automation for a new project in minutes.
 
-However, every project CI/CD has to be set up and updated separately, even though they have a lot in common.
-So, instead of making our life easier, CI/CD just adds a new folder in project to keep an eye on.
+However, every project CI/CD has to be set up and updated separately,
+even though they have a lot in common. So, instead of making our life easier,
+CI/CD adds a new folder in a project to keep an eye on.
 
-But imagine, what if we could ...
+But imagine, what if we could...
 
 - manage our GitHub Actions the same way we manage npm dependencies
 - adapt CI/CD for different projects to our needs and still keep them in sync

@@ -4,9 +4,8 @@
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
-  - [Secrets](#secrets)
   - [TODO](#todo)
-  - [Actions](#actions)
+  - [Secrets](#secrets)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
@@ -44,35 +43,38 @@ Index: [index.yml](./index.yml)
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 - Do not try to build one-fits-all soultion, provide customization instead
 
-## Secrets
-List of optional secrets to unleash secret techniques
-
-- `PYPI_PASSWORD` - If set, new releases are published to [PyPI](https://pypi.org/) on Release Pull Request merge
-
 ## TODO
 - [ ] Add `pytest-cov` support
 
-## Actions
+## Secrets
+- `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+- `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
+- `PYPI_PASSWORD` - Password for `__token__` username for https://pypi.org/
+
 ### Run style checks and unit tests
 Workflow: [on_push_check.yml](./on_push_check.yml)
+
+```bash
+# install this action to .github/workflows
+npx ghactions -i python -u on_push_check
+```
 
 - Starts on push to any branch
 - Installs package with `poetry`, `pipenv` or `requirements[-dev].txt`
 - Caches installed Python dependencies
-- Runs [flake8](https://flake8.pycqa.org/) if it is installed
-- Runs [pylint](https://www.pylint.org/) if it is installed
-- Runs [mypy](http://mypy-lang.org/) if it is installed
-- Runs [pyright](https://github.com/microsoft/pyright) if `pyrightconfig.json` file exists
-- Runs [pytest](https://pytest.org/) if it is installed
+- Runs `flake8` if it is installed
+- Runs `pylint` if it is installed
+- Runs `mypy` if it is installed
+- Runs `pyright` if `pyrightconfig.json` file exists
+- Runs `pytest` if it is installed
+
+### Update Pull Request labels
+Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i python -u on_push_check
+npx ghactions -i python -u on_pull_opened_or_edited
 ```
-
-### Update Pull Request labels
-
-Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 - Starts on Pull Request opened or edited event
 - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -81,14 +83,13 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 - If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
 - Otherwise adds `patch` label
 
+### Update Release from Pull Request
+Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
+
 ```bash
 # install this action to .github/workflows
-ghactions -i python -u on_pull_opened_or_edited
+npx ghactions -i python -u on_pull_merged
 ```
-
-### Update Release from Pull Request
-
-Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 - Starts on Pull Request merge for non-`release/*` branch
 - Creates or updates a Release draft for Pull Request base branch
@@ -96,53 +97,47 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 - Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
 
+### Create Release Pull Request
+Workflow: [on_release_published.yml](./on_release_published.yml)
+
 ```bash
 # install this action to .github/workflows
-ghactions -i python -u on_pull_merged
+npx ghactions -i python -u on_release_published
 ```
-
-### Create Release Pull Request
-
-Workflow: [on_release_published.yml](./on_release_published.yml)
 
 - Starts on Release published
 - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
 - Creates a Release Pull Request from Release target branch with `release` label
+- If the release is not a prerelease, cleans up `Unreleased` section in `CHANGELOG.md`
 - Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
 - Release Pull Request uses branch `release/<version>`
+- Signs commits if `GPG_PRIVATE_KEY` secret is set
+
+### Publish to PyPI
+Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i python -u on_release_published
+npx ghactions -i python -u on_release_pull_merged
 ```
 
-### Publish to PyPI
-
-Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
-
+- Runs only if `PYPI_PASSWORD` secret is set
 - Starts on Pull Request merge for `release/*` branch
 - Uses Pull Request branch for deployment, so released version contains only changes
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
-- Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD`
+- Publishes new version to [PyPI](https://pypi.org/)
+
+### Create Release draft
+Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i python -u on_release_pull_merged
+npx ghactions -i python -u on_demand_create_release_draft
 ```
-
-### Create Release draft
-
-Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.yml)
 
 - Starts only manually
 - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
 - Creates or updates a release draft for `target` branch
 - Release notes are populated from `Unreleased` section of `CHANGELOG.md`
 - Sets suggested version as `name` and `tag` of the Release
-
-
-```bash
-# install this action to .github/workflows
-ghactions -i python -u on_demand_create_release_draft
-```

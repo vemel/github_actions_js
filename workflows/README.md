@@ -4,9 +4,8 @@
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
-  - [Secrets](#secrets)
   - [TODO](#todo)
-  - [Actions](#actions)
+  - [Secrets](#secrets)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
@@ -43,33 +42,37 @@ Index: [index.yml](./index.yml)
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 - Do not try to build one-fits-all soultion, provide customization instead
 
-## Secrets
-List of optional secrets to unleash secret techniques
-
-- `NPM_TOKEN` - If set, new releases are published to [npm](https://www.npmjs.com/) on Release Pull Request merge
-
 ## TODO
 - [ ] Publish to GitHub Packages
 
-## Actions
+## Secrets
+- `CODECOV_TOKEN` - Token for https://codecov.io/ coverage report
+- `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+- `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
+- `NPM_TOKEN` - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
 
 ### Run style checks and unit tests
-
 Workflow: [on_push_check.yml](./on_push_check.yml)
-
-- Starts on push to any branch
-- Runs linting if `lint` script is available in `npm run`
-- Runs unit tests if `test` script is available in `npm run`
-- Uses `npm` cache to improve performance
 
 ```bash
 # install this action to .github/workflows
 npx ghactions -i node -u on_push_check
 ```
 
-### Update Pull Request labels
+- Starts on push to any branch
+- Uses `npm` cache to improve performance
+- Runs linting if `lint` script is available in `npm run`
+- Runs unit tests if `test` script is available in `npm run`
+- Runs `test-cov` script if it is available in `npm run`
+- Sends test coverage report to https://codecov.io/ if `CODECOV_TOKEN` secret is set
 
+### Update Pull Request labels
 Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
+
+```bash
+# install this action to .github/workflows
+npx ghactions -i node -u on_pull_opened_or_edited
+```
 
 - Starts on Pull Request opened or edited event
 - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -78,14 +81,13 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 - If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
 - Otherwise adds `patch` label
 
+### Update Release from Pull Request
+Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
+
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_pull_opened_or_edited
+npx ghactions -i node -u on_pull_merged
 ```
-
-### Update Release from Pull Request
-
-Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 - Starts on Pull Request merge for non-`release/*` branch
 - Creates or updates a Release draft for Pull Request base branch
@@ -93,53 +95,47 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 - Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
 
-```bash
-# install this action to .github/workflows
-npx ghactions -i node -u on_pull_merged
-```
-
 ### Create Release Pull Request
-
 Workflow: [on_release_published.yml](./on_release_published.yml)
-
-- Starts on Release published
-- Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Creates a Release Pull Request from Release target branch with `release` label
-- Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
-- Release Pull Request uses branch `release/<version>`
 
 ```bash
 # install this action to .github/workflows
 npx ghactions -i node -u on_release_published
 ```
 
+- Starts on Release published
+- Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+- Creates a Release Pull Request from Release target branch with `release` label
+- If the release is not a prerelease, cleans up `Unreleased` section in `CHANGELOG.md`
+- Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
+- Release Pull Request uses branch `release/<version>`
+- Signs commits if `GPG_PRIVATE_KEY` secret is set
+
 ### Publish to NPM
-
 Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
-
-- Starts on Pull Request merge for `release/*` branch
-- Uses Pull Request branch for deployment, so released version contains only changes
-  from base branch when Release had been published
-- Builds package if `build` script is available in `package.json`
-- Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
 
 ```bash
 # install this action to .github/workflows
 npx ghactions -i node -u on_release_pull_merged
 ```
 
-### Create Release draft
+- Runs only if `NPM_TOKEN` secret is set
+- Starts on Pull Request merge for `release/*` branch
+- Uses Pull Request branch for deployment, so released version contains only changes
+  from base branch when Release had been published
+- Builds package if `build` script is available in `package.json`
+- Publishes new version to [npm](https://www.npmjs.com/)
 
+### Create Release draft
 Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.yml)
+
+```bash
+# install this action to .github/workflows
+npx ghactions -i node -u on_demand_create_release_draft
+```
 
 - Starts only manually
 - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
 - Creates or updates a release draft for `target` branch
 - Release notes are populated from `Unreleased` section of `CHANGELOG.md`
 - Sets suggested version as `name` and `tag` of the Release
-
-
-```bash
-# install this action to .github/workflows
-npx ghactions -i node -u on_demand_create_release_draft
-```

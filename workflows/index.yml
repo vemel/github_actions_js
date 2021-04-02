@@ -1,4 +1,5 @@
 name: GitHub Actions for Node.js projects
+id: node
 documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 workflows:
   - name: on_push_check
