@@ -1,4 +1,5 @@
 # This workflow provided by GitHub Actions for Node.js projects
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 #
 # - Starts on Release published
 # - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format

@@ -1,4 +1,5 @@
 # This workflow provided by GitHub Actions for Node.js projects
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 #
 # - Starts only manually
 # - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch

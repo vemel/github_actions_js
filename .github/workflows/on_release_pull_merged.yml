@@ -1,4 +1,5 @@
 # This workflow provided by GitHub Actions for Node.js projects
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 #
 # - Runs only if `NPM_TOKEN` secret is set
 # - Starts on Pull Request merge for `release/*` branch
