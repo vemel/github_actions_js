@@ -1,6 +1,6 @@
 import { Step } from "./../../src/workflow/step";
 
-describe("test", () => {
+describe("step", () => {
     test("create", () => {
         const step = new Step({
             id: "stepid",
