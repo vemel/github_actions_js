@@ -16,11 +16,13 @@
 ## Installation
 
 ```bash
-# in a GitHub repository root
-npm i --save-dev github-actions
+# install globally or locally
+npm i -g github-actions
+# npm i --save-dev github-actions
 
 # run interactive manager
-npx ghactions -i node
+# in a GitHub repository root
+ghactions -i node
 ```
 
 Index: [index.yml](./index.yml)
@@ -56,7 +58,7 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_push_check
+ghactions -i node -u on_push_check
 ```
 
 - Starts on push to any branch
@@ -71,7 +73,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_pull_opened_or_edited
+ghactions -i node -u on_pull_opened_or_edited
 ```
 
 - Starts on Pull Request opened or edited event
@@ -86,7 +88,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_pull_merged
+ghactions -i node -u on_pull_merged
 ```
 
 - Starts on Pull Request merge for non-`release/*` branch
@@ -100,7 +102,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_release_published
+ghactions -i node -u on_release_published
 ```
 
 - Starts on Release published
@@ -116,7 +118,7 @@ Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_release_pull_merged
+ghactions -i node -u on_release_pull_merged
 ```
 
 - Runs only if `NPM_TOKEN` secret is set
@@ -131,7 +133,7 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-npx ghactions -i node -u on_demand_create_release_draft
+ghactions -i node -u on_demand_create_release_draft
 ```
 
 - Starts only manually

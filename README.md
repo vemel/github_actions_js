@@ -29,14 +29,16 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
 ## Basic usage
 
 ```bash
-# in a GitHub repository root
-npm i --save-dev github-actions
+# install globally or locally
+npm i -g github-actions
+# npm i --save-dev github-actions
 
 # run interactive manager
-npx ghactions
+# in a GitHub repository root
+ghactions
 
 # or check how to run non-interactively
-npx ghactions --help
+ghactions --help
 ```
 
 ## Automated automation?
