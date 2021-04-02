@@ -2,6 +2,7 @@
 
 - [GitHub Actions for Python projects](#github-actions-for-python-projects)
   - [Installation](#installation)
+  - [How to use](#how-to-use)
   - [Zen](#zen)
   - [Secrets](#secrets)
   - [TODO](#todo)
@@ -26,8 +27,13 @@ ghactions -i python
 
 Index: [index.yml](./index.yml)
 
-## Zen
+## How to use
+- Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
+- User-added steps survive update as well
+- Deleted steps are restored on update, so make them empty instead of removing
+- Do not add multiple jobs, only one job is supported
 
+## Zen
 - Enforce best practices for versioning and changelog in a passive-aggressive way
 - Write Release and Pull Request notes in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
 - Follow [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema

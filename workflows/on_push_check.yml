@@ -27,13 +27,10 @@ jobs:
       - name: Checkout current branch
         id: checkout
         uses: actions/checkout@v2
-        with:
-          github-actions-managed: true
       - name: Get available scripts
         id: scripts
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
@@ -62,7 +59,6 @@ jobs:
         id: cache
         if: steps.scripts.outputs.result
         with:
-          github-actions-managed: true
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
@@ -71,28 +67,24 @@ jobs:
         id: setup-node
         uses: actions/setup-node@v2
         with:
-          github-actions-managed: true
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
       - name: Install package
         id: install
         if: steps.scripts.outputs.result
         run: |
-          # github-actions-managed: true
           npm install -g npm
           npm ci
       - name: Run linting
         id: lint
         if: steps.scripts.outputs.lint
         run: |
-          # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.lint }}"
           npm run ${{ steps.scripts.outputs.lint }}
       - name: Run tests
         id: test
         if: steps.scripts.outputs.test
         run: |
-          # github-actions-managed: true
           echo "Running: npm run ${{ steps.scripts.outputs.test }}"
           npm run ${{ steps.scripts.outputs.test }}
       - name: Send test coverage report
@@ -102,7 +94,6 @@ jobs:
           RUN_SCRIPT: ${{ steps.scripts.outputs.test-cov }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          # github-actions-managed: true
           if [[ ! -z ${RUN_SCRIPT} ]]; then
             npm run ${RUN_SCRIPT}
           fi

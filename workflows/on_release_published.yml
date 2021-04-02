@@ -29,7 +29,6 @@ jobs:
         uses: actions/github-script@v3
         id: release
         with:
-          github-actions-managed: true
           script: |
             let release = null;
             if (context.payload.inputs && context.payload.inputs.tag) {
@@ -67,28 +66,23 @@ jobs:
         id: checkout
         uses: actions/checkout@v2
         with:
-          github-actions-managed: true
           ref: ${{ steps.release.outputs.target }}
       - name: Get new version
         id: version
         uses: vemel/nextversion@0.1.1
         with:
-          github-actions-managed: true
-          github-actions-comment: Add paths where version needs to be updated to 'update'
           path: ./package.json
           type: semver
           result: ${{ steps.release.outputs.tag }}
       - name: Set version
         id: set-version
         run: |
-          # github-actions-managed: true
           npm config set git-tag-version false
           npm version ${{ steps.version.outputs.result }} --allow-same-version
       - name: Add new release to CHANGELOG.md
         id: changelog
         uses: vemel/nextchange@0.1.0
         with:
-          github-actions-managed: true
           release: ${{ steps.version.outputs.result }}
           clear: true
           set: ${{ steps.release.outputs.body }}
@@ -97,13 +91,11 @@ jobs:
         if: ${{ steps.version.outputs.is-prerelease == "false" }}
         uses: vemel/nextchange@0.1.0
         with:
-          github-actions-managed: true
           release: Unreleased
           clear: true
       - name: Setup git credentials
         id: setup-git
         run: |
-          # github-actions-managed: true
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
       - name: Import GPG key
@@ -111,7 +103,6 @@ jobs:
         if: env.GPG_PRIVATE_KEY
         uses: crazy-max/ghaction-import-gpg@v3
         with:
-          github-actions-managed: true
           gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
           passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
           git-user-signingkey: true
@@ -119,7 +110,6 @@ jobs:
       - name: Commit changes
         id: commit
         run: |
-          # github-actions-managed: true
           VERSION=${{ toJSON(steps.version.outputs.result) }}
           BRANCH=${{ toJSON(steps.release.outputs.branch) }}
           git checkout -b $BRANCH
@@ -129,7 +119,6 @@ jobs:
         id: create-pull-request
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
             const response = await github.pulls.create({
               owner: context.repo.owner,

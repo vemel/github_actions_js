@@ -29,7 +29,6 @@ jobs:
         if: env.PYPI_PASSWORD
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
             let pullRequest = null;
             if (context.payload.inputs && context.payload.inputs.number) {
@@ -80,14 +79,12 @@ jobs:
         if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
-          github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
       - name: Set up Python
         uses: actions/setup-python@v2
         id: setup-python
         if: steps.pull-request.outputs.result
         with:
-          github-actions-managed: true
           python-version: 3.9
       - name: Publish new version to PyPI
         id: publish
@@ -96,7 +93,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          # github-actions-managed: true
           python -m pip install wheel
           python setup.py build sdist bdist_wheel
           twine upload --non-interactive dist/*
