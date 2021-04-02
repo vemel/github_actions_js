@@ -2,9 +2,8 @@ import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 
-import { LOCAL_WORKFLOWS_PATH } from "../lib/constants";
 import { getHelp, Namespace, parseArgs } from "./cli";
-import { DOCS_URL } from "./constants";
+import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants";
 import { JS_INDEX_URL } from "./indexes";
 import { runCheckAll } from "./runCheck";
 import { runInteractive } from "./runInteractive";
