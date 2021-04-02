@@ -104,54 +104,54 @@ jobs:
           github-actions-managed: true
           release: Unreleased
           clear: true
-      # - name: Setup git credentials
-      #   id: setup-git
-      #   run: |
-      #     # github-actions-managed: true
-      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git config --local user.name "github-actions[bot]"
-      # - name: Import GPG key
-      #   id: import-gpg
-      #   if: env.GPG_PRIVATE_KEY
-      #   uses: crazy-max/ghaction-import-gpg@v3
-      #   with:
-      #     github-actions-managed: true
-      #     gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
-      #     passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
-      #     git-user-signingkey: true
-      #     git-commit-gpgsign: true
-      # - name: Commit changes
-      #   id: commit
-      #   run: |
-      #     # github-actions-managed: true
-      #     VERSION=${{ toJSON(steps.version.outputs.result) }}
-      #     BRANCH=${{ toJSON(steps.release.outputs.branch) }}
-      #     git checkout -b $BRANCH
-      #     git commit -am "Bump version to $VERSION"
-      #     git push --set-upstream origin $BRANCH
-      # - name: Create Pull Request
-      #   id: create-pull-request
-      #   uses: actions/github-script@v3
-      #   with:
-      #     github-actions-managed: true
-      #     script: |
-      #       const response = await github.pulls.create({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         head: ${{ toJSON(steps.release.outputs.branch) }},
-      #         base: ${{ toJSON(steps.release.outputs.target) }},
-      #         title: "Release ${{ steps.version.outputs.result }}",
-      #         body: ${{ toJSON(steps.changelog.outputs.result) }}
-      #       });
-      #       const pullRequestNumber = response.data.number;
-      #       core.info(`Release Pull Request labels: ${pullRequestNumber}`);
-      #       const labels = ['release', ${{ toJSON(steps.changelog.outputs.label) }}];
-      #       core.info(`Labels: ${labels}`);
-      #       await github.issues.setLabels({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         issue_number: pullRequestNumber,
-      #         labels: labels
-      #       });
-      #       core.info(`Release Pull Request title: ${response.data.title}`);
-      #       core.info(`Release Pull Request URL: ${response.data.html_url}`);
+      - name: Setup git credentials
+        id: setup-git
+        run: |
+          # github-actions-managed: true
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Import GPG key
+        id: import-gpg
+        if: env.GPG_PRIVATE_KEY
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          github-actions-managed: true
+          gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
+          passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
+          git-user-signingkey: true
+          git-commit-gpgsign: true
+      - name: Commit changes
+        id: commit
+        run: |
+          # github-actions-managed: true
+          VERSION=${{ toJSON(steps.version.outputs.result) }}
+          BRANCH=${{ toJSON(steps.release.outputs.branch) }}
+          git checkout -b $BRANCH
+          git commit -am "Bump version to $VERSION"
+          git push --set-upstream origin $BRANCH
+      - name: Create Pull Request
+        id: create-pull-request
+        uses: actions/github-script@v3
+        with:
+          github-actions-managed: true
+          script: |
+            const response = await github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: ${{ toJSON(steps.release.outputs.branch) }},
+              base: ${{ toJSON(steps.release.outputs.target) }},
+              title: "Release ${{ steps.version.outputs.result }}",
+              body: ${{ toJSON(steps.changelog.outputs.result) }}
+            });
+            const pullRequestNumber = response.data.number;
+            core.info(`Release Pull Request labels: ${pullRequestNumber}`);
+            const labels = ['release', ${{ toJSON(steps.changelog.outputs.label) }}];
+            core.info(`Labels: ${labels}`);
+            await github.issues.setLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullRequestNumber,
+              labels: labels
+            });
+            core.info(`Release Pull Request title: ${response.data.title}`);
+            core.info(`Release Pull Request URL: ${response.data.html_url}`);
