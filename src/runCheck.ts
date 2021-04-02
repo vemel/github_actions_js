@@ -33,8 +33,7 @@ export function runCheck(
         return "error";
     }
     const remoteWorkflow = Workflow.fromString(remoteContent);
-    if (!remoteWorkflow.commentLines)
-        remoteWorkflow.commentLines = workflowItem.getCommentLines();
+    remoteWorkflow.commentLines = workflowItem.getCommentLines();
 
     const checker = new Checker(forceUpdate, localWorkflow);
 

@@ -119,7 +119,7 @@ export class WorkflowResource {
         }
         if (this.data.description) {
             result.push("");
-            result.push(...this.data.description.split(/\r?\n/));
+            result.push(...this.data.description.trim().split(/\r?\n/));
         }
         if (this.data.secrets) {
             result.push("");

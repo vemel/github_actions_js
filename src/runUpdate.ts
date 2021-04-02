@@ -24,8 +24,7 @@ export async function runUpdate(
     showDiff: boolean
 ): Promise<void> {
     const remoteWorkflow = Workflow.fromString(remoteContent);
-    if (!remoteWorkflow.commentLines)
-        remoteWorkflow.commentLines = workflowItem.getCommentLines();
+    remoteWorkflow.commentLines = workflowItem.getCommentLines();
     if (!localContent) {
         console.log(chalk.green("  ✓  created"));
         await workflowItem.setLocal(remoteContent);

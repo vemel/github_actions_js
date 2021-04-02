@@ -1,12 +1,16 @@
-# This workflow provided by GitHubActions.js project
-# Documentation: https://github.com/vemel/github_actions_js
+# This workflow provided by GitHub Actions for Node.js projects
 #
-# --- How to modify this workflow and still get updates ---
-# - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
-# - User-added steps survive update as well
-# - Deleted steps are restored on update, so make them empty instead of removing
-# - Do not add multiple jobs, only one job is supported
-# - This comment is user-editable and is not updated automatically
+# - Starts on Release published
+# - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+# - Creates a Release Pull Request from Release target branch with `release` label
+# - If the release is not a prerelease, cleans up `Unreleased` section in `CHANGELOG.md`
+# - Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
+# - Release Pull Request uses branch `release/<version>`
+# - Signs commits if `GPG_PRIVATE_KEY` secret is set
+#
+# Secrets:
+#   GPG_PRIVATE_KEY - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+#   GPG_PRIVATE_KEY_PASSPHRASE - Passphrase for GPG private key
 
 name: Create Release Pull Request
 "on":
