@@ -83,7 +83,7 @@ jobs:
       - name: Get Unreleased notes
         id: unreleased
         if: steps.pull-request.outputs.result
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           github-actions-comment: Get Unreleased section of CHANGELOG.md to set as notes of a newly created Release draft
@@ -135,7 +135,7 @@ jobs:
       - name: Build Release notes
         id: notes
         if: steps.pull-request.outputs.result
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           github-actions-comment: Merge Pull Request notes to Release notes and add link to this PR
@@ -145,7 +145,7 @@ jobs:
       - name: Get suggested version
         id: version
         if: steps.pull-request.outputs.result
-        uses: vemel/nextversion@main
+        uses: vemel/nextversion@0.1.1
         with:
           github-actions-managed: true
           github-actions-comment: Release draft will be an RC, use 'stable' instead if needed

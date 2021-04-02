@@ -71,7 +71,7 @@ jobs:
           ref: ${{ steps.release.outputs.target }}
       - name: Update version
         id: version
-        uses: vemel/nextversion@main
+        uses: vemel/nextversion@0.1.1
         with:
           github-actions-managed: true
           github-actions-comment: Change path here if version is stored in another file
@@ -83,7 +83,7 @@ jobs:
             ./pyproject.toml
       - name: Add new release to CHANGELOG.md
         id: changelog
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           release: ${{ steps.version.outputs.result }}
@@ -92,7 +92,7 @@ jobs:
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
         if: ${{ ! steps.version.outputs.is-prerelease }}
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           release: Unreleased

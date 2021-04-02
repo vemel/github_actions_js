@@ -27,7 +27,7 @@ jobs:
           github-actions-managed: true
       - name: Get Unreleased notes
         id: unreleased
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           github-actions-comment: Get Unreleased section of CHANGELOG.md to set as a body of a newly created release draft
@@ -78,13 +78,13 @@ jobs:
             core.setOutput('body', unreleased);
       - name: Analyze Release notes
         id: notes
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           set: ${{ steps.release.outputs.body }}
       - name: Get suggested version
         id: version
-        uses: vemel/nextversion@main
+        uses: vemel/nextversion@0.1.1
         with:
           github-actions-managed: true
           github-actions-comment: Bump version from package.json according to release notes

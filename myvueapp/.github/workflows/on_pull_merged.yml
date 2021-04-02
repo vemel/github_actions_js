@@ -1,4 +1,4 @@
-# This workflow provided by GitHubActions.py project
+# This workflow provided by GitHubActions.js project
 # Documentation: https://github.com/vemel/github_actions_js
 #
 # --- How to modify this workflow and still get updates ---
@@ -10,9 +10,6 @@
 
 name: Update Release from Pull Request
 "on":
-  pull_request:
-    types:
-      - closed
   workflow_dispatch:
     inputs:
       number:
@@ -22,7 +19,7 @@ jobs:
   update-release-draft:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Pull Request
+      name: Get Pull Request
         uses: actions/github-script@v3
         id: pull-request
         with:
@@ -150,7 +147,7 @@ jobs:
           github-actions-managed: true
           github-actions-comment: Release draft will be an RC, use 'stable' instead if needed
           path: ./package.json
-          type: pep440
+          type: semver
           release: rc
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft

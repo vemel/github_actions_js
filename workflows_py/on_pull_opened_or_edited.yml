@@ -51,8 +51,7 @@ jobs:
             }
 
             if (!pullRequest) {
-              core.error(`Cannot find Pull Request`);
-              return;
+              throw new Error(`Cannot find Pull Request`);
             }
 
             core.setOutput('branch', pullRequest.head.ref);
@@ -62,8 +61,7 @@ jobs:
             return true;
       - name: Analyze PR notes
         id: notes
-        if: steps.pull-request.outputs.result
-        uses: vemel/nextchange@main
+        uses: vemel/nextchange@0.1.0
         with:
           github-actions-managed: true
           github-actions-comment: Create Release notes from Pull Request notes in output
@@ -71,7 +69,6 @@ jobs:
       - name: Update Pull Request labels
         id: update-labels
         uses: actions/github-script@v3
-        if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           script: |
