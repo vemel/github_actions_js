@@ -57,7 +57,7 @@ workflows:
     url: ./on_release_pull_merged.yml
     secrets:
       - name: PYPI_PASSWORD
-        escription: Password for `__token__` username for https://pypi.org/
+        description: Password for `__token__` username for https://pypi.org/
     description: |
       - Runs only if `PYPI_PASSWORD` secret is set
       - Starts on Pull Request merge for `release/*` branch

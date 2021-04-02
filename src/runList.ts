@@ -14,13 +14,25 @@ export function runList(workflow: WorkflowResource): void {
     if (workflow.description) {
         console.log("");
         workflow.description
+            .trim()
             .split(/\r?\n/)
             .filter(line => line.trim())
             .forEach(line => {
                 console.log(`  ${line}`);
             });
-        console.log("");
     }
+    if (workflow.data.secrets) {
+        console.log("\n  Secrets:");
+        workflow.data.secrets.forEach(secret => {
+            if (secret.description) {
+                return console.log(
+                    `    ${chalk.blue(secret.name)} - ${secret.description}`
+                );
+            }
+            console.log(`    ${chalk.blue(secret.name)}`);
+        });
+    }
+    console.log("");
 }
 
 export function runListAll(workflows: Array<WorkflowResource>): void {

@@ -58,7 +58,7 @@ workflows:
     url: ./on_release_pull_merged.yml
     secrets:
       - name: NPM_TOKEN
-        escription: Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
+        description: Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
     description: |
       - Runs only if `NPM_TOKEN` secret is set
       - Starts on Pull Request merge for `release/*` branch
