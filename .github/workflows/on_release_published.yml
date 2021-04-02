@@ -33,8 +33,8 @@ jobs:
         uses: actions/github-script@v3
         id: release
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             let release = null;
             if (context.payload.inputs && context.payload.inputs.tag) {
               const tagName = context.payload.inputs.tag;
@@ -71,17 +71,16 @@ jobs:
         id: checkout
         uses: actions/checkout@v2
         with:
-          github-actions-managed: true
           ref: ${{ steps.release.outputs.target }}
+          github-actions-managed: true
       - name: Get new version
         id: version
         uses: vemel/nextversion@0.1.1
         with:
-          github-actions-managed: true
-          github-actions-comment: Add paths where version needs to be updated to 'update'
           path: ./package.json
           type: semver
           result: ${{ steps.release.outputs.tag }}
+          github-actions-managed: true
       - name: Set version
         id: set-version
         run: |
@@ -92,18 +91,18 @@ jobs:
         id: changelog
         uses: vemel/nextchange@0.1.0
         with:
-          github-actions-managed: true
           release: ${{ steps.version.outputs.result }}
           clear: true
           set: ${{ steps.release.outputs.body }}
+          github-actions-managed: true
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
         if: ${{ steps.version.outputs.is-prerelease == "false" }}
         uses: vemel/nextchange@0.1.0
         with:
-          github-actions-managed: true
           release: Unreleased
           clear: true
+          github-actions-managed: true
       - name: Setup git credentials
         id: setup-git
         run: |
@@ -115,11 +114,11 @@ jobs:
         if: env.GPG_PRIVATE_KEY
         uses: crazy-max/ghaction-import-gpg@v3
         with:
-          github-actions-managed: true
           gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
           passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
           git-user-signingkey: true
           git-commit-gpgsign: true
+          github-actions-managed: true
       - name: Commit changes
         id: commit
         run: |
@@ -133,8 +132,8 @@ jobs:
         id: create-pull-request
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             const response = await github.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -143,8 +142,10 @@ jobs:
               title: "Release ${{ steps.version.outputs.result }}",
               body: ${{ toJSON(steps.changelog.outputs.result) }}
             });
+
             const pullRequestNumber = response.data.number;
             core.info(`Release Pull Request labels: ${pullRequestNumber}`);
+
             const labels = ['release', ${{ toJSON(steps.changelog.outputs.label) }}];
             core.info(`Labels: ${labels}`);
             await github.issues.setLabels({
@@ -153,5 +154,6 @@ jobs:
               issue_number: pullRequestNumber,
               labels: labels
             });
+
             core.info(`Release Pull Request title: ${response.data.title}`);
             core.info(`Release Pull Request URL: ${response.data.html_url}`);

@@ -35,8 +35,8 @@ jobs:
         id: scripts
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
 
@@ -64,18 +64,18 @@ jobs:
         id: cache
         if: steps.scripts.outputs.result
         with:
-          github-actions-managed: true
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
+          github-actions-managed: true
       - name: Set up Node
         id: setup-node
         uses: actions/setup-node@v2
         with:
-          github-actions-managed: true
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
+          github-actions-managed: true
       - name: Install package
         id: install
         if: steps.scripts.outputs.result

@@ -27,8 +27,8 @@ jobs:
         uses: actions/github-script@v3
         id: pull-request
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             let pullRequest = null;
             if (context.payload.inputs && context.payload.inputs.number) {
               const number = context.payload.inputs.number;
@@ -61,15 +61,14 @@ jobs:
         id: notes
         uses: vemel/nextchange@0.1.0
         with:
-          github-actions-managed: true
-          github-actions-comment: Create Release notes from Pull Request notes in output
           set: ${{ steps.pull-request.outputs.body }}
+          github-actions-managed: true
       - name: Update Pull Request labels
         id: update-labels
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             // get suggested patch, minor or major label from pull request notes
             const number = ${{ steps.pull-request.outputs.number }};
             const branch = ${{ toJSON(steps.pull-request.outputs.branch) }};

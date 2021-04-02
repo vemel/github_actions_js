@@ -8,7 +8,7 @@
 # - Publishes new version to [npm](https://www.npmjs.com/)
 #
 # Secrets:
-#   NPM_TOKEN
+#   NPM_TOKEN - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
 
 name: Publish to NPM
 "on":
@@ -32,8 +32,8 @@ jobs:
         if: env.NPM_TOKEN
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             let pullRequest = null;
             if (context.payload.inputs && context.payload.inputs.number) {
               // find Pull Request by number fom input
@@ -83,15 +83,15 @@ jobs:
         if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
-          github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
+          github-actions-managed: true
       - name: Get available scripts
         id: scripts
         if: steps.pull-request.outputs.result
         uses: actions/github-script@v3
         with:
-          github-actions-managed: true
           script: |
+            // github-actions-managed: true
             const { promisify } = require('util');
             const exec = promisify(require('child_process').exec);
 
@@ -109,9 +109,9 @@ jobs:
         id: setup-node
         if: steps.pull-request.outputs.result
         with:
-          github-actions-managed: true
           registry-url: https://registry.npmjs.org/
           node-version: 14
+          github-actions-managed: true
       - name: Install package
         id: install
         if: steps.pull-request.outputs.result
