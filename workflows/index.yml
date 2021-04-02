@@ -1,5 +1,5 @@
 name: GitHub Actions for Node.js projects
-url: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 workflows:
   - name: on_push_check
     title: Run style checks and unit tests

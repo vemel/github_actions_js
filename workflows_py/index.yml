@@ -1,5 +1,5 @@
 name: GitHub Actions for Python projects
-url: https://github.com/vemel/github_actions_js/blob/main/workflows_py/README.md
+documentation: https://github.com/vemel/github_actions_js/blob/main/workflows_py/README.md
 workflows:
   - name: on_push_check
     title: Run style checks and unit tests
