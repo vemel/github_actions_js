@@ -18,6 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Handle invalid user YAML in workflow
 
+## [0.6.0-rc.1]
+### Added
+- Interactive run when no `--names` are specified
+- Index can be selected with a short id: `-i node`, `-i python`
+- Index `documentation` field that contains a documentation URL
+- Index `workflows.[].secrets` field with a list of secrets used in workflow
+
+### Changed
+- `--names existing` replaced with `--names installed`
+- Workflow comment is populated from description in index
+
+### Fixed
+- Handle invalid user YAML in workflow
+
 ## [0.5.0]
 ### Added
 - `--path` CLI argument to specify local path to workflows
