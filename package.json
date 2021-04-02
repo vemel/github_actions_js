@@ -10,6 +10,7 @@
     "dev": "ts-node src/index.ts",
     "test": "jest",
     "test-cov": "jest --coverage",
+    "workflows": "ts-node ./validator.ts",
     "lint": "eslint src/**/*.ts --cache",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
