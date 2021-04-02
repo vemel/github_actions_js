@@ -37,22 +37,33 @@ workflows:
   - name: on_release_published
     title: Create Release Pull Request
     url: ./on_release_published.yml
+    secrets:
+      - name: GPG_PRIVATE_KEY
+        description: Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+      - name: GPG_PRIVATE_KEY_PASSPHRASE
+        description: Passphrase for GPG private key
     description: |
       - Starts on Release published
       - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
       - Creates a Release Pull Request from Release target branch with `release` label
+      - If the release is not a prerelease, cleans up `Unreleased` section in `CHANGELOG.md`
       - Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
       - Release Pull Request uses branch `release/<version>`
+      - Signs commits if `GPG_PRIVATE_KEY` secret is set
 
   - name: on_release_pull_merged
     title: Publish to PyPI
     url: ./on_release_pull_merged.yml
+    secrets:
+      - name: PYPI_PASSWORD
+        escription: Password for `__token__` username for https://pypi.org/
     description: |
+      - Runs only if `PYPI_PASSWORD` secret is set
       - Starts on Pull Request merge for `release/*` branch
       - Uses Pull Request branch for deployment, so released version contains only changes
         from base branch when Release had been published
       - Builds package if `build` script is available in `package.json`
-      - Publishes new version to [PyPI](https://pypi.org/) if `PYPI_PASSWORD`
+      - Publishes new version to [PyPI](https://pypi.org/)
 
   - name: on_demand_create_release_draft
     title: Create Release draft

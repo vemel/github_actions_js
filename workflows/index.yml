@@ -8,9 +8,11 @@ workflows:
         description: Token for https://codecov.io/ coverage report
     description: |
       - Starts on push to any branch
+      - Uses `npm` cache to improve performance
       - Runs linting if `lint` script is available in `npm run`
       - Runs unit tests if `test` script is available in `npm run`
-      - Uses `npm` cache to improve performance
+      - Runs `test-cov` script if it is available in `npm run`
+      - Sends test coverage report to https://codecov.io/ if `CODECOV_TOKEN` secret is set
 
   - name: on_pull_opened_or_edited
     title: Update Pull Request labels
@@ -40,13 +42,15 @@ workflows:
       - name: GPG_PRIVATE_KEY
         description: Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
       - name: GPG_PRIVATE_KEY_PASSPHRASE
-        description: Passphrase for GPG key
+        description: Passphrase for GPG private key
     description: |
       - Starts on Release published
       - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
       - Creates a Release Pull Request from Release target branch with `release` label
+      - If the release is not a prerelease, cleans up `Unreleased` section in `CHANGELOG.md`
       - Release Pull Request contains only version bump in `package.json` and updated `CHANGELOG.md`
       - Release Pull Request uses branch `release/<version>`
+      - Signs commits if `GPG_PRIVATE_KEY` secret is set
 
   - name: on_release_pull_merged
     title: Publish to NPM
@@ -55,11 +59,12 @@ workflows:
       - name: NPM_TOKEN
         escription: Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
     description: |
+      - Runs only if `NPM_TOKEN` secret is set
       - Starts on Pull Request merge for `release/*` branch
       - Uses Pull Request branch for deployment, so released version contains only changes
         from base branch when Release had been published
       - Builds package if `build` script is available in `package.json`
-      - Publishes new version to [npm](https://www.npmjs.com/) if `NPM_TOKEN` secret is set
+      - Publishes new version to [npm](https://www.npmjs.com/)
 
   - name: on_demand_create_release_draft
     title: Create Release draft
