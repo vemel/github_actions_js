@@ -19,6 +19,7 @@ function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
 }
 
 export function runCheck(
+    workflowItem: WorkflowResource,
     localContent: string,
     remoteContent: string,
     forceUpdate: boolean,
@@ -32,6 +33,9 @@ export function runCheck(
         return "error";
     }
     const remoteWorkflow = Workflow.fromString(remoteContent);
+    if (!remoteWorkflow.commentLines)
+        remoteWorkflow.commentLines = workflowItem.getCommentLines();
+
     const checker = new Checker(forceUpdate, localWorkflow);
 
     const errors = checker.getErrors();
@@ -73,7 +77,13 @@ export async function runCheckAll(
             return "hasupdates";
         }
 
-        return runCheck(localContent, remoteContent, forceUpdate, showDiff);
+        return runCheck(
+            item,
+            localContent,
+            remoteContent,
+            forceUpdate,
+            showDiff
+        );
     });
     return Promise.all(results).then(
         results => results.filter(x => x === "error").length === 0

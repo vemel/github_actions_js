@@ -6,25 +6,39 @@ import { promisify } from "util";
 
 import { UTF8 } from "../constants";
 import { getTempDir } from "../utils";
+import { IWorkflowIndex } from "./workflowIndex";
+
+interface ISecret {
+    name: string;
+    description?: string;
+}
 
 export interface IWorkflow {
     name: string;
     url: string;
     title: string;
     description?: string;
+    secrets?: Array<ISecret>;
 }
 
 export class WorkflowResource {
     data: IWorkflow;
     path: string;
     url: string;
+    indexData: IWorkflowIndex;
     private _local?: string | null;
     private _remote?: string | null;
 
-    constructor(data: IWorkflow, workflowsPath: string, url: string) {
+    constructor(
+        data: IWorkflow,
+        workflowsPath: string,
+        url: string,
+        indexData: IWorkflowIndex
+    ) {
         this.data = data;
         this.path = path.join(workflowsPath, this.fileName);
         this.url = url;
+        this.indexData = indexData;
     }
 
     get name(): string {
@@ -94,6 +108,30 @@ export class WorkflowResource {
         }
         await promisify(fs.rmdir)(tempPath, { recursive: true });
         this._remote = result;
+        return result;
+    }
+
+    getCommentLines(): Array<string> {
+        const result: Array<string> = [];
+        result.push(`This workflow provided by ${this.indexData.name}`);
+        if (this.indexData.documentation) {
+            result.push(`Documentation: ${this.indexData.documentation}`);
+        }
+        if (this.data.description) {
+            result.push("");
+            result.push(...this.data.description.split(/\r?\n/));
+        }
+        if (this.data.secrets) {
+            result.push("");
+            result.push("Secrets:");
+            result.push(
+                ...this.data.secrets.map(secret => {
+                    if (secret.description)
+                        return `  ${secret.name} - ${secret.description}`;
+                    return `  ${secret.name}`;
+                })
+            );
+        }
         return result;
     }
 }

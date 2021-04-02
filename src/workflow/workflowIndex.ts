@@ -10,6 +10,7 @@ import { IWorkflow, WorkflowResource } from "./resource";
 
 export interface IWorkflowIndex {
     name: string;
+    documentation?: string;
     workflows: Array<IWorkflow>;
 }
 
@@ -30,7 +31,8 @@ export class WorkflowIndex {
                 new WorkflowResource(
                     data,
                     this.workflowsPath,
-                    this.getURL(data.url)
+                    this.getURL(data.url),
+                    this.data
                 )
         );
     }

@@ -24,6 +24,7 @@ async function logChecks(
         console.log(workflow.getTitle());
         return (
             runCheck(
+                workflow,
                 (await workflow.getLocal()) || "",
                 (await workflow.getRemote()) || "",
                 args.force,
@@ -53,7 +54,7 @@ async function getWorkflowResources(
     if (!result.length) return result;
     if (!(await confirmApply())) {
         console.log("");
-        console.log("Okay, makes sense. Start me again any time. Bye for now!");
+        console.log("Okay, let's keep things as they are");
         return [];
     }
 
