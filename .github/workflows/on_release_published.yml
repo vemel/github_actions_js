@@ -98,7 +98,7 @@ jobs:
           github-actions-managed: true
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
-        if: ${{ steps.version.outputs.is-prerelease == "false" }}
+        if: ${{ steps.version.outputs.is-prerelease == 'false' }}
         uses: vemel/nextchange@0.1.0
         with:
           release: Unreleased
