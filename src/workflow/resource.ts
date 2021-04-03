@@ -6,6 +6,7 @@ import { promisify } from "util";
 
 import { UTF8 } from "../constants";
 import { getTempDir } from "../utils";
+import { Workflow } from "./workflow";
 import { IWorkflowIndex } from "./workflowIndex";
 
 export interface ISecret {
@@ -26,8 +27,8 @@ export class WorkflowResource {
     path: string;
     url: string;
     indexData: IWorkflowIndex;
-    private _local?: string | null;
-    private _remote?: string | null;
+    private _local: Workflow | null = null;
+    private _remote: Workflow | null = null;
 
     constructor(
         data: IWorkflow,
@@ -67,23 +68,18 @@ export class WorkflowResource {
         return fs.existsSync(this.path);
     }
 
-    async getLocal(): Promise<string | null> {
-        if (this._local !== undefined) return this._local;
-        let result: string | null;
-        try {
-            result = await promisify(fs.readFile)(this.path, {
-                encoding: UTF8
-            });
-            this._local = result;
-        } catch {
-            result = null;
-        }
-        this._local = result;
-        return result;
+    async getLocal(): Promise<Workflow> {
+        if (this._local) return this._local;
+        if (!this.existsLocally()) null;
+        const result = await promisify(fs.readFile)(this.path, {
+            encoding: UTF8
+        });
+        this._local = Workflow.fromString(result);
+        return this._local;
     }
 
     async setLocal(data: string): Promise<void> {
-        return await promisify(fs.writeFile)(this.path, data, {
+        return promisify(fs.writeFile)(this.path, data, {
             encoding: UTF8
         });
     }
@@ -93,22 +89,19 @@ export class WorkflowResource {
         this._remote = null;
     }
 
-    async getRemote(): Promise<string | null> {
-        if (this._remote !== undefined) return this._remote;
-        let result: string | null;
+    async getRemote(): Promise<Workflow> {
+        if (this._remote) return this._remote;
         const tempPath = getTempDir();
         const downloadPath = path.join(tempPath, this.fileName);
-        try {
-            await download(this.url, tempPath, { filename: this.fileName });
-            result = await promisify(fs.readFile)(downloadPath, {
-                encoding: UTF8
-            });
-        } catch {
-            result = null;
-        }
+        await download(this.url, tempPath, { filename: this.fileName });
+        const result = await promisify(fs.readFile)(downloadPath, {
+            encoding: UTF8
+        });
         await promisify(fs.rmdir)(tempPath, { recursive: true });
-        this._remote = result;
-        return result;
+        this._remote = Workflow.fromString(result);
+        this._remote.commentLines = this.getCommentLines();
+        this._remote.job.steps.map(step => step.makeManaged());
+        return this._remote;
     }
 
     getCommentLines(): Array<string> {

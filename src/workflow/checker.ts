@@ -14,6 +14,9 @@ export class Checker {
     }
 
     getChecks(update: Workflow): Array<Check> {
+        const errors = this.getErrors();
+        if (errors.length) return errors;
+
         return [
             ...this.getWorkflowChecks(update),
             ...this.getJobChecks(update),
@@ -32,8 +35,8 @@ export class Checker {
         return result;
     }
 
-    getErrors(): Array<string> {
-        return [...this.getStepErrors()];
+    getErrors(): Array<Check> {
+        return this.getStepErrors().map(error => new Check(error, "error"));
     }
 
     static getAction(oldValue: unknown, newValue: unknown): TAction {
@@ -74,7 +77,7 @@ export class Checker {
                 update.name
             ),
             new Check(
-                "triggers",
+                "trigger",
                 Checker.getAction(this.current.triggers, update.triggers),
                 true,
                 this.current.triggers,

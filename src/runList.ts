@@ -12,7 +12,6 @@ export function runList(workflow: WorkflowResource): void {
         )}) ${chalk.grey(state)} ${chalk.bold(workflow.path)}`
     );
     if (workflow.description) {
-        console.log("");
         workflow.description
             .trim()
             .split(/\r?\n/)

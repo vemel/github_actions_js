@@ -9,7 +9,12 @@ import { runCheckAll } from "./runCheck";
 import { runInteractive } from "./runInteractive";
 import { runListAll } from "./runList";
 import { runUpdateAll } from "./runUpdate";
-import { decapitalize, getCommandName, getVersionString } from "./utils";
+import {
+    decapitalize,
+    getCommandArgs,
+    getCommandName,
+    getVersionString
+} from "./utils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
@@ -102,7 +107,7 @@ async function main(): Promise<void> {
             console.log(
                 chalk.green(
                     `✓  Run ${chalk.bold(
-                        `${commandName} all`
+                        `${commandName} ${getCommandArgs()} --update`
                     )} any time you want!`
                 )
             );

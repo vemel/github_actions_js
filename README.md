@@ -186,4 +186,6 @@ And if there are remote changes other than steps that we want to apply, we can u
 - [x] Add `--path` argument to allow running not for a repository root
 - [x] Smart diff
 - [x] Interactive CLI
-- [ ] External `scripts` support
+- [x] Generator for index READMEs
+- [ ] Add `--clean` CLI flag to remove `github-actions-managed` flags
+- [ ] Interactive updates selection

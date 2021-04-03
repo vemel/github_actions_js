@@ -10,55 +10,55 @@ import {
     createWorkflowsDir,
     selectWorkflows
 } from "./inquire";
-import { runCheck } from "./runCheck";
+import { getCheckResult, logCheck, runCheck } from "./runCheck";
 import { runList } from "./runList";
-import { runUpdateAll } from "./runUpdate";
+import { logUpdate, runUpdate } from "./runUpdate";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-async function logChecks(
-    workflow: WorkflowResource,
-    args: Namespace
-): Promise<boolean> {
-    if (workflow.existsLocally()) {
-        console.log(workflow.getTitle());
-        return (
-            runCheck(
-                workflow,
-                (await workflow.getLocal()) || "",
-                (await workflow.getRemote()) || "",
-                args.force,
-                args.diff
-            ) === "hasupdates"
-        );
-    }
-    runList(workflow);
-    return true;
-}
-
-async function getWorkflowResources(
+async function updateWorkflows(
     workflowIndex: WorkflowIndex,
     args: Namespace
-): Promise<Array<WorkflowResource>> {
-    let workflows: Array<WorkflowResource> = [];
-    while (!workflows.length) {
-        workflows = await selectWorkflows(workflowIndex);
+): Promise<void> {
+    let resources: Array<WorkflowResource> = [];
+    while (!resources.length) {
+        resources = await selectWorkflows(workflowIndex);
     }
+    const checkLists = await Promise.all(
+        resources.map(workflow => runCheck(workflow, args.force))
+    );
+    const changedResources: Array<WorkflowResource> = [];
+    resources.forEach((resource, index) => {
+        const checks = checkLists[index];
+        const updateChecks = checks.filter(check =>
+            check.isApplied(args.force)
+        );
+        if (updateChecks.length) changedResources.push(resource);
+        if (resource.existsLocally()) {
+            console.log(resource.getTitle());
+            checks.forEach(check => logCheck(check, args.force, args.diff));
+            logCheck(getCheckResult(resource, checks, args.force));
+        } else {
+            runList(resource);
+        }
+    });
 
-    const result: Array<WorkflowResource> = [];
-    console.log("");
-    for (const workflow of workflows) {
-        const hasChanges = await logChecks(workflow, args);
-        if (hasChanges) result.push(workflow);
-    }
-    if (!result.length) return result;
+    if (!changedResources.length) return;
     if (!(await confirmApply())) {
         console.log("");
-        console.log("Okay, let's keep things as they are");
-        return [];
+        console.log("Okay, let's keep things as they are...");
+        return;
     }
 
-    return result;
+    await Promise.all(
+        changedResources.map(resource => runUpdate(resource, args.force))
+    );
+
+    resources.map((resource, index) => {
+        console.log(resource.getTitle());
+        const checks = checkLists[index];
+        logUpdate(getCheckResult(resource, checks, args.force));
+    });
 }
 
 async function checkLocalPath(localPath: string): Promise<boolean> {
@@ -114,16 +114,8 @@ export async function runInteractive(args: Namespace): Promise<void> {
         args.ref,
         localPath
     );
-    // await Promise.all([
-    //     ...workflowIndex
-    //         .getInstalledWorkflows()
-    //         .map(worklfow => worklfow.getLocal()),
-    //     ...workflowIndex
-    //         .getInstalledWorkflows()
-    //         .map(worklfow => worklfow.getRemote())
-    // ]);
-    const workflows = await getWorkflowResources(workflowIndex, args);
-    await runUpdateAll(workflows, args.force, args.diff);
+    await updateWorkflows(workflowIndex, args);
+
     console.log("");
     console.log(
         "My job here is done! Start me from time to time. Bye for now!"

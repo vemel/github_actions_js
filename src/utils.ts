@@ -1,7 +1,7 @@
 import fs from "fs";
+import yaml from "js-yaml";
 import os from "os";
 import path from "path";
-import yaml from "js-yaml";
 
 import { UTF8 } from "./constants";
 
@@ -21,6 +21,10 @@ export function joinURL(base: string, newPath: string): string {
 
 export function getCommandName(): string {
     return (process.argv[1] && process.argv[1].split("/").pop()) || "ghactions";
+}
+
+export function getCommandArgs(): string {
+    return process.argv.slice(2).join(" ");
 }
 
 export function getVersionString(): string {

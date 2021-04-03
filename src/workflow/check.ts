@@ -2,7 +2,14 @@ import chalk from "chalk";
 
 import { yamlDump } from "./../utils";
 
-export type TAction = "updated" | "deleted" | "added" | "equal" | "kept";
+export type TAction =
+    | "up to date"
+    | "updated"
+    | "deleted"
+    | "added"
+    | "equal"
+    | "kept"
+    | "error";
 
 export class Check {
     action: TAction;
@@ -42,20 +49,26 @@ export class Check {
             {
                 added: chalk.green,
                 updated: chalk.blue,
+                error: chalk.red,
                 deleted: chalk.yellow
             }[this.action] || chalk.grey
         );
     }
 
-    get messagePostfix(): string {
-        if (this.action === "kept") return ", because it is not managed";
-        return "";
+    private getcheckMessage(verb: string): string {
+        const prefix = `${this.icon}  ${chalk.bold(this.item)}`;
+        if (this.action === "up to date") return `${prefix} is up to date`;
+        if (this.action === "error") return `${prefix}`;
+
+        verb = verb ? `${verb} ` : "";
+        const message = `${prefix} ${verb}${chalk.bold(this.action)}`;
+        if (this.action === "kept")
+            return `${message}, because it is no longer managed`;
+        return message;
     }
 
     get checkMessage(): string {
-        return `${this.icon}  ${chalk.bold(this.item)} will be ${chalk.bold(
-            this.action
-        )}${this.messagePostfix}`;
+        return this.getcheckMessage("will be");
     }
 
     get noForceMessage(): string {
@@ -65,23 +78,26 @@ export class Check {
     }
 
     get updateMessage(): string {
-        return `${this.icon}  ${chalk.bold(this.item)} ${this.action}${
-            this.messagePostfix
-        }`;
+        return this.getcheckMessage("");
     }
 
     get icon(): string {
-        return {
-            equal: "✓",
-            kept: "✓",
-            updated: "↻",
-            deleted: "✖",
-            added: "✎"
-        }[this.action];
+        return (
+            {
+                updated: "↻",
+                deleted: "✖",
+                error: "✗",
+                added: "✎"
+            }[this.action] || "✓"
+        );
     }
     isApplied(force: boolean): boolean {
+        if (this.isError()) return false;
         if (!force && this.force) return false;
         if (this.action == "equal" || this.action == "kept") return false;
         return true;
+    }
+    isError(): boolean {
+        return this.action === "error";
     }
 }

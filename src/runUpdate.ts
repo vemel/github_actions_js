@@ -1,13 +1,16 @@
 import chalk from "chalk";
 
 import { logDiff } from "./differ";
+import { getCheckResult, runCheck } from "./runCheck";
 import { Check } from "./workflow/check";
-import { Checker } from "./workflow/checker";
 import { Merger } from "./workflow/merger";
 import { WorkflowResource } from "./workflow/resource";
-import { Workflow } from "./workflow/workflow";
 
-function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
+export function logUpdate(
+    check: Check,
+    forceUpdate = false,
+    showDiff = false
+): void {
     if (check.action === "equal") return;
     if (!forceUpdate && check.force) {
         return console.log(chalk.grey(`  ${check.noForceMessage}`));
@@ -18,74 +21,48 @@ function logCheck(check: Check, forceUpdate: boolean, showDiff: boolean) {
 
 export async function runUpdate(
     workflowItem: WorkflowResource,
-    localContent: string | null,
-    remoteContent: string,
-    forceUpdate: boolean,
-    showDiff: boolean
+    forceUpdate: boolean
 ): Promise<void> {
-    const remoteWorkflow = Workflow.fromString(remoteContent);
-    remoteWorkflow.commentLines = workflowItem.getCommentLines();
-    if (!localContent) {
-        console.log(chalk.green("  ✓  created"));
-        await workflowItem.setLocal(remoteContent);
+    const remoteWorkflow = await workflowItem.getRemote();
+    if (!workflowItem.existsLocally()) {
+        await workflowItem.setLocal(remoteWorkflow.render());
         return;
     }
 
-    let localWorkflow: Workflow;
-    try {
-        localWorkflow = Workflow.fromString(localContent);
-    } catch (e) {
-        console.log(chalk.red(`  ✗  ${e}`));
-        return;
-    }
-    const checker = new Checker(forceUpdate, localWorkflow);
-
-    const errors = checker.getErrors();
-    if (errors.length) {
-        errors.forEach(error => console.log(chalk.red(`  ✗  ${error}`)));
-        console.log(
-            chalk.red(`  ✗  has ${chalk.bold("errors")} that prevent update`)
-        );
-        return;
-    }
-    let newWorkflow = new Merger(true).merge(localWorkflow, remoteWorkflow);
-    const checks = checker.getChecks(newWorkflow);
-    const applyChecks = checks.filter(check => check.isApplied(forceUpdate));
-    checks.forEach(check => logCheck(check, forceUpdate, showDiff));
-    if (!applyChecks.length) {
-        console.log(chalk.grey("  ✓  is up to date"));
-        return;
-    }
-    console.log(chalk.green("  ✓  updated successfully"));
-    if (!forceUpdate)
-        newWorkflow = new Merger(forceUpdate).merge(
-            localWorkflow,
-            remoteWorkflow
-        );
-
+    const localWorkflow = await workflowItem.getLocal();
+    const newWorkflow = new Merger(forceUpdate).merge(
+        localWorkflow,
+        remoteWorkflow
+    );
     await workflowItem.setLocal(newWorkflow.render());
 }
 
 export async function runUpdateAll(
-    items: Array<WorkflowResource>,
+    resources: Array<WorkflowResource>,
     forceUpdate: boolean,
     showDiff: boolean
 ): Promise<void> {
-    const results: Array<Promise<void>> = items.map(async item => {
-        const remoteContent = await item.getRemote();
-        const localContent = await item.getLocal();
-        console.log(item.getTitle());
-        if (!remoteContent) {
-            console.log(chalk.red(`  ✗  download failed: ${item.url}`));
-            return;
-        }
-        await runUpdate(
-            item,
-            localContent,
-            remoteContent,
-            forceUpdate,
-            showDiff
-        );
+    const checkLists = await Promise.all(
+        resources.map(resource => runCheck(resource, forceUpdate))
+    );
+
+    resources.forEach((resource, index) => {
+        console.log(resource.getTitle());
+        const checks = checkLists[index];
+        checks.forEach(check => logUpdate(check, forceUpdate, showDiff));
+        logUpdate(getCheckResult(resource, checks, forceUpdate), false, false);
     });
-    return Promise.all(results).then(() => undefined);
+
+    const updatedItems = resources.filter((resource, index) => {
+        if (!resource.existsLocally()) return true;
+        const checks = checkLists[index];
+        const applyChecks = checks.filter(check =>
+            check.isApplied(forceUpdate)
+        );
+        return applyChecks.length > 0;
+    });
+    if (updatedItems.length)
+        await Promise.all(
+            updatedItems.map(resource => runUpdate(resource, forceUpdate))
+        );
 }
