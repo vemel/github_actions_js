@@ -79,8 +79,14 @@ export class Step {
             }
             return this;
         }
-        if (!this.data.with) this.data.with = {};
-        this.data.with["github-actions-managed"] = true;
+        if (this.data.with?.["github-actions-managed"]) {
+            this.data.with["github-actions-managed"] = true;
+            return this;
+        }
+        this.data.with = {
+            "github-actions-managed": true,
+            ...(this.data.with || {})
+        };
         return this;
     }
 
