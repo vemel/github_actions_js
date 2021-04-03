@@ -36,7 +36,9 @@ export class Checker {
     }
 
     getErrors(): Array<Check> {
-        return this.getStepErrors().map(error => new Check(error, "error"));
+        return this.getStepErrors().map(
+            error => new Check("error", "error", false, error)
+        );
     }
 
     static getAction(oldValue: unknown, newValue: unknown): TAction {
@@ -44,17 +46,6 @@ export class Checker {
         if (!oldValue) return "added";
         if (!newValue) return "deleted";
         return "updated";
-    }
-
-    static getCheck(
-        item: string,
-        force: boolean,
-        oldValue: unknown,
-        newValue: unknown
-    ): Check | null {
-        const action = Checker.getAction(oldValue, newValue);
-        if (!action) return null;
-        return new Check(item, action, force, oldValue, newValue);
     }
 
     getWorkflowChecks(update: Workflow): Array<Check> {
@@ -127,12 +118,12 @@ export class Checker {
         return [
             ...currentSteps
                 .filter(step => step.findIndex(updateSteps) < 0)
-                .map(step => new Check(`${step.name} step`, "deleted")),
+                .map(step => new Check("step", "deleted", false, step)),
             ...updateSteps.map(step => {
                 const stepIndex = step.findIndex(currentSteps);
                 const localStep = currentSteps[stepIndex] || new Step({});
                 return new Check(
-                    `${step.name} step`,
+                    "step",
                     (() => {
                         if (stepIndex < 0) return "added";
                         if (!step.isManaged()) return "kept";

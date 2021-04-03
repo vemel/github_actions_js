@@ -30,8 +30,8 @@ export class Step {
         return this.data.id || null;
     }
 
-    get name(): string {
-        return this.data.name || this.id || "unnamed";
+    get name(): string | null {
+        return this.data.name || this.id || null;
     }
 
     isManaged(): boolean {

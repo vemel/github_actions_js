@@ -26,7 +26,8 @@ export function getCheckResult(
     forceUpdate: boolean
 ): Check {
     const errorChecks = checks.filter(check => check.isError());
-    if (errorChecks.length) return new Check("cancelled", "error");
+    if (errorChecks.length)
+        return new Check("error", "error", false, "has errors");
 
     if (!resource.existsLocally()) return new Check("workflow", "added");
     const applyChecks = checks.filter(check => check.isApplied(forceUpdate));
@@ -47,7 +48,7 @@ export async function runCheck(
     try {
         remoteWorkflow = await workflowItem.getRemote();
     } catch (e) {
-        return [new Check(`${e}`, "error")];
+        return [new Check("error", "error", false, `${e}`)];
     }
     const checker = new Checker(forceUpdate, localWorkflow);
 

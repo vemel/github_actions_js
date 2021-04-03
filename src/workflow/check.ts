@@ -1,6 +1,19 @@
 import chalk from "chalk";
 
 import { yamlDump } from "./../utils";
+import { Step } from "./step";
+
+type TWorkflowPart =
+    | "error"
+    | "top comment"
+    | "workflow name"
+    | "trigger"
+    | "job environment"
+    | "job runner"
+    | "job strategy"
+    | "job run condition"
+    | "step"
+    | "workflow";
 
 export type TAction =
     | "up to date"
@@ -13,13 +26,13 @@ export type TAction =
 
 export class Check {
     action: TAction;
-    item: string;
+    item: TWorkflowPart;
     force?: boolean;
     private _oldValue: unknown;
     private _newValue: unknown;
 
     constructor(
-        item: string,
+        item: TWorkflowPart,
         action: TAction,
         force = false,
         oldValue: unknown = null,
@@ -55,10 +68,18 @@ export class Check {
         );
     }
 
+    private getTitle(): string {
+        if (this._oldValue instanceof Step && this._oldValue.name)
+            return `step ${this._oldValue.name}`;
+        if (this._newValue instanceof Step && this._newValue.name)
+            return `step ${this._newValue.name}`;
+        return this.item;
+    }
+
     private getcheckMessage(verb: string): string {
-        const prefix = `${this.icon}  ${chalk.bold(this.item)}`;
+        const prefix = `${this.icon}  ${chalk.bold(this.getTitle())}`;
         if (this.action === "up to date") return `${prefix} is up to date`;
-        if (this.action === "error") return `${prefix}`;
+        if (this.action === "error") return `${this.icon}  ${this.oldValue}`;
 
         verb = verb ? `${verb} ` : "";
         const message = `${prefix} ${verb}${chalk.bold(this.action)}`;
