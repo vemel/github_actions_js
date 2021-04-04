@@ -25,6 +25,8 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
     - [CLI arguments](#cli-arguments)
   - [Example](#example)
   - [Version 1.0.0 checklist](#version-100-checklist)
+  - [Versioning](#versioning)
+  - [Latest changes](#latest-changes)
 
 ## Basic usage
 
@@ -190,3 +192,12 @@ And if there are remote changes other than steps that we want to apply, we can u
 - [x] Generator for index READMEs
 - [x] Add `--clean` CLI flag to remove `github-actions-managed` flags
 - [ ] Interactive updates selection
+
+## Versioning
+
+`github-actions` adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Latest changes
+
+Full changelog can be found in [Changelog](./CHANGELOG.md).
+Release notes can be found in [Releases](https://github.com/altitudenetworks/github_actions_js/releases).
