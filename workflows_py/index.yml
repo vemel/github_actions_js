@@ -29,6 +29,10 @@ workflows:
   - name: on_pull_merged
     title: Update Release from Pull Request
     url: ./on_pull_merged.yml
+    env:
+      - name: RELEASE_TYPE
+        description: "Release suggested version: stable, rc, alpha, beta"
+        default: rc
     description: |
       - Starts on Pull Request merge for non-`release/*` branch
       - Creates or updates a Release draft for Pull Request base branch

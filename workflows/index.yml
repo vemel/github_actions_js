@@ -8,6 +8,16 @@ workflows:
     secrets:
       - name: CODECOV_TOKEN
         description: Token for https://codecov.io/ coverage report
+    env:
+      - name: LINT_SCRIPT
+        description: "npm run script to run for code style check if available"
+        default: "lint"
+      - name: TEST_SCRIPT
+        description: "npm run script to run for testing if available"
+        default: "test"
+      - name: TEST_COVERAGE_SCRIPT
+        description: "npm run script to run for test coverage if available"
+        default: "test-cov"
     description: |
       - Starts on push to any branch
       - Uses `npm` cache to improve performance
@@ -30,6 +40,10 @@ workflows:
   - name: on_pull_merged
     title: Update Release from Pull Request
     url: ./on_pull_merged.yml
+    env:
+      - name: RELEASE_TYPE
+        description: "Release suggested version: stable, rc, alpha, beta"
+        default: rc
     description: |
       - Starts on Pull Request merge for non-`release/*` branch
       - Creates or updates a Release draft for Pull Request base branch
