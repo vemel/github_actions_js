@@ -105,6 +105,10 @@ export async function selectWorkflows(
                 type: "checkbox",
                 default: hasInstalled ? ["installed"] : [],
                 message: message,
+                validate: result => {
+                    if (result.length) return true;
+                    return "Select at least one workflow";
+                },
                 pageSize: 30,
                 choices: choices.map(choice => ({
                     name: choice,
@@ -127,4 +131,74 @@ export async function confirmApply(): Promise<boolean> {
             }
         ])
         .then(({ confirm }) => confirm);
+}
+
+type TConfirmResult =
+    | "apply"
+    | "rerun_noforce"
+    | "rerun_force"
+    | "rerun_nodiff"
+    | "rerun_diff"
+    | "discard";
+interface IConfirmChoice {
+    name: string;
+    value: TConfirmResult;
+}
+
+export async function confirmRerunApply(
+    forceUpdate: boolean,
+    showDiff: boolean,
+    hasChanges: boolean
+): Promise<TConfirmResult> {
+    const choices: Array<IConfirmChoice> = [];
+    if (hasChanges) {
+        choices.push({
+            name: `${chalk.green("Apply")} listed changes and exit`,
+            value: "apply"
+        });
+    } else {
+        choices.push({
+            name: `Exit, as everything is ${chalk.green("up to date")}`,
+            value: "apply"
+        });
+    }
+    if (forceUpdate) {
+        choices.push({
+            name: `Run again without ${chalk.blue("--force")} flag`,
+            value: "rerun_noforce"
+        });
+    } else {
+        choices.push({
+            name: `Run again with ${chalk.blue("--force")} flag`,
+            value: "rerun_force"
+        });
+    }
+    if (showDiff) {
+        choices.push({
+            name: `Run again and hide changed lines, disable ${chalk.blue(
+                "--diff"
+            )} flag`,
+            value: "rerun_nodiff"
+        });
+    } else {
+        choices.push({
+            name: `Run again and show changed lines with ${chalk.blue(
+                "--diff"
+            )} flag`,
+            value: "rerun_diff"
+        });
+    }
+    if (hasChanges) {
+        choices.push({ name: "Discard changes and exit", value: "discard" });
+    }
+    return inquirer
+        .prompt([
+            {
+                name: "result",
+                type: "list",
+                message: "What do we do next?",
+                choices: choices
+            }
+        ])
+        .then(({ result }) => result);
 }

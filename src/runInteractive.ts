@@ -6,30 +6,29 @@ import { Namespace } from "./cli";
 import { LOCAL_WORKFLOWS_PATH } from "./constants";
 import {
     chooseIndex,
-    confirmApply,
+    confirmRerunApply,
     createWorkflowsDir,
     selectWorkflows
 } from "./inquire";
 import { getCheckResult, logCheck, runCheck } from "./runCheck";
 import { runList } from "./runList";
 import { logUpdate, runUpdate } from "./runUpdate";
+import { Check } from "./workflow/check";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-async function updateWorkflows(
-    workflowIndex: WorkflowIndex,
+async function logWorkflowChecks(
+    resources: Array<WorkflowResource>,
     args: Namespace
-): Promise<void> {
-    let resources: Array<WorkflowResource> = [];
-    while (!resources.length) {
-        resources = await selectWorkflows(workflowIndex);
-    }
+): Promise<Array<[WorkflowResource, Array<Check>]>> {
     const checkLists = await Promise.all(
         resources.map(workflow => runCheck(workflow, args.force))
     );
     const changedResources: Array<WorkflowResource> = [];
+    const result: Array<[WorkflowResource, Array<Check>]> = [];
     resources.forEach((resource, index) => {
         const checks = checkLists[index];
+        result.push([resource, checks]);
         const updateChecks = checks.filter(check =>
             check.isApplied(args.force)
         );
@@ -42,23 +41,25 @@ async function updateWorkflows(
             runList(resource);
         }
     });
+    return result;
+}
 
-    if (!changedResources.length) return;
-    if (!(await confirmApply())) {
-        console.log("");
-        console.log("Okay, let's keep things as they are...");
-        return;
-    }
-
+async function updateWorkflows(
+    resources: Array<WorkflowResource>,
+    forceUpdate: boolean
+) {
     await Promise.all(
-        changedResources.map(resource => runUpdate(resource, args.force))
+        resources.map(resource => runUpdate(resource, forceUpdate))
     );
+}
 
-    resources.map((resource, index) => {
-        console.log(resource.getTitle());
-        const checks = checkLists[index];
-        logUpdate(getCheckResult(resource, checks, args.force));
-    });
+function logWorkflowUpdates(
+    resource: WorkflowResource,
+    checks: Array<Check>,
+    forceUpdate: boolean
+) {
+    console.log(resource.getTitle());
+    logUpdate(getCheckResult(resource, checks, forceUpdate));
 }
 
 async function checkLocalPath(localPath: string): Promise<boolean> {
@@ -114,7 +115,38 @@ export async function runInteractive(args: Namespace): Promise<void> {
         args.ref,
         localPath
     );
-    await updateWorkflows(workflowIndex, args);
+    const resources = await selectWorkflows(workflowIndex);
+    while (true) {
+        const resourceCheckLists = await logWorkflowChecks(resources, args);
+        const changedResourceChecks = resourceCheckLists.filter(
+            ([, checks]) =>
+                checks.filter(check => check.isApplied(args.force)).length
+        );
+        const changedResources = changedResourceChecks.map(
+            ([resource]) => resource
+        );
+        const confirmResult = await confirmRerunApply(
+            args.force,
+            args.diff,
+            changedResources.length > 0
+        );
+        if (confirmResult === "discard") {
+            console.log("");
+            console.log("Okay, let's keep things as they are...");
+            break;
+        }
+        if (confirmResult === "apply") {
+            changedResourceChecks.map(([resource, checks]) =>
+                logWorkflowUpdates(resource, checks, args.force)
+            );
+            await updateWorkflows(changedResources, args.force);
+            break;
+        }
+        if (confirmResult === "rerun_force") args.force = true;
+        if (confirmResult === "rerun_noforce") args.force = false;
+        if (confirmResult === "rerun_diff") args.diff = true;
+        if (confirmResult === "rerun_nodiff") args.diff = false;
+    }
 
     console.log("");
     console.log(
