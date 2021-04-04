@@ -21,6 +21,8 @@ name: Update Release from Pull Request
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TYPE: rc
     steps:
       - name: Get Pull Request
         uses: actions/github-script@v3
@@ -142,7 +144,7 @@ jobs:
         with:
           path: ./package.json
           type: semver
-          release: rc
+          release: ${{ env.RELEASE_TYPE }}
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft
         uses: actions/github-script@v3

@@ -6,6 +6,7 @@
   - [Zen](#zen)
   - [TODO](#todo)
   - [Secrets](#secrets)
+  - [Available workflows](#available-workflows)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
@@ -51,6 +52,7 @@ Index: [index.yml](./index.yml)
 - `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
 - `PYPI_PASSWORD` - Password for `__token__` username for https://pypi.org/
 
+## Available workflows
 ### Run style checks and unit tests
 Workflow: [on_push_check.yml](./on_push_check.yml)
 
@@ -68,6 +70,7 @@ ghactions -i python -u on_push_check
 - Runs `pyright` if `pyrightconfig.json` file exists
 - Runs `pytest` if it is installed
 
+
 ### Update Pull Request labels
 Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
@@ -83,6 +86,7 @@ ghactions -i python -u on_pull_opened_or_edited
 - If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
 - Otherwise adds `patch` label
 
+
 ### Update Release from Pull Request
 Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
@@ -96,6 +100,11 @@ ghactions -i python -u on_pull_merged
 - Release draft notes are merged from existing notes and Pull Request notes
 - Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
+
+**Environment**
+
+- `RELEASE_TYPE` - Release suggested version: stable, rc, alpha, beta (default: `rc`)
+
 
 ### Create Release Pull Request
 Workflow: [on_release_published.yml](./on_release_published.yml)
@@ -113,6 +122,12 @@ ghactions -i python -u on_release_published
 - Release Pull Request uses branch `release/<version>`
 - Signs commits if `GPG_PRIVATE_KEY` secret is set
 
+**Secrets**
+
+- `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+- `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
+
+
 ### Publish to PyPI
 Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
@@ -127,6 +142,11 @@ ghactions -i python -u on_release_pull_merged
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
 - Publishes new version to [PyPI](https://pypi.org/)
+
+**Secrets**
+
+- `PYPI_PASSWORD` - Password for `__token__` username for https://pypi.org/
+
 
 ### Create Release draft
 Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.yml)

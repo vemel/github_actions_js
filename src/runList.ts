@@ -20,6 +20,19 @@ export function runList(workflow: WorkflowResource): void {
                 console.log(`  ${line}`);
             });
     }
+    if (workflow.data.env) {
+        console.log("\n  Environment:");
+        workflow.data.env.forEach(env => {
+            if (env.description) {
+                return console.log(
+                    `    ${chalk.blue(env.name)} - ${
+                        env.description
+                    } (default: ${chalk.blue(env.default)})`
+                );
+            }
+            console.log(`    ${chalk.blue(env.name)}`);
+        });
+    }
     if (workflow.data.secrets) {
         console.log("\n  Secrets:");
         workflow.data.secrets.forEach(secret => {

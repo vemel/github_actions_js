@@ -38,19 +38,50 @@ async function main(): Promise<void> {
                 throw new Error(`Step ${step.name} is managed`);
         });
 
-        const installString = `\`\`\`bash\n# install this action to .github/workflows\nnpx ghactions -i ${workflowIndex.data.id} -u ${resource.name}\n\`\`\``;
+        const installString = `\`\`\`bash\n# install this action to .github/workflows\nghactions -i ${workflowIndex.data.id} -u ${resource.name}\n\`\`\``;
+        const description: string = [
+            installString,
+            resource.description ? resource.description.trimRight() : "",
+            resource.data.env
+                ? [
+                      "**Environment**",
+                      "",
+                      ...resource.data.env.map(
+                          env =>
+                              `- \`${env.name}\` - ${env.description} (default: \`${env.default}\`)`
+                      )
+                  ].join("\n")
+                : "",
+            resource.data.secrets
+                ? [
+                      "**Secrets**",
+                      "",
+                      ...resource.data.secrets.map(
+                          secret =>
+                              `- \`${secret.name}\` - ${secret.description}`
+                      )
+                  ].join("\n")
+                : ""
+        ]
+            .filter(x => x)
+            .join("\n\n");
         workflowTexts.push(
-            `### ${resource.title}\nWorkflow: [${resource.name}.yml](${resource.data.url})\n\n${installString}\n\n${resource.description}`
+            `### ${resource.title}\nWorkflow: [${resource.name}.yml](${resource.data.url})\n\n${description}`
         );
     });
     if (secrets.length) {
         console.log("## Secrets");
         secrets.forEach(secret => {
-            console.log(`- \`${secret.name}\` - ${secret.description}`);
+            if (secret.description) {
+                console.log(`- \`${secret.name}\` - ${secret.description}`);
+            } else {
+                console.log(`- \`${secret.name}\``);
+            }
         });
         console.log("");
     }
-    workflowTexts.forEach(text => console.log(text));
+    console.log("## Available workflows");
+    workflowTexts.forEach(text => console.log(text + "\n\n"));
 }
 
 if (typeof require !== "undefined" && require.main === module) {

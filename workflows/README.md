@@ -4,8 +4,8 @@
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
-  - [TODO](#todo)
   - [Secrets](#secrets)
+  - [Available workflows](#available-workflows)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
@@ -44,15 +44,13 @@ Index: [index.yml](./index.yml)
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 - Do not try to build one-fits-all soultion, provide customization instead
 
-## TODO
-- [ ] Publish to GitHub Packages
-
 ## Secrets
 - `CODECOV_TOKEN` - Token for https://codecov.io/ coverage report
 - `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
 - `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
 - `NPM_TOKEN` - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
 
+## Available workflows
 ### Run style checks and unit tests
 Workflow: [on_push_check.yml](./on_push_check.yml)
 
@@ -67,6 +65,17 @@ ghactions -i node -u on_push_check
 - Runs unit tests if `test` script is available in `npm run`
 - Runs `test-cov` script if it is available in `npm run`
 - Sends test coverage report to https://codecov.io/ if `CODECOV_TOKEN` secret is set
+
+**Environment**
+
+- `LINT_SCRIPT` - npm run script to run for code style check if available (default: `lint`)
+- `TEST_SCRIPT` - npm run script to run for testing if available (default: `test`)
+- `TEST_COVERAGE_SCRIPT` - npm run script to run for test coverage if available (default: `test-cov`)
+
+**Secrets**
+
+- `CODECOV_TOKEN` - Token for https://codecov.io/ coverage report
+
 
 ### Update Pull Request labels
 Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
@@ -83,6 +92,7 @@ ghactions -i node -u on_pull_opened_or_edited
 - If Pull Request notes has `Added`, `Changed` or `Deprecated` sections, adds `minor` label
 - Otherwise adds `patch` label
 
+
 ### Update Release from Pull Request
 Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
@@ -96,6 +106,11 @@ ghactions -i node -u on_pull_merged
 - Release draft notes are merged from existing notes and Pull Request notes
 - Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
+
+**Environment**
+
+- `RELEASE_TYPE` - Release suggested version: stable, rc, alpha, beta (default: `rc`)
+
 
 ### Create Release Pull Request
 Workflow: [on_release_published.yml](./on_release_published.yml)
@@ -113,6 +128,12 @@ ghactions -i node -u on_release_published
 - Release Pull Request uses branch `release/<version>`
 - Signs commits if `GPG_PRIVATE_KEY` secret is set
 
+**Secrets**
+
+- `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+- `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
+
+
 ### Publish to NPM
 Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
@@ -127,6 +148,11 @@ ghactions -i node -u on_release_pull_merged
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
 - Publishes new version to [npm](https://www.npmjs.com/)
+
+**Secrets**
+
+- `NPM_TOKEN` - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
+
 
 ### Create Release draft
 Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.yml)

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `--clean` CLI flag to create workflows without `github-actions-script` marker
 - `--diff` and `--force` flags can be set during interactive run
+- Indexes can list env variables used in workflows
 
 ### Fixed
 - Workflows are downloaded in parallel

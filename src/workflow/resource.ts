@@ -14,12 +14,19 @@ export interface ISecret {
     description?: string;
 }
 
+interface IEnv {
+    name: string;
+    description?: string;
+    default?: string;
+}
+
 export interface IWorkflow {
     name: string;
     url: string;
     title: string;
     description?: string;
     secrets?: Array<ISecret>;
+    env?: Array<IEnv>;
 }
 
 export class WorkflowResource {
