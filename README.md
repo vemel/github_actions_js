@@ -28,6 +28,8 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
   - [Versioning](#versioning)
   - [Latest changes](#latest-changes)
 
+<img src="ghactions.png" alt="GitHub Actions Manager" width="400"/>
+
 ## Basic usage
 
 ```bash
