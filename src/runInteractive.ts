@@ -107,6 +107,10 @@ export async function runInteractive(args: Namespace): Promise<void> {
         localPath
     );
     const resources = await selectWorkflows(workflowIndex);
+    if (args.list) {
+        resources.forEach(resource => runList(resource));
+        return;
+    }
     while (true) {
         const resourceCheckLists = await logWorkflowChecks(resources, args);
         const changedResourceChecks = resourceCheckLists.filter(

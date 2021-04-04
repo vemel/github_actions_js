@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflows were created with non-managed steps sometimes
 - `job.*.steps.[].with.github-actions-script` moved to the first position to be more visible
 - Show non-managed steps diff correctly
+- Support `--list` flag in interactive mode
 
 ## [0.6.2]
 ### Fixed
