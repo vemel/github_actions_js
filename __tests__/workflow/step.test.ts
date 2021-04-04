@@ -9,7 +9,7 @@ describe("step", () => {
         });
         expect(step.id).toBe("stepid");
         expect(step.name).toBe("stepname");
-        expect(new Step({ key: "value" }).name).toBe("unnamed");
+        expect(new Step({ key: "value" }).name).toBe(null);
         expect(new Step({ name: "test" }).name).toBe("test");
         expect(new Step({ id: "test" }).name).toBe("test");
     });
