@@ -1,6 +1,6 @@
 {
   "name": "github-actions",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "private": false,
   "description": "CLI tool to install and update GitHub Actions",
   "main": "lib/index.js",
