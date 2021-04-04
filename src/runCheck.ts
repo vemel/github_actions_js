@@ -38,7 +38,8 @@ export function getCheckResult(
 
 export async function runCheck(
     workflowItem: WorkflowResource,
-    forceUpdate: boolean
+    forceUpdate: boolean,
+    removeMarker: boolean
 ): Promise<Array<Check>> {
     if (!workflowItem.existsLocally()) {
         return [];
@@ -53,16 +54,20 @@ export async function runCheck(
     const checker = new Checker(forceUpdate, localWorkflow);
 
     const newWorkflow = new Merger(true).merge(localWorkflow, remoteWorkflow);
+    if (removeMarker) {
+        newWorkflow.job.steps.forEach(step => step.makeNonManaged());
+    }
     return checker.getChecks(newWorkflow);
 }
 
 export async function runCheckAll(
     resources: Array<WorkflowResource>,
     forceUpdate: boolean,
-    showDiff: boolean
+    showDiff: boolean,
+    removeMarker: boolean
 ): Promise<boolean> {
     const checkLists = await Promise.all(
-        resources.map(resource => runCheck(resource, forceUpdate))
+        resources.map(resource => runCheck(resource, forceUpdate, removeMarker))
     );
     const errorChecks: Array<Check> = [];
     resources.forEach((resource, index) => {

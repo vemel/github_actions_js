@@ -14,6 +14,7 @@ export interface Namespace {
     update: boolean;
     list: boolean;
     diff: boolean;
+    clean: boolean;
     index: string;
     indexResource: IndexResource;
 }
@@ -27,8 +28,9 @@ export function getHelp(): string {
                 "",
                 `Documentation: ${DOCS_URL}`,
                 "",
-                "{bold ghactions} - Manage workflows for Node.js projects",
-                "{bold ghactions_py} - Manage workflows for Python projects"
+                "{bold ghactions} - Run in interactive mode",
+                "{bold ghactions -i node} - Manage workflows for Node.js projects",
+                "{bold ghactions -i python} - Manage workflows for Python projects"
             ].join("\n")
         },
         {
@@ -39,7 +41,7 @@ export function getHelp(): string {
                     alias: "n",
                     typeLabel: "name",
                     multiple: true,
-                    description: `Workflow name {bold <name>}.yml, {bold all}, or {bold installed}, default: {bold installed}`
+                    description: `Workflow name {bold <name>}.yml, {bold all}, or {bold installed}, default: {bold interactive mode}`
                 },
                 {
                     name: "ref",
@@ -60,7 +62,7 @@ export function getHelp(): string {
                     name: "path",
                     alias: "p",
                     typeLabel: "path",
-                    description: `Path to GitHUb project root, default {bold CWD}`,
+                    description: `Path to GitHub project root, default {bold CWD}`,
                     type: Boolean
                 },
                 {
@@ -88,6 +90,13 @@ export function getHelp(): string {
                     type: Boolean
                 },
                 {
+                    name: "clean",
+                    alias: "c",
+                    description:
+                        "Do not add {bold github-actions-managed} marker to workflow steps",
+                    type: Boolean
+                },
+                {
                     name: "help",
                     alias: "h",
                     description: "Print this usage guide",
@@ -109,6 +118,7 @@ export function parseArgs(): Namespace {
         { name: "version", alias: "v", type: Boolean },
         { name: "list", alias: "l", type: Boolean },
         { name: "diff", alias: "d", type: Boolean },
+        { name: "clean", alias: "c", type: Boolean },
         { name: "help", alias: "h", type: Boolean },
         { name: "force", alias: "f", type: Boolean },
         { name: "update", alias: "u", type: Boolean },

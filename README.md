@@ -89,11 +89,12 @@ Let's start today:
 | `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | interactive mode | Workflow name `<name>.yml`, `all`, or `installed` |
 | `-r <version>` | `--ref <version>` | `main` | Update workflows to a specific tag/branch |
 | `-i <url>` | `--index <url>` | `node`/`python`/`<url>` | Link to workflows index YAML file, supports `{ref}` placeholder |
-| `-p <path>` | `--path <path>` | `.github/workflows` | Path to workflows |
+| `-p <path>` | `--path <path>` | current workdir | Path to GitHub project root |
 | `-u` | `--update` | | Apply suggested changes |
 | `-f` | `--force` | | Update user-managed workflow parts |
 | `-l` | `--list` | | List available workflows |
 | `-d` | `--diff` | | Show diff for update and check runs |
+| `-c` | `--clean` | | Do not add `github-actions-managed` marker to workflow steps |
 | `-h` | `--help` | | Print this usage guide |
 | `-v` | `--version` | | Show package version |
 

@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
+### Added
+- `--clean` CLI flag to create workflows without `github-actions-script` marker
 - `--diff` and `--force` flags can be set during interactive run
 
 ### Fixed
@@ -14,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Check mode shows a correct command to apply update
 - Workflows were created with non-managed steps sometimes
 - `job.*.steps.[].with.github-actions-script` moved to the first position to be more visible
+- Show non-managed steps diff correctly
 
 ## [0.6.2]
 ### Fixed

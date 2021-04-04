@@ -21,10 +21,12 @@ export function logUpdate(
 
 export async function runUpdate(
     workflowItem: WorkflowResource,
-    forceUpdate: boolean
+    forceUpdate: boolean,
+    removeMarker: boolean
 ): Promise<void> {
     const remoteWorkflow = await workflowItem.getRemote();
     if (!workflowItem.existsLocally()) {
+        remoteWorkflow.job.steps.forEach(step => step.makeNonManaged());
         await workflowItem.setLocal(remoteWorkflow.render());
         return;
     }
@@ -34,16 +36,20 @@ export async function runUpdate(
         localWorkflow,
         remoteWorkflow
     );
+    if (removeMarker) {
+        newWorkflow.job.steps.forEach(step => step.makeNonManaged());
+    }
     await workflowItem.setLocal(newWorkflow.render());
 }
 
 export async function runUpdateAll(
     resources: Array<WorkflowResource>,
     forceUpdate: boolean,
-    showDiff: boolean
+    showDiff: boolean,
+    removeMarker: boolean
 ): Promise<void> {
     const checkLists = await Promise.all(
-        resources.map(resource => runCheck(resource, forceUpdate))
+        resources.map(resource => runCheck(resource, forceUpdate, removeMarker))
     );
 
     resources.forEach((resource, index) => {
@@ -63,6 +69,8 @@ export async function runUpdateAll(
     });
     if (updatedItems.length)
         await Promise.all(
-            updatedItems.map(resource => runUpdate(resource, forceUpdate))
+            updatedItems.map(resource =>
+                runUpdate(resource, forceUpdate, removeMarker)
+            )
         );
 }

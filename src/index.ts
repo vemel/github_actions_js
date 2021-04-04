@@ -102,7 +102,12 @@ async function main(): Promise<void> {
         process.exit(0);
     }
     if (!args.update) {
-        const result = await runCheckAll(workflows, args.force, args.diff);
+        const result = await runCheckAll(
+            workflows,
+            args.force,
+            args.diff,
+            args.clean
+        );
         if (result) {
             console.log(
                 chalk.green(
@@ -115,7 +120,7 @@ async function main(): Promise<void> {
         process.exit(result ? 0 : 1);
     }
 
-    await runUpdateAll(workflows, args.force, args.diff);
+    await runUpdateAll(workflows, args.force, args.diff, args.clean);
 }
 
 function logUpdateError(): void {

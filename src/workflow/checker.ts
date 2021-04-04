@@ -126,8 +126,8 @@ export class Checker {
                     "step",
                     (() => {
                         if (stepIndex < 0) return "added";
-                        if (!step.isManaged()) return "kept";
-                        if (step.equals(localStep)) return "equal";
+                        if (!localStep.isManaged()) return "kept";
+                        if (localStep.equals(step)) return "equal";
                         return "updated";
                     })() as TAction,
                     false,

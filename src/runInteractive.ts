@@ -22,7 +22,7 @@ async function logWorkflowChecks(
     args: Namespace
 ): Promise<Array<[WorkflowResource, Array<Check>]>> {
     const checkLists = await Promise.all(
-        resources.map(workflow => runCheck(workflow, args.force))
+        resources.map(workflow => runCheck(workflow, args.force, args.clean))
     );
     const changedResources: Array<WorkflowResource> = [];
     const result: Array<[WorkflowResource, Array<Check>]> = [];
@@ -42,15 +42,6 @@ async function logWorkflowChecks(
         }
     });
     return result;
-}
-
-async function updateWorkflows(
-    resources: Array<WorkflowResource>,
-    forceUpdate: boolean
-) {
-    await Promise.all(
-        resources.map(resource => runUpdate(resource, forceUpdate))
-    );
 }
 
 function logWorkflowUpdates(
@@ -139,7 +130,11 @@ export async function runInteractive(args: Namespace): Promise<void> {
             changedResourceChecks.map(([resource, checks]) =>
                 logWorkflowUpdates(resource, checks, args.force)
             );
-            await updateWorkflows(changedResources, args.force);
+            await Promise.all(
+                changedResources.map(resource =>
+                    runUpdate(resource, args.force, args.clean)
+                )
+            );
             break;
         }
         if (confirmResult === "rerun_force") args.force = true;
