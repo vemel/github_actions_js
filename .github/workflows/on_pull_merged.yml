@@ -77,16 +77,16 @@ jobs:
         if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
-          ref: ${{ steps.pull-request.outputs.base }}
           github-actions-managed: true
+          ref: ${{ steps.pull-request.outputs.base }}
       - name: Get Unreleased notes
         id: unreleased
         if: steps.pull-request.outputs.result
         uses: vemel/nextchange@0.1.0
         with:
+          github-actions-managed: true
           get: Unreleased
           sanitize: true
-          github-actions-managed: true
       - name: Get or create Release draft
         uses: actions/github-script@v3
         id: release
@@ -135,20 +135,20 @@ jobs:
         if: steps.pull-request.outputs.result
         uses: vemel/nextchange@0.1.0
         with:
+          github-actions-managed: true
           set: ${{ steps.release.outputs.body }}
           append: ${{ steps.pull-request.outputs.body }}
           suffix: ${{ steps.pull-request.outputs.suffix }}
-          github-actions-managed: true
       - name: Get suggested version
         id: version
         if: steps.pull-request.outputs.result
         uses: vemel/nextversion@0.1.1
         with:
+          github-actions-managed: true
           path: ./package.json
           type: semver
-          release: rc
+          release: ${{ env.RELEASE_TYPE }}
           result: ${{ steps.notes.outputs.label }}
-          github-actions-managed: true
       - name: Update release draft
         uses: actions/github-script@v3
         id: update-release
@@ -197,3 +197,5 @@ jobs:
                 body: `Pull request notes were merged to release draft ${version}`,
             });
             core.info(`Comment URL: ${response.data.html_url}`);
+    env:
+      RELEASE_TYPE: rc
