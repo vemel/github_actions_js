@@ -1,1 +1,12 @@
 theme: jekyll-theme-cayman
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - README.md
+  - workflows/README.md
+  - workflows_py/README.md
+  - CUSTOM.md
+  - CONTRIBUTING.md
