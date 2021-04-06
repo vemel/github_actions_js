@@ -218,8 +218,10 @@ interface IConfirmChoice {
 export async function confirmRerunApply(
     forceUpdate: boolean,
     showDiff: boolean,
-    hasChanges: boolean
+    hasChanges: boolean,
+    hasForceChanges: boolean
 ): Promise<TConfirmResult> {
+    if (!hasForceChanges) return "apply";
     const choices: Array<IConfirmChoice> = [];
     if (hasChanges) {
         choices.push({

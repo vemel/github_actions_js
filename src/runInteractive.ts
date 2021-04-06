@@ -103,13 +103,19 @@ export async function runInteractive(args: Namespace): Promise<void> {
                 !resource.existsLocally() ||
                 checks.filter(check => check.isApplied(args.force)).length
         );
+        const forceChangedResourceChecks = resourceCheckLists.filter(
+            ([resource, checks]) =>
+                !resource.existsLocally() ||
+                checks.filter(check => check.isApplied(true)).length
+        );
         const changedResources = changedResourceChecks.map(
             ([resource]) => resource
         );
         const confirmResult = await confirmRerunApply(
             args.force,
             args.diff,
-            changedResources.length > 0
+            changedResourceChecks.length > 0,
+            forceChangedResourceChecks.length > 0
         );
         if (confirmResult === "discard") {
             console.log("");
