@@ -1,4 +1,10 @@
-import { isFileURL, isGitHubURL, joinURL, replaceRef } from "../src/urlUtils";
+import {
+    highlightURL,
+    isFileURL,
+    isGitHubURL,
+    joinURL,
+    replaceRef
+} from "../src/urlUtils";
 
 test("join url", () => {
     expect(joinURL("https://example.com/old", "new")).toBe(
@@ -43,4 +49,11 @@ test("replace ref", () => {
             "newref"
         )
     ).toBe("https://github.com/psf/black/tree/newref/.github/workflows");
+});
+
+test("highlight url", () => {
+    highlightURL("https://google.com");
+    highlightURL("https://github.com/psf/black/tree/newref/.github/workflows");
+    highlightURL("file:///test/ts");
+    highlightURL("test");
 });

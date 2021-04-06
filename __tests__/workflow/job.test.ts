@@ -17,12 +17,15 @@ describe("job", () => {
 
         expect(clone.runsIf).toBe("cond");
         clone.runsIf = "newcond";
+        clone.runsIf = undefined;
 
         expect(clone.env).toEqual({ key: "value" });
         clone.env = { newkey: "value" };
+        clone.env = undefined;
 
         expect(clone.strategy).toEqual({ matrix: [1, 2, 3] });
         clone.strategy = { matrix: [1] };
+        clone.strategy = undefined;
 
         expect(clone.steps.length).toBe(1);
         clone.steps = [new Step({})];
