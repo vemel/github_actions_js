@@ -48,11 +48,20 @@ export function joinURL(base: string, newPath: string): string {
 }
 
 export function isGitHubURL(url: string): boolean {
-    return new URL(url).origin.endsWith("github.com");
+    try {
+        const hostname = new URL(url).hostname;
+        return hostname === "github.com" || hostname.endsWith(".github.com");
+    } catch {
+        return false;
+    }
 }
 
 export function isFileURL(url: string): boolean {
-    return new URL(url).protocol === "file:";
+    try {
+        return new URL(url).protocol === "file:";
+    } catch {
+        return false;
+    }
 }
 
 export function highlightURL(url: string): string {

@@ -16,18 +16,23 @@ test("join url", () => {
 });
 
 test("is GitHub URL", () => {
+    expect(isGitHubURL("test")).toBe(false);
     expect(isGitHubURL("https://google.com")).toBe(false);
+    expect(isGitHubURL("https://nogithub.com")).toBe(false);
     expect(isGitHubURL("https://github.com")).toBe(true);
+    expect(isGitHubURL("https://custom.github.com")).toBe(true);
     expect(isGitHubURL("https://github.com/user/repo")).toBe(true);
 });
 
 test("is file URL", () => {
+    expect(isFileURL("test")).toBe(false);
     expect(isFileURL("https://google.com")).toBe(false);
     expect(isFileURL("https://github.com")).toBe(false);
     expect(isFileURL("file:///home/user/")).toBe(true);
 });
 
 test("replace ref", () => {
+    expect(replaceRef("test", "newref")).toBe("test");
     expect(replaceRef("https://google.com", "newref")).toBe(
         "https://google.com"
     );
