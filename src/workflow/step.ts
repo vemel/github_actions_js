@@ -136,4 +136,9 @@ export class Step {
         }
         return -1;
     }
+
+    clone(): Step {
+        const newData = JSON.parse(JSON.stringify(this.data));
+        return new Step(newData);
+    }
 }

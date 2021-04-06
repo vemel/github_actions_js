@@ -2,7 +2,8 @@ import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
 import { DOCS_URL } from "./constants";
-import { INDEXES, IndexResource } from "./indexes";
+import { getIndexResource } from "./indexes";
+import IndexResource from "./workflow/indexResource";
 
 export interface Namespace {
     help: boolean;
@@ -15,7 +16,7 @@ export interface Namespace {
     list: boolean;
     diff: boolean;
     clean: boolean;
-    index: string;
+    index?: string;
     indexResource: IndexResource;
 }
 
@@ -143,9 +144,6 @@ export function parseArgs(): Namespace {
     result.update = result.update || false;
     result.ref = result.ref || "main";
     result.path = result.path || ".";
-    result.index = INDEXES.find(i => i.id === result.index)?.url || "";
-    result.indexResource =
-        INDEXES.find(i => i.id === result.index || i.url === result.index) ||
-        new IndexResource(result.index, result.index, result.index);
+    result.indexResource = getIndexResource(result.index || "");
     return result;
 }

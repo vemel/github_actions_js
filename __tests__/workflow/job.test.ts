@@ -11,20 +11,21 @@ describe("job", () => {
     });
 
     test("create", () => {
-        expect(job.runsOn).toBe("runner");
-        job.runsOn = job.runsOn;
+        const clone = job.clone();
+        expect(clone.runsOn).toBe("runner");
+        clone.runsOn = "newrunner";
 
-        expect(job.runsIf).toBe("cond");
-        job.runsIf = job.runsIf;
+        expect(clone.runsIf).toBe("cond");
+        clone.runsIf = "newcond";
 
-        expect(job.env).toEqual({ key: "value" });
-        job.env = job.env;
+        expect(clone.env).toEqual({ key: "value" });
+        clone.env = { newkey: "value" };
 
-        expect(job.strategy).toEqual({ matrix: [1, 2, 3] });
-        job.strategy = job.strategy;
+        expect(clone.strategy).toEqual({ matrix: [1, 2, 3] });
+        clone.strategy = { matrix: [1] };
 
-        expect(job.steps.length).toBe(1);
-        job.steps = job.steps;
+        expect(clone.steps.length).toBe(1);
+        clone.steps = [new Step({})];
     });
 
     test("merge steps", () => {
@@ -122,5 +123,9 @@ describe("job", () => {
                 }
             }
         ]);
+    });
+
+    test("clone", () => {
+        expect(job.clone().env).toEqual({ key: "value" });
     });
 });

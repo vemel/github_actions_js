@@ -81,4 +81,9 @@ export class Job {
         result.push(...localSteps.reverse().filter(step => !step.isManaged()));
         return result.reverse();
     }
+
+    clone(): Job {
+        const newData = JSON.parse(JSON.stringify(this.data));
+        return new Job(newData);
+    }
 }

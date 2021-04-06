@@ -59,12 +59,11 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const indexURL = args.index || JS_INDEX_URL;
     let workflowIndex: WorkflowIndex;
     let workflows: Array<WorkflowResource>;
     try {
         workflowIndex = await WorkflowIndex.download(
-            indexURL,
+            args.indexResource.url || JS_INDEX_URL,
             args.ref,
             path.join(args.path, LOCAL_WORKFLOWS_PATH)
         );

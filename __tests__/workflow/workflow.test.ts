@@ -1,3 +1,4 @@
+import { Job } from "../../src/workflow/job";
 import { Workflow } from "../../src/workflow/workflow";
 
 const renderResult = `# comment
@@ -34,21 +35,22 @@ describe("workflow", () => {
         ["comment", "", "line2"]
     );
     test("create", () => {
-        expect(workflow.name).toBe("workflow");
-        workflow.name = workflow.name;
+        const clone = workflow.clone();
+        expect(clone.name).toBe("workflow");
+        clone.name = "test";
 
-        expect(workflow.triggers).toEqual({ event: {} });
-        workflow.triggers = workflow.triggers;
+        expect(clone.triggers).toEqual({ event: {} });
+        clone.triggers = {};
 
-        expect(workflow.commentLines).toEqual(["comment", "", "line2"]);
-        workflow.commentLines = workflow.commentLines;
+        expect(clone.commentLines).toEqual(["comment", "", "line2"]);
+        clone.commentLines = [];
 
         expect(new Workflow({ name: "test" }, []).job.data).toEqual({
             "runs-on": "ubuntu:latest",
             steps: []
         });
-        expect(workflow.job.steps.length).toBe(1);
-        workflow.job = workflow.job;
+        expect(clone.job.steps.length).toBe(1);
+        clone.job = new Job({ "runs-on": "test", steps: [] });
         new Workflow({ name: "test" }, []).job = workflow.job;
     });
 

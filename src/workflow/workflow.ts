@@ -72,6 +72,7 @@ export class Workflow {
     }
 
     clone(): Workflow {
-        return Workflow.fromString(this.render());
+        const newData = JSON.parse(JSON.stringify(this.data));
+        return new Workflow(newData, [...this.commentLines]);
     }
 }

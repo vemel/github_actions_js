@@ -10,15 +10,6 @@ export function decapitalize(s: string): string {
     return `${s[0].toLowerCase()}${s.substr(1)}`;
 }
 
-export function joinURL(base: string, newPath: string): string {
-    const url = new URL(base);
-    let oldPathname = url.pathname;
-    const origin = base.substr(0, base.length - url.pathname.length);
-    if (!base.endsWith("/")) oldPathname = path.dirname(oldPathname);
-    const pathname = path.join(oldPathname, newPath);
-    return `${origin}${pathname}`;
-}
-
 export function getCommandName(): string {
     return (process.argv[1] && process.argv[1].split("/").pop()) || "ghactions";
 }

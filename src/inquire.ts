@@ -1,7 +1,8 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
 
-import { INDEXES, IndexResource } from "./indexes";
+import { INDEXES } from "./indexes";
+import IndexResource from "./workflow/indexResource";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 

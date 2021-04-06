@@ -1,11 +1,6 @@
-import download from "download";
-import fs from "fs";
 import yaml from "js-yaml";
-import path from "path";
-import { promisify } from "util";
 
-import { UTF8 } from "../constants";
-import { getTempDir, joinURL } from "../utils";
+import { download, joinURL } from "../urlUtils";
 import { IWorkflow, WorkflowResource } from "./resource";
 
 export interface IWorkflowIndex {
@@ -88,17 +83,7 @@ export class WorkflowIndex {
         workflowsPath: string
     ): Promise<WorkflowIndex> {
         url = url.replace("{ref}", ref);
-        const tempPath = getTempDir();
-        const downloadPath = path.join(tempPath, "index.yml");
-        try {
-            await download(url, tempPath, { filename: "index.yml" });
-        } catch (e) {
-            throw new Error(`index download failed: ${e.message}`);
-        }
-        const content = await promisify(fs.readFile)(downloadPath, {
-            encoding: UTF8
-        });
-        await promisify(fs.rmdir)(tempPath, { recursive: true });
+        const content = await download(url);
         const data = yaml.load(content) as IWorkflowIndex;
         return new WorkflowIndex(url, data, workflowsPath);
     }

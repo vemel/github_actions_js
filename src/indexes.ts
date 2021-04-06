@@ -1,28 +1,4 @@
-import fs from "fs";
-import path from "path";
-
-export class IndexResource {
-    name: string;
-    url: string;
-    id: string;
-    markerFilePath: string | null;
-    constructor(
-        name: string,
-        url: string,
-        id: string,
-        markerFilePath?: string
-    ) {
-        this.name = name;
-        this.url = url;
-        this.id = id;
-        this.markerFilePath = markerFilePath || null;
-    }
-
-    markerFileExists(localPath: string): boolean {
-        if (!this.markerFilePath) return false;
-        return fs.existsSync(path.join(localPath, this.markerFilePath));
-    }
-}
+import IndexResource from "./workflow/indexResource";
 
 export const REPO_URL =
     "https://raw.githubusercontent.com/vemel/github_actions_js";
@@ -43,3 +19,9 @@ export const INDEXES: Array<IndexResource> = [
         "setup.py"
     )
 ];
+
+export function getIndexResource(id: string): IndexResource {
+    const result = INDEXES.find(index => index.id === id || index.url === id);
+    if (!result) return new IndexResource(id, id, id);
+    return result;
+}

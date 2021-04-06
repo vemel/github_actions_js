@@ -97,4 +97,9 @@ describe("step", () => {
             run: "myline\nother"
         });
     });
+
+    test("clone", () => {
+        const step = new Step({ id: "test", with: { script: "asd" } });
+        expect(step.clone().id).toBe("test");
+    });
 });

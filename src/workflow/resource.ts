@@ -1,11 +1,10 @@
 import chalk from "chalk";
-import download from "download";
 import fs from "fs";
 import path from "path";
 import { promisify } from "util";
 
 import { UTF8 } from "../constants";
-import { getTempDir } from "../utils";
+import { download } from "../urlUtils";
 import { Workflow } from "./workflow";
 import { IWorkflowIndex } from "./workflowIndex";
 
@@ -98,14 +97,8 @@ export class WorkflowResource {
 
     async getRemote(): Promise<Workflow> {
         if (this._remote) return this._remote;
-        const tempPath = getTempDir();
-        const downloadPath = path.join(tempPath, this.fileName);
-        await download(this.url, tempPath, { filename: this.fileName });
-        const result = await promisify(fs.readFile)(downloadPath, {
-            encoding: UTF8
-        });
-        await promisify(fs.rmdir)(tempPath, { recursive: true });
-        this._remote = Workflow.fromString(result);
+        const content = await download(this.url);
+        this._remote = Workflow.fromString(content);
         this._remote.commentLines = this.getCommentLines();
         this._remote.job.steps.map(step => step.makeManaged());
         return this._remote;
