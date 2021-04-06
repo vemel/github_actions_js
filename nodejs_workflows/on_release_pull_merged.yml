@@ -1,0 +1,130 @@
+# This workflow provided by GitHub Actions for Node.js projects
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+#
+# - Runs only if `NPM_TOKEN` secret is set
+# - Starts on Pull Request merge for `release/*` branch
+# - Uses Pull Request branch for deployment, so released version contains only changes
+#   from base branch when Release had been published
+# - Builds package if `build` script is available in `package.json`
+# - Publishes new version to [npm](https://www.npmjs.com/)
+#
+# Secrets:
+#   NPM_TOKEN - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
+
+name: Publish to NPM
+"on":
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      number:
+        description: Pull Request number
+        required: true
+jobs:
+  publish-to-npm:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_SCRIPT: build
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Get Pull Request
+        id: pull-request
+        if: env.NPM_TOKEN
+        uses: actions/github-script@v3
+        with:
+          script: |
+            let pullRequest = null;
+            if (context.payload.inputs && context.payload.inputs.number) {
+              // find Pull Request by number fom input
+              const number = context.payload.inputs.number;
+              try {
+                pullRequest = (await github.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: number,
+                })).data;
+              } catch(e) {
+                core.error(`Cannot get Pull Request #${number}: ${e}`);
+                return;
+              }
+            } else {
+              // get Pull Request from event payload
+              pullRequest = context.payload.pull_request;
+            }
+
+            if (!pullRequest) {
+              core.error(`Cannot find Pull Request`);
+              return;
+            }
+
+            // Stop if Pull request is not merged
+            if (!pullRequest.merged) {
+              core.info(`Pull Request ${pullRequest.number} is not merged, skipping`);
+              return;
+            }
+
+            // Stop if Pull Request branch name starts with `release`
+            const branch = pullRequest.head.ref;
+            if (!branch.startsWith('release')) {
+              core.info(`This is not a release branch ${branch}, skipping`);
+              return;
+            }
+
+            core.setOutput('branch', branch);
+            core.setOutput('base', pullRequest.base.ref);
+            core.setOutput('number', pullRequest.number);
+            core.setOutput('url', pullRequest.html_url);
+            core.setOutput('body', pullRequest.body);
+            core.setOutput('suffix', `[#${pullRequest.number}](${pullRequest.html_url})`);
+            return true;
+      - name: Checkout Pull Request base branch
+        id: checkout
+        if: steps.pull-request.outputs.result
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.pull-request.outputs.base }}
+      - name: Get available scripts
+        id: scripts
+        if: steps.pull-request.outputs.result
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const { promisify } = require('util');
+            const exec = promisify(require('child_process').exec);
+
+            const output = (await exec('npm run')).stdout;
+            const scripts = output.split(/\r?\n/)
+              .filter(line => line.startsWith('  ') && !line.startsWith('   '))
+              .map(line => line.trim());
+
+            if (scripts.includes(process.env.BUILD_SCRIPT)) {
+              core.setOutput('build', process.env.BUILD_SCRIPT);
+            }
+            return true;
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        id: setup-node
+        if: steps.pull-request.outputs.result
+        with:
+          registry-url: https://registry.npmjs.org/
+          node-version: 14
+      - name: Install package
+        id: install
+        if: steps.pull-request.outputs.result
+        run: |
+          npm install -g npm
+          npm ci
+      - name: Build package
+        id: build
+        if: steps.pull-request.outputs.result && steps.scripts.outputs.build
+        run: |
+          echo "Running: npm run ${{ steps.scripts.outputs.build }}"
+          npm run ${{ steps.scripts.outputs.build }}
+      - name: Publish new version to NPM
+        id: publish
+        if: steps.pull-request.outputs.result
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --access public --verbose
