@@ -127,9 +127,9 @@ export class Step {
     }
 
     isSame(step: Step): boolean {
-        if (this.id && step.id && this.id === step.id) return true;
-        if (this.name && step.name && this.name === step.name) return true;
-        if (this.uses && step.uses && this.uses === step.uses) return true;
+        if (this.id && step.id) return this.id === step.id;
+        if (this.name && step.name) return this.name === step.name;
+        if (this.uses && step.uses) return this.uses === step.uses;
         return false;
     }
 

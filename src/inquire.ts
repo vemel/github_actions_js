@@ -24,7 +24,8 @@ export async function chooseIndex(
             {
                 name: "url",
                 type: "list",
-                message: "Select workflows repository",
+                message: "Select repository with workflows",
+                pageSize: 30,
                 choices: [
                     ...indexes.map(index => ({
                         name: highlightURL(index.replace("{ref}", ref)),
@@ -233,27 +234,27 @@ export async function confirmRerunApply(
     }
     if (forceUpdate) {
         choices.push({
-            name: `Run again without ${chalk.blue("--force")} flag`,
+            name: `Remove ${chalk.blue(
+                "--force"
+            )} flag to keep user-edited parts untouched`,
             value: "rerun_noforce"
         });
     } else {
         choices.push({
-            name: `Run again with ${chalk.blue("--force")} flag`,
+            name: `Add ${chalk.blue(
+                "--force"
+            )} flag to update user-edited parts`,
             value: "rerun_force"
         });
     }
     if (showDiff) {
         choices.push({
-            name: `Run again and hide changed lines, disable ${chalk.blue(
-                "--diff"
-            )} flag`,
+            name: `Hide changed lines, disable ${chalk.blue("--diff")} flag`,
             value: "rerun_nodiff"
         });
     } else {
         choices.push({
-            name: `Run again and show changed lines with ${chalk.blue(
-                "--diff"
-            )} flag`,
+            name: `Show changed lines with ${chalk.blue("--diff")} flag`,
             value: "rerun_diff"
         });
     }
