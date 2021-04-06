@@ -142,6 +142,6 @@ export function parseArgs(): Namespace {
     result.update = result.update || false;
     result.ref = result.ref || "main";
     result.path = result.path || ".";
-    result.index = getIndexResource(result.index || "").url;
+    result.index = getIndexResource(result.index || "");
     return result;
 }

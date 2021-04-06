@@ -1,9 +1,10 @@
 import chalk from "chalk";
+import Configstore from "configstore";
 import inquirer from "inquirer";
 import inquirerSelectDirectory from "inquirer-select-directory";
 import { pathToFileURL } from "url";
 
-import { getIndexResource, INDEXES } from "./indexes";
+import { getShortcut, INDEXES } from "./indexes";
 import { highlightURL } from "./urlUtils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
@@ -16,6 +17,8 @@ export async function chooseIndex(
     if (url) {
         return WorkflowIndex.fromURL(url, ref, workflowsPath);
     }
+    const config = new Configstore("github-actions", { indexes: [...INDEXES] });
+    const indexes: Array<string> = config.get("indexes");
     return inquirer
         .prompt([
             {
@@ -23,9 +26,9 @@ export async function chooseIndex(
                 type: "list",
                 message: "Select workflows repository",
                 choices: [
-                    ...INDEXES.map(index => ({
-                        name: highlightURL(index.url.replace("{ref}", ref)),
-                        value: index.shortcut
+                    ...indexes.map(index => ({
+                        name: highlightURL(index.replace("{ref}", ref)),
+                        value: index
                     })),
                     {
                         name: `From GitHub URL ${chalk.grey(
@@ -71,13 +74,15 @@ export async function chooseIndex(
                 }
             }
             console.log(
-                `\nNext time you can run me with ${chalk.blue(`-i ${url}`)}\n`
+                `\nNext time you can run me with ${chalk.blue(
+                    `-i ${getShortcut(url)}`
+                )}\n`
             );
-            return await WorkflowIndex.fromURL(
-                getIndexResource(url).url,
-                ref,
-                workflowsPath
+            config.set(
+                "indexes",
+                [url, ...indexes.filter(index => index !== url)].slice(0, 10)
             );
+            return await WorkflowIndex.fromURL(url, ref, workflowsPath);
         });
 }
 

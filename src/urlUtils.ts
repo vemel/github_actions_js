@@ -72,5 +72,9 @@ export function highlightURL(url: string): string {
             ref
         )}/${directories.join("/")}`;
     }
+    if (isFileURL(url)) {
+        const parsedURL = new URL(url);
+        return `${chalk.grey("file://")}${parsedURL.pathname}`;
+    }
     return url;
 }
