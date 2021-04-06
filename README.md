@@ -14,7 +14,8 @@
 
 Nice and a bit shy CLI tool to install and update [GitHub Actions](https://github.com/features/actions).
 
-Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./workflows_py/README.md) projects.
+Comes with awesome packs for [Node.js](./workflows/README.md), [Python](./workflows_py/README.md)
+and [Rust](https://github.com/actions-rs/example) projects.
 
 - [GitHub Actions Manager](#github-actions-manager)
   - [Basic usage](#basic-usage)
@@ -65,6 +66,7 @@ And finally, what if we could add these best practices for a new project with a 
 Let's start today:
 - CI/CD for Node.js projects [installation guide](./nodejs_workflows/README.md)
 - CI/CD for Python projects [installation guide](./python_workflows_py/README.md)
+- CI/CD for Rust projects by [@actions-rs](https://github.com/actions-rs/example)
 - Or provide path to any GitHub repository to clone their workflows (run `ghactions`, then select `From GitHub URL`)
 - Or even clone workflows from your local path (run `ghactions`, then select `From local folder`)
 
