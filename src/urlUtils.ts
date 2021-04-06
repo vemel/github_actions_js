@@ -78,3 +78,22 @@ export function highlightURL(url: string): string {
     }
     return url;
 }
+
+export function replaceRef(url: string, ref: string): string {
+    if (isGitHubURL(url)) {
+        const parsedURL = new URL(url);
+        const [
+            ,
+            owner,
+            repo,
+            tree,
+            oldRef,
+            ...directories
+        ] = parsedURL.pathname.split("/");
+        parsedURL.pathname = `${owner}/${repo}/${tree}/${
+            ref || oldRef
+        }/${directories.join("/")}`;
+        return parsedURL.href;
+    }
+    return url;
+}

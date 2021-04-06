@@ -64,10 +64,8 @@ export class WorkflowIndex {
 
     static async fromURL(
         url: string,
-        ref: string,
         workflowsPath: string
     ): Promise<WorkflowIndex> {
-        url = url.replace("{ref}", ref);
         if (isFileURL(url))
             return WorkflowIndex.fromFileURL(url, workflowsPath);
         if (isGitHubURL(url))

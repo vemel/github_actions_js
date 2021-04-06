@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Temporary downloads clean up on error
 - Added workflows were not listed as changed
 - Steps are discovered by `id`, `name`, then `uses`
+- Ref replace can be applied to any GitHub URLs
 
 ## [0.7.0]
 ### Added

@@ -9,7 +9,7 @@ import { runCheckAll } from "./runCheck";
 import { runInteractive } from "./runInteractive";
 import { runListAll } from "./runList";
 import { runUpdateAll } from "./runUpdate";
-import { highlightURL } from "./urlUtils";
+import { highlightURL, replaceRef } from "./urlUtils";
 import {
     decapitalize,
     getCommandArgs,
@@ -69,8 +69,7 @@ async function main(): Promise<void> {
     let workflows: Array<WorkflowResource>;
     try {
         workflowIndex = await WorkflowIndex.fromURL(
-            args.index || JS_INDEX_URL,
-            args.ref,
+            replaceRef(args.index || JS_INDEX_URL, args.ref),
             path.join(args.path, LOCAL_WORKFLOWS_PATH)
         );
         console.log(`Using index ${highlightURL(workflowIndex.url)}`);

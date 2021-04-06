@@ -5,7 +5,7 @@ import inquirerSelectDirectory from "inquirer-select-directory";
 import { pathToFileURL } from "url";
 
 import { getShortcut, INDEXES } from "./indexes";
-import { highlightURL } from "./urlUtils";
+import { highlightURL, replaceRef } from "./urlUtils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
@@ -15,7 +15,7 @@ export async function chooseIndex(
     workflowsPath: string
 ): Promise<WorkflowIndex> {
     if (url) {
-        return WorkflowIndex.fromURL(url, ref, workflowsPath);
+        return WorkflowIndex.fromURL(replaceRef(url, ref), workflowsPath);
     }
     const config = new Configstore("github-actions", { indexes: [...INDEXES] });
     const indexes: Array<string> = config.get("indexes");
@@ -28,7 +28,7 @@ export async function chooseIndex(
                 pageSize: 30,
                 choices: [
                     ...indexes.map(index => ({
-                        name: highlightURL(index.replace("{ref}", ref)),
+                        name: highlightURL(replaceRef(index, ref)),
                         value: index
                     })),
                     {
@@ -48,7 +48,7 @@ export async function chooseIndex(
         ])
         .then(async ({ url }) => {
             if (url === "github") {
-                url = await inputGitHubURL();
+                url = await inputGitHubURL(ref);
             }
             if (url === "path") {
                 let currentPath = ".";
@@ -76,18 +76,21 @@ export async function chooseIndex(
             }
             console.log(
                 `\nNext time you can run me with ${chalk.blue(
-                    `-i ${getShortcut(url)}`
+                    `-i ${replaceRef(getShortcut(url), ref)}`
                 )}\n`
             );
             config.set(
                 "indexes",
                 [url, ...indexes.filter(index => index !== url)].slice(0, 10)
             );
-            return await WorkflowIndex.fromURL(url, ref, workflowsPath);
+            return await WorkflowIndex.fromURL(
+                replaceRef(url, ref),
+                workflowsPath
+            );
         });
 }
 
-async function inputGitHubURL(): Promise<string> {
+async function inputGitHubURL(ref: string): Promise<string> {
     return inquirer
         .prompt([
             {
@@ -99,7 +102,10 @@ async function inputGitHubURL(): Promise<string> {
                     "e.g. https://github.com/psf/black/tree/master/.github/workflows"
                 )}\n : `,
                 validate: async value => {
-                    const index = await WorkflowIndex.fromURL(value, "", "");
+                    const index = await WorkflowIndex.fromURL(
+                        replaceRef(value, ref),
+                        ""
+                    );
                     if (index.names.length) return true;
                     return `Path ${value} does not have workflows`;
                 }

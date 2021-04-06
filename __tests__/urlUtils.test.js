@@ -1,4 +1,4 @@
-import { isFileURL, isGitHubURL, joinURL } from "../src/urlUtils";
+import { isFileURL, isGitHubURL, joinURL, replaceRef } from "../src/urlUtils";
 
 test("join url", () => {
     expect(joinURL("https://example.com/old", "new")).toBe(
@@ -25,4 +25,17 @@ test("is file URL", () => {
     expect(isFileURL("https://google.com")).toBe(false);
     expect(isFileURL("https://github.com")).toBe(false);
     expect(isFileURL("file:///home/user/")).toBe(true);
+});
+
+test("replace ref", () => {
+    expect(replaceRef("https://google.com", "newref")).toBe(
+        "https://google.com"
+    );
+    expect(replaceRef("file:///my/ref", "newref")).toBe("file:///my/ref");
+    expect(
+        replaceRef(
+            "https://github.com/psf/black/tree/master/.github/workflows",
+            "newref"
+        )
+    ).toBe("https://github.com/psf/black/tree/newref/.github/workflows");
 });

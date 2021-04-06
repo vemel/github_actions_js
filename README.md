@@ -91,8 +91,8 @@ Let's start today:
 | Short | Long | Default | Description |
 | - | - | - | - |
 | `-n <name>[ <name>]*` | `--names <name>[ <name>]*` | interactive mode | Workflow name `<name>.yml`, `all`, or `installed` |
-| `-r <version>` | `--ref <version>` | `main` | Update workflows to a specific tag/branch |
-| `-i <url>` | `--index <url>` | `node`/`python`/`<url>` | Link to workflows index YAML file, supports `{ref}` placeholder |
+| `-i <url>` | `--index <url>` | `<GitHub URL>` / `file:///url` / `node` / `python` | Link to workflows directory `.../.github/workflows` |
+| `-r <version>` | `--ref <version>` | | Update workflows to a specific tag/branch |
 | `-p <path>` | `--path <path>` | current workdir | Path to GitHub project root |
 | `-u` | `--update` | | Apply suggested changes |
 | `-f` | `--force` | | Update user-managed workflow parts |

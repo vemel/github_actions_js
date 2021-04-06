@@ -1,7 +1,7 @@
 export const JS_INDEX_URL =
-    "https://github.com/vemel/github_actions_js/tree/{ref}/nodejs_workflows";
+    "https://github.com/vemel/github_actions_js/tree/main/nodejs_workflows";
 export const PY_INDEX_URL =
-    "https://github.com/vemel/github_actions_js/tree/{ref}/python_workflows";
+    "https://github.com/vemel/github_actions_js/tree/main/python_workflows";
 
 export interface IIndex {
     url: string;

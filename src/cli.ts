@@ -43,19 +43,18 @@ export function getHelp(): string {
                     description: `Workflow name {bold <name>}.yml, {bold all}, or {bold installed}, default: {bold interactive mode}`
                 },
                 {
-                    name: "ref",
-                    alias: "r",
-                    typeLabel: "version",
-                    description:
-                        "Update workflows to a specific tag/branch, default: {bold main}"
-                },
-                {
                     name: "index",
                     alias: "i",
                     typeLabel: "url",
                     description:
-                        "Link to workflows index YAML file, supports {bold ref} placeholder",
+                        "Link to workflows directory {bold .github/workflows}",
                     type: String
+                },
+                {
+                    name: "ref",
+                    alias: "r",
+                    typeLabel: "version",
+                    description: "Update workflows to a specific tag/branch"
                 },
                 {
                     name: "path",
@@ -140,7 +139,7 @@ export function parseArgs(): Namespace {
     result.help = result.help || false;
     result.force = result.force || false;
     result.update = result.update || false;
-    result.ref = result.ref || "main";
+    result.ref = result.ref || "";
     result.path = result.path || ".";
     result.index = getIndexResource(result.index || "");
     return result;
