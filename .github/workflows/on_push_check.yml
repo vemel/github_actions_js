@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Starts on push to any branch
 # - Uses `npm` cache to improve performance
@@ -65,18 +65,18 @@ jobs:
         id: cache
         if: steps.scripts.outputs.result
         with:
+          github-actions-managed: true
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
-          github-actions-managed: true
       - name: Set up Node
         id: setup-node
         uses: actions/setup-node@v2
         with:
+          github-actions-managed: true
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
-          github-actions-managed: true
       - name: Install package
         id: install
         if: steps.scripts.outputs.result

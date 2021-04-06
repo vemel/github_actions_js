@@ -74,19 +74,20 @@ export async function chooseIndex(
                     break;
                 }
             }
+            const result = await WorkflowIndex.fromURL(
+                replaceRef(url, ref),
+                workflowsPath
+            );
             console.log(
                 `\nNext time you can run me with ${chalk.blue(
-                    `-i ${replaceRef(getShortcut(url), ref)}`
+                    `-i ${getShortcut(replaceRef(url, "main"))}`
                 )}\n`
             );
             config.set(
                 "indexes",
                 [url, ...indexes.filter(index => index !== url)].slice(0, 10)
             );
-            return await WorkflowIndex.fromURL(
-                replaceRef(url, ref),
-                workflowsPath
-            );
+            return result;
         });
 }
 

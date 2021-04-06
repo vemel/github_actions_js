@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Runs only if `NPM_TOKEN` secret is set
 # - Starts on Pull Request merge for `release/*` branch
@@ -84,8 +84,8 @@ jobs:
         if: steps.pull-request.outputs.result
         uses: actions/checkout@v2
         with:
-          ref: ${{ steps.pull-request.outputs.base }}
           github-actions-managed: true
+          ref: ${{ steps.pull-request.outputs.base }}
       - name: Get available scripts
         id: scripts
         if: steps.pull-request.outputs.result
@@ -110,9 +110,9 @@ jobs:
         id: setup-node
         if: steps.pull-request.outputs.result
         with:
+          github-actions-managed: true
           registry-url: https://registry.npmjs.org/
           node-version: 14
-          github-actions-managed: true
       - name: Install package
         id: install
         if: steps.pull-request.outputs.result

@@ -1,11 +1,14 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Starts on Pull Request merge for non-`release/*` branch
 # - Creates or updates a Release draft for Pull Request base branch
 # - Release draft notes are merged from existing notes and Pull Request notes
 # - Each entry added from Pull Request notes contains a link to the Pull Request
 # - Release draft suggested version is based on Release notes
+#
+# Environment:
+#   RELEASE_TYPE - Release suggested version: stable, rc, alpha, beta (default: `rc`)
 
 name: Update Release from Pull Request
 "on":

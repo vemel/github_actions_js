@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Starts on Pull Request opened or edited event
 # - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -62,8 +62,8 @@ jobs:
         id: notes
         uses: vemel/nextchange@0.1.0
         with:
-          set: ${{ steps.pull-request.outputs.body }}
           github-actions-managed: true
+          set: ${{ steps.pull-request.outputs.body }}
       - name: Update Pull Request labels
         id: update-labels
         uses: actions/github-script@v3

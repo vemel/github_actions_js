@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Starts only manually
 # - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
@@ -28,9 +28,9 @@ jobs:
         id: unreleased
         uses: vemel/nextchange@0.1.0
         with:
+          github-actions-managed: true
           get: Unreleased
           sanitize: true
-          github-actions-managed: true
       - name: Get or create Release draft
         uses: actions/github-script@v3
         id: release
@@ -78,17 +78,17 @@ jobs:
         id: notes
         uses: vemel/nextchange@0.1.0
         with:
-          set: ${{ steps.release.outputs.body }}
           github-actions-managed: true
+          set: ${{ steps.release.outputs.body }}
       - name: Get suggested version
         id: version
         uses: vemel/nextversion@0.1.1
         with:
+          github-actions-managed: true
           path: ./package.json
           type: semver
           release: ${{ github.event.inputs.release }}
           result: ${{ steps.notes.outputs.label }}
-          github-actions-managed: true
       - name: Update release draft
         id: update-release
         uses: actions/github-script@v3

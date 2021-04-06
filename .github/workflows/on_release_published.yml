@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
 #
 # - Starts on Release published
 # - Release notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -72,16 +72,16 @@ jobs:
         id: checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ steps.release.outputs.target }}
           github-actions-managed: true
+          ref: ${{ steps.release.outputs.target }}
       - name: Get new version
         id: version
         uses: vemel/nextversion@0.1.1
         with:
+          github-actions-managed: true
           path: ./package.json
           type: semver
           result: ${{ steps.release.outputs.tag }}
-          github-actions-managed: true
       - name: Set version
         id: set-version
         run: |
@@ -92,18 +92,18 @@ jobs:
         id: changelog
         uses: vemel/nextchange@0.1.0
         with:
+          github-actions-managed: true
           release: ${{ steps.version.outputs.result }}
           clear: true
           set: ${{ steps.release.outputs.body }}
-          github-actions-managed: true
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
         if: ${{ steps.version.outputs.is-prerelease == 'false' }}
         uses: vemel/nextchange@0.1.0
         with:
+          github-actions-managed: true
           release: Unreleased
           clear: true
-          github-actions-managed: true
       - name: Setup git credentials
         id: setup-git
         run: |
@@ -115,11 +115,11 @@ jobs:
         if: env.GPG_PRIVATE_KEY
         uses: crazy-max/ghaction-import-gpg@v3
         with:
+          github-actions-managed: true
           gpg-private-key: ${{ env.GPG_PRIVATE_KEY }}
           passphrase: ${{ env.GPG_PRIVATE_KEY_PASSPHRASE }}
           git-user-signingkey: true
           git-commit-gpgsign: true
-          github-actions-managed: true
       - name: Commit changes
         id: commit
         run: |
