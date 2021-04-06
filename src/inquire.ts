@@ -52,7 +52,7 @@ export async function chooseIndex(
                 let currentPath = ".";
                 while (true) {
                     currentPath = await inputLocalPath(currentPath);
-                    const url = pathToFileURL(currentPath).href;
+                    url = pathToFileURL(currentPath).href;
                     const index = await WorkflowIndex.fromFileURL(
                         url,
                         workflowsPath
@@ -69,7 +69,7 @@ export async function chooseIndex(
                         );
                         continue;
                     }
-                    return index;
+                    break;
                 }
             }
             console.log(
