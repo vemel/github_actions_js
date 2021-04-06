@@ -70,9 +70,9 @@ export class Check {
 
     private getTitle(): string {
         if (this._oldValue instanceof Step && this._oldValue.name)
-            return `step ${this._oldValue.name}`;
+            return `step ${this._oldValue.name || "unnamed"}`;
         if (this._newValue instanceof Step && this._newValue.name)
-            return `step ${this._newValue.name}`;
+            return `step ${this._newValue.name || "unnamed"}`;
         return this.item;
     }
 
@@ -84,7 +84,7 @@ export class Check {
         verb = verb ? `${verb} ` : "";
         const message = `${prefix} ${verb}${chalk.bold(this.action)}`;
         if (this.action === "kept")
-            return `${message}, because it is no longer managed`;
+            return `${message}, because it is not managed`;
         return message;
     }
 

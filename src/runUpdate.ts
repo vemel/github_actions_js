@@ -26,7 +26,7 @@ export async function runUpdate(
 ): Promise<void> {
     const remoteWorkflow = await workflowItem.getRemote();
     if (!workflowItem.existsLocally()) {
-        remoteWorkflow.job.steps.forEach(step => step.makeNonManaged());
+        remoteWorkflow.job.steps.forEach(step => step.makeManaged());
         await workflowItem.setLocal(remoteWorkflow.render());
         return;
     }

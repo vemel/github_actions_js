@@ -14,6 +14,7 @@ interface IStepWith {
 export interface IStepData {
     name?: string;
     id?: string;
+    uses?: string;
     with?: IStepWith;
     env?: IEnv;
     run?: string;
@@ -32,6 +33,10 @@ export class Step {
 
     get name(): string | null {
         return this.data.name || this.id || null;
+    }
+
+    get uses(): string | null {
+        return this.data.uses ? this.data.uses.split("@")[0] : null;
     }
 
     isManaged(): boolean {
@@ -121,8 +126,10 @@ export class Step {
         return this;
     }
 
-    hasSameId(step: Step): boolean {
-        if (this.id === step.id) return true;
+    isSame(step: Step): boolean {
+        if (this.id && step.id && this.id === step.id) return true;
+        if (this.name && step.name && this.name === step.name) return true;
+        if (this.uses && step.uses && this.uses === step.uses) return true;
         return false;
     }
 
@@ -132,7 +139,7 @@ export class Step {
 
     findIndex(steps: Array<Step>): number {
         for (let i = 0; i < steps.length; i++) {
-            if (this.hasSameId(steps[i])) return i;
+            if (this.isSame(steps[i])) return i;
         }
         return -1;
     }

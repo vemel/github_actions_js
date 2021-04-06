@@ -13,6 +13,7 @@ import {
 import { getCheckResult, logCheck, runCheck } from "./runCheck";
 import { runList, runListAll } from "./runList";
 import { logUpdate, runUpdate } from "./runUpdate";
+import { highlightURL } from "./urlUtils";
 import { Check } from "./workflow/check";
 import { WorkflowResource } from "./workflow/resource";
 
@@ -87,6 +88,8 @@ export async function runInteractive(args: Namespace): Promise<void> {
         console.log(`No workflows found in ${workflowIndex.url}`);
         return;
     }
+
+    console.log(`Using index ${highlightURL(workflowIndex.url)}`);
 
     const resources = await selectWorkflows(workflowIndex);
     if (args.list) {

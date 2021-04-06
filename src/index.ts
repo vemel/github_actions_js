@@ -9,6 +9,7 @@ import { runCheckAll } from "./runCheck";
 import { runInteractive } from "./runInteractive";
 import { runListAll } from "./runList";
 import { runUpdateAll } from "./runUpdate";
+import { highlightURL } from "./urlUtils";
 import {
     decapitalize,
     getCommandArgs,
@@ -38,13 +39,12 @@ async function main(): Promise<void> {
     }
 
     if (args.names.length === 0) {
-        await runInteractive(args);
-        // try {
-        //     await runInteractive(args);
-        // } catch (e) {
-        //     console.warn(chalk.red(`✗  ${e}`));
-        //     process.exit(1);
-        // }
+        try {
+            await runInteractive(args);
+        } catch (e) {
+            console.warn(chalk.red(`✗  ${e}`));
+            process.exit(1);
+        }
         process.exit(0);
     }
 
@@ -73,6 +73,7 @@ async function main(): Promise<void> {
             args.ref,
             path.join(args.path, LOCAL_WORKFLOWS_PATH)
         );
+        console.log(`Using index ${highlightURL(workflowIndex.url)}`);
         workflows = workflowIndex.getWorkflows(args.names);
     } catch (e) {
         console.log(chalk.red(`✗  ${e.message}`));

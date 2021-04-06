@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom indexes were not usable in interactive mode
 - Temporary downloads clean up on error
 - Added workflows were not listed as changed
+- Steps are discovered by `id`, `name`, then `uses`
 
 ## [0.7.0]
 ### Added

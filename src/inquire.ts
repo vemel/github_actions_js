@@ -3,7 +3,7 @@ import inquirer from "inquirer";
 import inquirerSelectDirectory from "inquirer-select-directory";
 import { pathToFileURL } from "url";
 
-import { INDEXES } from "./indexes";
+import { getIndexResource, INDEXES } from "./indexes";
 import { highlightURL } from "./urlUtils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
@@ -24,10 +24,8 @@ export async function chooseIndex(
                 message: "Select workflows repository",
                 choices: [
                     ...INDEXES.map(index => ({
-                        name: `${highlightURL(
-                            index.url.replace("{ref}", ref)
-                        )} ${chalk.grey(index.shortcut)}`,
-                        value: index.url
+                        name: highlightURL(index.url.replace("{ref}", ref)),
+                        value: index.shortcut
                     })),
                     {
                         name: `From GitHub URL ${chalk.grey(
@@ -73,9 +71,13 @@ export async function chooseIndex(
                 }
             }
             console.log(
-                `\nNext time you can run me with ${chalk.bold(`-i ${url}`)}\n`
+                `\nNext time you can run me with ${chalk.blue(`-i ${url}`)}\n`
             );
-            return await WorkflowIndex.fromURL(url, ref, workflowsPath);
+            return await WorkflowIndex.fromURL(
+                getIndexResource(url).url,
+                ref,
+                workflowsPath
+            );
         });
 }
 
