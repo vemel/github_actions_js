@@ -8,7 +8,6 @@ relative_links:
   collections: true
 include:
   - README.md
-  - workflows/README.md
-  - workflows_py/README.md
-  - CUSTOM.md
+  - nodejs_workflows/README.md
+  - python_workflows/README.md
   - CONTRIBUTING.md
