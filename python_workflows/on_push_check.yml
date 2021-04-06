@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/python_workflows/README.md
 #
 # --- How to modify this workflow and still get updates ---
 # - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update

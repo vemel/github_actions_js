@@ -23,7 +23,6 @@ Comes with awesome packs for [Node.js](./workflows/README.md) and [Python](./wor
     - [Simple, no-force update](#simple-no-force-update)
     - [Force update](#force-update)
     - [CLI arguments](#cli-arguments)
-  - [Example](#example)
   - [Version 1.0.0 checklist](#version-100-checklist)
   - [Versioning](#versioning)
   - [Latest changes](#latest-changes)
@@ -64,9 +63,10 @@ But imagine, what if we could...
 And finally, what if we could add these best practices for a new project with a single command.
 
 Let's start today:
-- CI/CD for Node.js projects [installation guide](./workflows/README.md)
-- CI/CD for Python projects [installation guide](./workflows_py/README.md)
-- Create and manage your own Actions pack [guide](./CUSTOM.md)
+- CI/CD for Node.js projects [installation guide](./nodejs_workflows/README.md)
+- CI/CD for Python projects [installation guide](./python_workflows_py/README.md)
+- Or provide path to any GitHub repository to clone their workflows (run `ghactions`, then select `From GitHub URL`)
+- Or even clone workflows from your local path (run `ghactions`, then select `From local folder`)
 
 ## Advanced usage
 
@@ -101,87 +101,6 @@ Let's start today:
 | `-c` | `--clean` | | Do not add `github-actions-managed` marker to workflow steps |
 | `-h` | `--help` | | Print this usage guide |
 | `-v` | `--version` | | Show package version |
-
-## Example
-
-We want to announce all pushes to our repos to our Slack, so let's create
-a workflow template in our index repository:
-
-```yaml
-name: Send Slack message on push
-"on":
-  push: {}
-jobs:
-  slack-message:
-    runs-on: ubuntu:latest
-    env:
-      PROJECT_NAME: some project
-    steps:
-      - name: Checkout current branch
-        id: checkout
-        uses: actions/checkout@v1
-      - name: Collect changes
-        id: changes
-        run: |
-          const collector = require('./collector')
-          core.setOutput('result', collector.collect());
-      - name: Send Slack message
-        id: message
-        run: |
-          CHANGES=${{ toJSON(steps.changes.outputs.result) }}
-          MESSAGE="We have just updated our ${PROJECT_NAME}! ${CHANGES}"
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"${MESSAGE}\"}" \
-            ${{ secrets.SLACK_WEBHOOK }}
-```
-
-Okay, now we install it to any project with `ghactions -i ${INDEX_URL} -u all`
-We can change `PROJECT_NAME` env variable for every project to correctly show what project it was.
-
-In a project we will have something like this after modification (except for comments)
-
-```yaml
-name: Send Slack message on push
-"on":
-  push: {}
-jobs:
-  slack-message:
-    runs-on: ubuntu:latest
-    env:
-      PROJECT_NAME: awesomelib # we changed project name
-    steps:
-       # notice github-actions-managed line here
-      - name: Checkout current branch
-        id: checkout
-        uses: actions/checkout@v1
-        with:
-          github-actions-managed: true
-      # and in this step
-      # these lines mean that these steps can be updated wuth ghactions -i ${INDEX_URL} -u all
-      # if these steps were changed remotely
-      - name: Collect changes
-        id: changes
-        run: |
-            # github-actions-managed: true
-          const collector = require('./collector')
-          core.setOutput('result', collector.collect());
-      - name: Send Slack message
-        id: message
-        # if you want steps to survive updates, remove this line or set to false
-        run: |
-            # github-actions-managed: false
-            # ^^ cool, this step will not be affected by updates even if it has been changed remotely
-            CHANGES=${{ toJSON(steps.changes.outputs.result) }}
-            MESSAGE="We have just updated our ${PROJECT_NAME}! ${CHANGES}"
-            curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"${MESSAGE}\"}" \
-              ${{ secrets.SLACK_WEBHOOK }}
-      - name: Extra step
-        run: |
-          echo "This step is local-only, so updates do not touch it"
-```
-
-And if there are remote changes other than steps that we want to apply, we can use `--force` flag.
 
 ## Version 1.0.0 checklist
 - [x] Unify `check` and `update` reports

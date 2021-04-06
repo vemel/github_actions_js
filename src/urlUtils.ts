@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "fs";
 import http from "http";
 import https from "https";
@@ -44,4 +45,32 @@ export function joinURL(base: string, newPath: string): string {
     if (!base.endsWith("/")) oldPathname = path.dirname(oldPathname);
     const pathname = path.join(oldPathname, newPath);
     return `${origin}${pathname}`;
+}
+
+export function isGitHubURL(url: string): boolean {
+    return new URL(url).origin.endsWith("github.com");
+}
+
+export function isFileURL(url: string): boolean {
+    return new URL(url).protocol === "file:";
+}
+
+export function highlightURL(url: string): string {
+    if (isGitHubURL(url)) {
+        const parsedURL = new URL(url);
+        const [
+            ,
+            owner,
+            repo,
+            tree,
+            ref,
+            ...directories
+        ] = parsedURL.pathname.split("/");
+        return `${chalk.grey(parsedURL.origin)}/${chalk.blue(
+            owner
+        )}/${chalk.blue(repo)}/${chalk.grey(tree)}/${chalk.grey(
+            ref
+        )}/${directories.join("/")}`;
+    }
+    return url;
 }

@@ -39,6 +39,12 @@ async function main(): Promise<void> {
 
     if (args.names.length === 0) {
         await runInteractive(args);
+        // try {
+        //     await runInteractive(args);
+        // } catch (e) {
+        //     console.warn(chalk.red(`✗  ${e}`));
+        //     process.exit(1);
+        // }
         process.exit(0);
     }
 
@@ -62,8 +68,8 @@ async function main(): Promise<void> {
     let workflowIndex: WorkflowIndex;
     let workflows: Array<WorkflowResource>;
     try {
-        workflowIndex = await WorkflowIndex.download(
-            args.indexResource.url || JS_INDEX_URL,
+        workflowIndex = await WorkflowIndex.fromURL(
+            args.index || JS_INDEX_URL,
             args.ref,
             path.join(args.path, LOCAL_WORKFLOWS_PATH)
         );

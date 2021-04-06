@@ -1,47 +1,32 @@
-import yaml from "js-yaml";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
 
-import { download, joinURL } from "../urlUtils";
-import { IWorkflow, WorkflowResource } from "./resource";
-
-export interface IWorkflowIndex {
-    name: string;
-    id: string;
-    documentation?: string;
-    workflows: Array<IWorkflow>;
-}
+import { listWorkflowURLs } from "./../github";
+import { isFileURL, isGitHubURL } from "./../urlUtils";
+import { WorkflowResource } from "./resource";
 
 export class WorkflowIndex {
     url: string;
-    data: IWorkflowIndex;
     name: string;
+    names: Array<string>;
     workflowsPath: string;
+    shortcut: string;
     private _workflows: Array<WorkflowResource>;
 
-    constructor(url: string, data: IWorkflowIndex, workflowsPath: string) {
-        this.data = data;
+    constructor(
+        url: string,
+        workflowsPath: string,
+        workflowURLs: Array<string>
+    ) {
         this.url = url;
-        this.name = this.data.name;
+        this.name = url;
         this.workflowsPath = workflowsPath;
-        this._workflows = this.data.workflows.map(
-            data =>
-                new WorkflowResource(
-                    data,
-                    this.workflowsPath,
-                    this.getURL(data.url),
-                    this.data
-                )
+        this._workflows = workflowURLs.map(
+            url => new WorkflowResource(url, this.workflowsPath)
         );
-    }
-
-    get names(): Array<string> {
-        return this.data.workflows.map(w => w.name);
-    }
-
-    getURL(url: string): string {
-        if (url.startsWith("./")) {
-            return joinURL(this.url, url);
-        }
-        return url;
+        this.names = this._workflows.map(w => w.name);
+        this.shortcut = "";
     }
 
     getWorkflow(name: string): WorkflowResource {
@@ -77,14 +62,42 @@ export class WorkflowIndex {
         return result;
     }
 
-    static async download(
+    static async fromURL(
         url: string,
         ref: string,
         workflowsPath: string
     ): Promise<WorkflowIndex> {
         url = url.replace("{ref}", ref);
-        const content = await download(url);
-        const data = yaml.load(content) as IWorkflowIndex;
-        return new WorkflowIndex(url, data, workflowsPath);
+        if (isFileURL(url))
+            return WorkflowIndex.fromFileURL(url, workflowsPath);
+        if (isGitHubURL(url))
+            return WorkflowIndex.fromGitHubURL(url, workflowsPath);
+        throw new Error(
+            `URL ${url} is not supported, provide https://github.com URL or file url`
+        );
+    }
+
+    static async fromGitHubURL(
+        url: string,
+        workflowsPath: string
+    ): Promise<WorkflowIndex> {
+        const result = new WorkflowIndex(
+            url,
+            workflowsPath,
+            await listWorkflowURLs(url)
+        );
+        return result;
+    }
+
+    static async fromFileURL(
+        url: string,
+        workflowsPath: string
+    ): Promise<WorkflowIndex> {
+        const rootPath = fileURLToPath(url);
+        const files = fs.readdirSync(rootPath);
+        const workflows: Array<string> = files
+            .filter(filePath => path.parse(filePath).ext === ".yml")
+            .map(filePath => pathToFileURL(path.join(rootPath, filePath)).href);
+        return new WorkflowIndex(url, workflowsPath, workflows);
     }
 }

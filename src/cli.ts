@@ -3,7 +3,6 @@ import commandLineUsage from "command-line-usage";
 
 import { DOCS_URL } from "./constants";
 import { getIndexResource } from "./indexes";
-import IndexResource from "./workflow/indexResource";
 
 export interface Namespace {
     help: boolean;
@@ -16,8 +15,7 @@ export interface Namespace {
     list: boolean;
     diff: boolean;
     clean: boolean;
-    index?: string;
-    indexResource: IndexResource;
+    index: string;
 }
 
 export function getHelp(): string {
@@ -144,6 +142,6 @@ export function parseArgs(): Namespace {
     result.update = result.update || false;
     result.ref = result.ref || "main";
     result.path = result.path || ".";
-    result.indexResource = getIndexResource(result.index || "");
+    result.index = getIndexResource(result.index || "").url;
     return result;
 }

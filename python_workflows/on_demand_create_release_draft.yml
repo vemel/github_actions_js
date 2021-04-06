@@ -1,5 +1,5 @@
-# This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
+# This workflow provided by GitHub Actions Manager project
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/python_workflows/README.md
 #
 # - Starts only manually
 # - Can be used if you do not enforce Pull Request-based updates and commit directly to `target` branch
@@ -22,21 +22,17 @@ jobs:
       - name: Checkout Release target branch
         id: checkout
         uses: actions/checkout@v2
-        with:
-          github-actions-managed: true
       - name: Get Unreleased notes
         id: unreleased
         uses: vemel/nextchange@0.1.0
         with:
           get: Unreleased
           sanitize: true
-          github-actions-managed: true
       - name: Get or create Release draft
         uses: actions/github-script@v3
         id: release
         with:
           script: |
-            // github-actions-managed: true
             let release = null;
             const baseBranch = ${{ toJSON(github.event.ref) }}.replace("refs/heads/", "");
             const unreleased = ${{ toJSON(steps.unreleased.outputs.result) }};
@@ -79,22 +75,19 @@ jobs:
         uses: vemel/nextchange@0.1.0
         with:
           set: ${{ steps.release.outputs.body }}
-          github-actions-managed: true
       - name: Get suggested version
         id: version
         uses: vemel/nextversion@0.1.1
         with:
           path: ./package.json
-          type: semver
+          type: pep440
           release: ${{ github.event.inputs.release }}
           result: ${{ steps.notes.outputs.label }}
-          github-actions-managed: true
       - name: Update release draft
         id: update-release
         uses: actions/github-script@v3
         with:
           script: |
-            // github-actions-managed: true
             const releaseId = ${{ steps.release.outputs.id }};
             core.info(`Release ID: ${releaseId}`);
 

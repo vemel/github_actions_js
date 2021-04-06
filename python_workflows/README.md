@@ -1,28 +1,28 @@
-# GitHub Actions Manager
+# GitHub Actions for Python projects
 
-- [GitHub Actions Manager](#github-actions-for-nodejs-projects)
+- [GitHub Actions for Python projects](#github-actions-for-python-projects)
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
+  - [TODO](#todo)
   - [Secrets](#secrets)
   - [Available workflows](#available-workflows)
     - [Run style checks and unit tests](#run-style-checks-and-unit-tests)
     - [Update Pull Request labels](#update-pull-request-labels)
     - [Update Release from Pull Request](#update-release-from-pull-request)
     - [Create Release Pull Request](#create-release-pull-request)
-    - [Publish to NPM](#publish-to-npm)
+    - [Publish to PyPI](#publish-to-pypi)
     - [Create Release draft](#create-release-draft)
 
 ## Installation
 
 ```bash
-# install globally or locally
+# install globally
 npm i -g github-actions
-# npm i --save-dev github-actions
 
 # run interactive manager
 # in a GitHub repository root
-ghactions -i node
+ghactions -i python
 ```
 
 Index: [index.yml](./index.yml)
@@ -36,7 +36,7 @@ Index: [index.yml](./index.yml)
 ## Zen
 - Enforce best practices for versioning and changelog in a passive-aggressive way
 - Write Release and Pull Request notes in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
-- Follow [SemVer](https://semver.org/) versioning schema
+- Follow [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning schema
 - Noone likes to write and assemble Release notes, so leave it to automation
 - Always leave a final decision to a human in case automation goes crazy
 - All actions use only Node.js 12 for speed and stability
@@ -44,11 +44,13 @@ Index: [index.yml](./index.yml)
 - Full compatibility with [nektos/act](https://github.com/nektos/act) for local execution
 - Do not try to build one-fits-all soultion, provide customization instead
 
+## TODO
+- [ ] Add `pytest-cov` support
+
 ## Secrets
-- `CODECOV_TOKEN` - Token for https://codecov.io/ coverage report
 - `GPG_PRIVATE_KEY` - Key to sign commits https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
 - `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
-- `NPM_TOKEN` - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
+- `PYPI_PASSWORD` - Password for `__token__` username for https://pypi.org/
 
 ## Available workflows
 ### Run style checks and unit tests
@@ -56,25 +58,17 @@ Workflow: [on_push_check.yml](./on_push_check.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_push_check
+ghactions -i python -u on_push_check
 ```
 
 - Starts on push to any branch
-- Uses `npm` cache to improve performance
-- Runs linting if `lint` script is available in `npm run`
-- Runs unit tests if `test` script is available in `npm run`
-- Runs `test-cov` script if it is available in `npm run`
-- Sends test coverage report to https://codecov.io/ if `CODECOV_TOKEN` secret is set
-
-**Environment**
-
-- `LINT_SCRIPT` - npm run script to run for code style check if available (default: `lint`)
-- `TEST_SCRIPT` - npm run script to run for testing if available (default: `test`)
-- `TEST_COVERAGE_SCRIPT` - npm run script to run for test coverage if available (default: `test-cov`)
-
-**Secrets**
-
-- `CODECOV_TOKEN` - Token for https://codecov.io/ coverage report
+- Installs package with `poetry`, `pipenv` or `requirements[-dev].txt`
+- Caches installed Python dependencies
+- Runs `flake8` if it is installed
+- Runs `pylint` if it is installed
+- Runs `mypy` if it is installed
+- Runs `pyright` if `pyrightconfig.json` file exists
+- Runs `pytest` if it is installed
 
 
 ### Update Pull Request labels
@@ -82,7 +76,7 @@ Workflow: [on_pull_opened_or_edited.yml](./on_pull_opened_or_edited.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_pull_opened_or_edited
+ghactions -i python -u on_pull_opened_or_edited
 ```
 
 - Starts on Pull Request opened or edited event
@@ -98,7 +92,7 @@ Workflow: [on_pull_merged.yml](./on_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_pull_merged
+ghactions -i python -u on_pull_merged
 ```
 
 - Starts on Pull Request merge for non-`release/*` branch
@@ -117,7 +111,7 @@ Workflow: [on_release_published.yml](./on_release_published.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_release_published
+ghactions -i python -u on_release_published
 ```
 
 - Starts on Release published
@@ -134,24 +128,24 @@ ghactions -i node -u on_release_published
 - `GPG_PRIVATE_KEY_PASSPHRASE` - Passphrase for GPG private key
 
 
-### Publish to NPM
+### Publish to PyPI
 Workflow: [on_release_pull_merged.yml](./on_release_pull_merged.yml)
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_release_pull_merged
+ghactions -i python -u on_release_pull_merged
 ```
 
-- Runs only if `NPM_TOKEN` secret is set
+- Runs only if `PYPI_PASSWORD` secret is set
 - Starts on Pull Request merge for `release/*` branch
 - Uses Pull Request branch for deployment, so released version contains only changes
   from base branch when Release had been published
 - Builds package if `build` script is available in `package.json`
-- Publishes new version to [npm](https://www.npmjs.com/)
+- Publishes new version to [PyPI](https://pypi.org/)
 
 **Secrets**
 
-- `NPM_TOKEN` - Token for npm publishing https://docs.npmjs.com/creating-and-viewing-access-tokens
+- `PYPI_PASSWORD` - Password for `__token__` username for https://pypi.org/
 
 
 ### Create Release draft
@@ -159,7 +153,7 @@ Workflow: [on_demand_create_release_draft.yml](./on_demand_create_release_draft.
 
 ```bash
 # install this action to .github/workflows
-ghactions -i node -u on_demand_create_release_draft
+ghactions -i python -u on_demand_create_release_draft
 ```
 
 - Starts only manually

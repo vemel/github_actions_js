@@ -1,54 +1,117 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
+import inquirerSelectDirectory from "inquirer-select-directory";
+import { pathToFileURL } from "url";
 
 import { INDEXES } from "./indexes";
-import IndexResource from "./workflow/indexResource";
+import { highlightURL } from "./urlUtils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
 
-export async function chooseIndex(localPath: string): Promise<IndexResource> {
-    const defaultIndex = INDEXES.find(index =>
-        index.markerFileExists(localPath)
-    );
+export async function chooseIndex(
+    url: string | undefined,
+    ref: string,
+    workflowsPath: string
+): Promise<WorkflowIndex> {
+    if (url) {
+        return WorkflowIndex.fromURL(url, ref, workflowsPath);
+    }
     return inquirer
         .prompt([
             {
-                name: "index",
+                name: "url",
                 type: "list",
-                default: defaultIndex?.url,
-                message: "What Workflows should we use here?",
+                message: "Select workflows repository",
                 choices: [
-                    ...INDEXES.map(index => {
-                        let name = `${index.name} ${chalk.grey(index.id)}`;
-                        if (index === defaultIndex)
-                            name = `${name} (looks like you have ${chalk.bold(
-                                index.markerFilePath
-                            )})`;
-                        return {
-                            name: name,
-                            value: index
-                        };
-                    }),
-                    { name: "Enter URL manually", value: null }
+                    ...INDEXES.map(index => ({
+                        name: `${highlightURL(
+                            index.url.replace("{ref}", ref)
+                        )} ${chalk.grey(index.shortcut)}`,
+                        value: index.url
+                    })),
+                    {
+                        name: `From GitHub URL ${chalk.grey(
+                            "https://github.com/<owner>/<repo>/tree/main/.github/workflows"
+                        )}`,
+                        value: "github"
+                    },
+                    {
+                        name: `From local folder ${chalk.grey(
+                            "other/project/.github/workflows"
+                        )}`,
+                        value: "path"
+                    }
                 ]
             }
         ])
-        .then(async ({ index }) => {
-            if (!index) {
-                const url = await inputIndex();
-                return new IndexResource(url, url, url);
+        .then(async ({ url }) => {
+            if (url === "github") {
+                url = await inputGitHubURL();
             }
-            return index;
+            if (url === "path") {
+                let currentPath = ".";
+                while (true) {
+                    currentPath = await inputLocalPath(currentPath);
+                    const url = pathToFileURL(currentPath).href;
+                    const index = await WorkflowIndex.fromFileURL(
+                        url,
+                        workflowsPath
+                    );
+                    if (!index.names.length) {
+                        console.log(
+                            chalk.red(
+                                `✗  Path ${chalk.bold(
+                                    currentPath
+                                )} does not have workflows, choose ${chalk.bold(
+                                    ".github/workflows"
+                                )} directory`
+                            )
+                        );
+                        continue;
+                    }
+                    return index;
+                }
+            }
+            console.log(
+                `\nNext time you can run me with ${chalk.bold(`-i ${url}`)}\n`
+            );
+            return await WorkflowIndex.fromURL(url, ref, workflowsPath);
         });
 }
 
-async function inputIndex(): Promise<string> {
+async function inputGitHubURL(): Promise<string> {
     return inquirer
         .prompt([
             {
                 name: "input",
                 type: "input",
-                message: `Enter full URL to ${chalk.bold("index.yml")}`
+                message: `Paste URL to ${chalk.bold(
+                    "<github_repo>/.github/workflows"
+                )} ${chalk.grey(
+                    "e.g. https://github.com/psf/black/tree/master/.github/workflows"
+                )}\n : `,
+                validate: async value => {
+                    const index = await WorkflowIndex.fromURL(value, "", "");
+                    if (index.names.length) return true;
+                    return `Path ${value} does not have workflows`;
+                }
+            }
+        ])
+        .then(({ input }) => input);
+}
+
+async function inputLocalPath(basePath: string): Promise<string> {
+    inquirer.registerPrompt("directory", inquirerSelectDirectory);
+    return inquirer
+        .prompt([
+            {
+                name: "input",
+                type: "directory",
+                basePath: basePath,
+                message: `Select path to ${chalk.bold(".github/workflows")}`,
+                options: {
+                    displayHidden: true
+                }
             }
         ])
         .then(({ input }) => input);
@@ -62,8 +125,7 @@ export async function createWorkflowsDir(path: string): Promise<boolean> {
                 type: "confirm",
                 message: `It looks like we do not have ${chalk.blue(
                     path
-                )} directory to store workflows. Create it?`,
-                choices: INDEXES.map(index => index.name)
+                )} directory to store workflows. Create it?`
             }
         ])
         .then(({ answer }) => answer);
@@ -88,12 +150,11 @@ export async function selectWorkflows(
             : []),
         ` All workflows below ${chalk.grey("all")}`,
         ...workflowIndex.getAllWorkflows().map(w => {
-            if (w.existsLocally()) {
-                return ` ${chalk.green(w.title)} ${chalk.grey(
-                    ` in ${w.path}`
-                )}`;
-            }
-            return ` ${w.title} ${chalk.grey(` in ${w.path}`)}`;
+            const title = w.getTitle(
+                w.existsLocally() ? "is installed to" : "can be installed to",
+                w.existsLocally() ? chalk.green : chalk.white
+            );
+            return ` ${title}`;
         })
     ];
     const message = hasInstalled

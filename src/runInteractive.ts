@@ -11,34 +11,29 @@ import {
     selectWorkflows
 } from "./inquire";
 import { getCheckResult, logCheck, runCheck } from "./runCheck";
-import { runList } from "./runList";
+import { runList, runListAll } from "./runList";
 import { logUpdate, runUpdate } from "./runUpdate";
 import { Check } from "./workflow/check";
 import { WorkflowResource } from "./workflow/resource";
-import { WorkflowIndex } from "./workflow/workflowIndex";
 
 async function logWorkflowChecks(
     resources: Array<WorkflowResource>,
     args: Namespace
 ): Promise<Array<[WorkflowResource, Array<Check>]>> {
+    await Promise.all(resources.map(resource => resource.getRemote()));
     const checkLists = await Promise.all(
-        resources.map(workflow => runCheck(workflow, args.force, args.clean))
+        resources.map(resource => runCheck(resource, args.force, args.clean))
     );
-    const changedResources: Array<WorkflowResource> = [];
     const result: Array<[WorkflowResource, Array<Check>]> = [];
     resources.forEach((resource, index) => {
         const checks = checkLists[index];
         result.push([resource, checks]);
-        const updateChecks = checks.filter(check =>
-            check.isApplied(args.force)
-        );
-        if (updateChecks.length) changedResources.push(resource);
         if (resource.existsLocally()) {
             console.log(resource.getTitle());
             checks.forEach(check => logCheck(check, args.force, args.diff));
             logCheck(getCheckResult(resource, checks, args.force));
         } else {
-            runList(resource);
+            runList(resource, resource.getRemoteCached());
         }
     });
     return result;
@@ -87,34 +82,22 @@ export async function runInteractive(args: Namespace): Promise<void> {
     if (!(await checkLocalPath(localPath))) {
         return;
     }
-
-    if (!args.indexResource.url) {
-        args.indexResource = await chooseIndex(args.path);
-        console.log("");
-        console.log(
-            `Next time run me with ${chalk.blue(
-                `-i ${args.indexResource.id}`
-            )} to skip this question`
-        );
-        console.log("");
+    const workflowIndex = await chooseIndex(args.index, args.ref, localPath);
+    if (!workflowIndex.names.length) {
+        console.log(`No workflows found in ${workflowIndex.url}`);
+        return;
     }
-    console.log(`Downloading index ${chalk.blue(args.indexResource.name)} ...`);
-    console.log("");
 
-    const workflowIndex = await WorkflowIndex.download(
-        args.indexResource.url,
-        args.ref,
-        localPath
-    );
     const resources = await selectWorkflows(workflowIndex);
     if (args.list) {
-        resources.forEach(resource => runList(resource));
+        await runListAll(resources);
         return;
     }
     while (true) {
         const resourceCheckLists = await logWorkflowChecks(resources, args);
         const changedResourceChecks = resourceCheckLists.filter(
-            ([, checks]) =>
+            ([resource, checks]) =>
+                !resource.existsLocally() ||
                 checks.filter(check => check.isApplied(args.force)).length
         );
         const changedResources = changedResourceChecks.map(
@@ -149,6 +132,6 @@ export async function runInteractive(args: Namespace): Promise<void> {
 
     console.log("");
     console.log(
-        "My job here is done! Start me from time to time. Bye for now!"
+        "My job here is done! Start me from time to time to sync up changes. Bye for now!"
     );
 }

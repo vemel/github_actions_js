@@ -1,4 +1,4 @@
-# This workflow provided by GitHub Actions for Node.js projects
+# This workflow provided by GitHub Actions Manager
 # Documentation: https://github.com/vemel/github_actions_js/blob/main/workflows/README.md
 #
 # - Starts on Pull Request merge for non-`release/*` branch

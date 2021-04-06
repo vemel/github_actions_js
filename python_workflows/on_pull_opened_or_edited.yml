@@ -1,5 +1,5 @@
 # This workflow provided by GitHub Actions Manager
-# Documentation: https://github.com/vemel/github_actions_js/blob/main/nodejs_workflows/README.md
+# Documentation: https://github.com/vemel/github_actions_js/blob/main/python_workflows/README.md
 #
 # - Starts on Pull Request opened or edited event
 # - Pull Request notes must be in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
@@ -57,6 +57,7 @@ jobs:
             core.setOutput('number', pullRequest.number);
             core.setOutput('body', pullRequest.body);
             core.setOutput('labels', pullRequest.labels.map(data => data.name));
+            return true;
       - name: Analyze PR notes
         id: notes
         uses: vemel/nextchange@0.1.0

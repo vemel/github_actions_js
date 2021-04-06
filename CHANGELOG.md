@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support `file:///` protocol for index URL
+- Support any GitHub repositories as index
+- Interactive mode allows to choose GitHub repo
+- Interactive mode allows to choose local directory
 
 ### Fixed
 - Custom indexes were not usable in interactive mode
 - Temporary downloads clean up on error
+- Added workflows were not listed as changed
 
 ## [0.7.0]
 ### Added

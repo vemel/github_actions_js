@@ -6,64 +6,28 @@ import { promisify } from "util";
 import { UTF8 } from "../constants";
 import { download } from "../urlUtils";
 import { Workflow } from "./workflow";
-import { IWorkflowIndex } from "./workflowIndex";
-
-export interface ISecret {
-    name: string;
-    description?: string;
-}
-
-interface IEnv {
-    name: string;
-    description?: string;
-    default?: string;
-}
-
-export interface IWorkflow {
-    name: string;
-    url: string;
-    title: string;
-    description?: string;
-    secrets?: Array<ISecret>;
-    env?: Array<IEnv>;
-}
 
 export class WorkflowResource {
-    data: IWorkflow;
     path: string;
     url: string;
-    indexData: IWorkflowIndex;
+    name: string;
     private _local: Workflow | null = null;
     private _remote: Workflow | null = null;
 
-    constructor(
-        data: IWorkflow,
-        workflowsPath: string,
-        url: string,
-        indexData: IWorkflowIndex
-    ) {
-        this.data = data;
-        this.path = path.join(workflowsPath, this.fileName);
+    constructor(url: string, workflowsPath: string) {
         this.url = url;
-        this.indexData = indexData;
-    }
-
-    get name(): string {
-        return this.data.name;
+        this.name = path.parse(url).name;
+        this.path = path.join(workflowsPath, this.fileName);
     }
 
     get title(): string | null {
-        return this.data.title || null;
+        if (this._local) return this._local.name;
+        if (this._remote) return this._remote.name;
+        return this.name;
     }
 
-    getTitle(action = "in"): string {
-        return `${this.title} (${chalk.bold(
-            chalk.blue(this.name)
-        )}) ${chalk.grey(`${action} ${this.path}`)}`;
-    }
-
-    get description(): string | null {
-        return this.data.description || null;
+    getTitle(action = "in", color: chalk.Chalk = chalk.blue): string {
+        return `${color(this.title)} ${chalk.grey(`${action} ${this.path}`)}`;
     }
 
     get fileName(): string {
@@ -99,32 +63,12 @@ export class WorkflowResource {
         if (this._remote) return this._remote;
         const content = await download(this.url);
         this._remote = Workflow.fromString(content);
-        this._remote.commentLines = this.getCommentLines();
         this._remote.job.steps.map(step => step.makeManaged());
         return this._remote;
     }
 
-    getCommentLines(): Array<string> {
-        const result: Array<string> = [];
-        result.push(`This workflow provided by ${this.indexData.name}`);
-        if (this.indexData.documentation) {
-            result.push(`Documentation: ${this.indexData.documentation}`);
-        }
-        if (this.data.description) {
-            result.push("");
-            result.push(...this.data.description.trim().split(/\r?\n/));
-        }
-        if (this.data.secrets) {
-            result.push("");
-            result.push("Secrets:");
-            result.push(
-                ...this.data.secrets.map(secret => {
-                    if (secret.description)
-                        return `  ${secret.name} - ${secret.description}`;
-                    return `  ${secret.name}`;
-                })
-            );
-        }
-        return result;
+    getRemoteCached(): Workflow {
+        if (this._remote) return this._remote;
+        throw new Error("Remote workflow is not cached yet");
     }
 }

@@ -1,6 +1,6 @@
-# GitHub Actions for Node.js projects
+# GitHub Actions Manager
 
-- [GitHub Actions for Node.js projects](#github-actions-for-nodejs-projects)
+- [GitHub Actions Manager](#github-actions-for-nodejs-projects)
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
