@@ -4,7 +4,7 @@ import inquirer from "inquirer";
 import inquirerSelectDirectory from "inquirer-select-directory";
 import { pathToFileURL } from "url";
 
-import { getShortcut, INDEXES } from "./indexes";
+import { getIndexResource, getShortcut, INDEXES } from "./indexes";
 import { highlightURL, replaceRef } from "./urlUtils";
 import { WorkflowResource } from "./workflow/resource";
 import { WorkflowIndex } from "./workflow/workflowIndex";
@@ -17,8 +17,12 @@ export async function chooseIndex(
     if (url) {
         return WorkflowIndex.fromURL(replaceRef(url, ref), workflowsPath);
     }
-    const config = new Configstore("github-actions", { indexes: [...INDEXES] });
+    const defaultIndexes = INDEXES.map(index => index.url) as Array<string>;
+    const config = new Configstore("github-actions", {
+        indexes: defaultIndexes
+    });
     const indexes: Array<string> = config.get("indexes");
+    indexes.push(...defaultIndexes.filter(index => !indexes.includes(index)));
     return inquirer
         .prompt([
             {
@@ -27,10 +31,18 @@ export async function chooseIndex(
                 message: "Select repository with workflows",
                 pageSize: 30,
                 choices: [
-                    ...indexes.map(index => ({
-                        name: highlightURL(replaceRef(index, ref)),
-                        value: index
-                    })),
+                    ...indexes.map(url => {
+                        const index = getIndexResource(url);
+                        const title = index
+                            ? `${index.title} ${highlightURL(
+                                  replaceRef(url, ref)
+                              )}`
+                            : highlightURL(replaceRef(url, ref));
+                        return {
+                            name: title,
+                            value: url
+                        };
+                    }),
                     {
                         name: `From GitHub URL ${chalk.grey(
                             "https://github.com/<owner>/<repo>/tree/main/.github/workflows"
@@ -80,13 +92,14 @@ export async function chooseIndex(
             );
             console.log(
                 `\nNext time you can run me with ${chalk.blue(
-                    `-i ${getShortcut(replaceRef(url, "main"))}`
+                    `-i ${getShortcut(url) || replaceRef(url, ref)}`
                 )}\n`
             );
-            config.set(
-                "indexes",
-                [url, ...indexes.filter(index => index !== url)].slice(0, 10)
-            );
+            const newIndexes = [
+                url,
+                ...indexes.filter(index => index !== url)
+            ] as Array<string>;
+            config.set("indexes", newIndexes.slice(0, 10));
             return result;
         });
 }

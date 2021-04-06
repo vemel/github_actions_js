@@ -45,13 +45,26 @@ describe("workflow", () => {
         expect(clone.commentLines).toEqual(["comment", "", "line2"]);
         clone.commentLines = [];
 
-        expect(new Workflow({ name: "test" }, []).job.data).toEqual({
+        expect(
+            new Workflow(
+                {
+                    name: "test",
+                    jobs: {
+                        test: {
+                            "runs-on": "ubuntu:latest",
+                            steps: []
+                        }
+                    }
+                },
+                []
+            ).getJob("test").data
+        ).toEqual({
             "runs-on": "ubuntu:latest",
             steps: []
         });
-        expect(clone.job.steps.length).toBe(1);
-        clone.job = new Job({ "runs-on": "test", steps: [] });
-        new Workflow({ name: "test" }, []).job = workflow.job;
+        expect(clone.getJob("main").steps.length).toBe(1);
+        clone.setJob(new Job("main", { "runs-on": "test", steps: [] }));
+        clone.deleteJob("main");
     });
 
     test("render", () => {

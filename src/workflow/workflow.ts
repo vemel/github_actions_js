@@ -38,17 +38,27 @@ export class Workflow {
         this.data.on = value;
     }
 
-    get job(): Job {
-        const jobs = Object.values(this.data.jobs || {});
-        if (jobs.length) return new Job(jobs[0]);
-        return new Job({ "runs-on": "ubuntu:latest", steps: [] });
+    get jobNames(): Array<string> {
+        return Object.keys(this.data.jobs || {});
     }
 
-    set job(value: Job) {
+    get jobs(): Array<Job> {
+        return this.jobNames.map(name => this.getJob(name));
+    }
+
+    getJob(name: string): Job {
+        const data = this.data.jobs?.[name];
+        if (!data) throw new Error(`Job ${name} not found`);
+        return new Job(name, data);
+    }
+
+    setJob(job: Job): void {
         if (!this.data.jobs) this.data.jobs = {};
-        const jobNames = Object.keys(this.data.jobs);
-        const jobName = jobNames.length ? jobNames[0] : "build";
-        this.data.jobs[jobName] = value.data;
+        this.data.jobs[job.name] = job.data;
+    }
+
+    deleteJob(name: string): void {
+        delete this.data.jobs?.[name];
     }
 
     render(): string {

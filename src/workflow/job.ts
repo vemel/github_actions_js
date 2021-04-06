@@ -17,8 +17,11 @@ export interface IJobData {
 }
 
 export class Job {
+    name: string;
     data: IJobData;
-    constructor(data: IJobData) {
+
+    constructor(name: string, data: IJobData) {
+        this.name = name;
         this.data = data;
     }
 
@@ -84,6 +87,6 @@ export class Job {
 
     clone(): Job {
         const newData = JSON.parse(JSON.stringify(this.data));
-        return new Job(newData);
+        return new Job(this.name, newData);
     }
 }

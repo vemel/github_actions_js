@@ -1,6 +1,6 @@
 # GitHub Actions Manager
 
-- [GitHub Actions Manager](#github-actions-for-nodejs-projects)
+- [GitHub Actions Manager](#github-actions-manager)
   - [Installation](#installation)
   - [How to use](#how-to-use)
   - [Zen](#zen)
@@ -31,7 +31,6 @@ Index: [index.yml](./index.yml)
 - Set 'github-actions-managed' to false on manual edit to prevent step overwrite on update
 - User-added steps survive update as well
 - Deleted steps are restored on update, so make them empty instead of removing
-- Do not add multiple jobs, only one job is supported
 
 ## Zen
 - Enforce best practices for versioning and changelog in a passive-aggressive way

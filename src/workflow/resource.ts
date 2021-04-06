@@ -63,7 +63,9 @@ export class WorkflowResource {
         if (this._remote) return this._remote;
         const content = await download(this.url);
         this._remote = Workflow.fromString(content);
-        this._remote.job.steps.map(step => step.makeManaged());
+        this._remote.jobs.forEach(job =>
+            job.steps.map(step => step.makeManaged())
+        );
         return this._remote;
     }
 

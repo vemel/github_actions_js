@@ -23,6 +23,8 @@ name: Update Release from Pull Request
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TYPE: rc
     steps:
       - name: Get Pull Request
         uses: actions/github-script@v3
@@ -200,5 +202,3 @@ jobs:
                 body: `Pull request notes were merged to release draft ${version}`,
             });
             core.info(`Comment URL: ${response.data.html_url}`);
-    env:
-      RELEASE_TYPE: rc

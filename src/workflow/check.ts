@@ -1,6 +1,7 @@
 import chalk from "chalk";
 
 import { yamlDump } from "./../utils";
+import { Job } from "./job";
 import { Step } from "./step";
 
 type TWorkflowPart =
@@ -8,6 +9,7 @@ type TWorkflowPart =
     | "top comment"
     | "workflow name"
     | "trigger"
+    | "job"
     | "job environment"
     | "job runner"
     | "job strategy"
@@ -69,10 +71,24 @@ export class Check {
     }
 
     private getTitle(): string {
-        if (this._oldValue instanceof Step && this._oldValue.name)
-            return `step ${this._oldValue.name || "unnamed"}`;
-        if (this._newValue instanceof Step && this._newValue.name)
-            return `step ${this._newValue.name || "unnamed"}`;
+        if (this.item === "step") {
+            if (this._oldValue instanceof Step) {
+                return `step ${this._oldValue.name || "unnamed"}`;
+            }
+            if (this._newValue instanceof Step) {
+                return `step ${this._newValue.name || "unnamed"}`;
+            }
+            return "step unnamed";
+        }
+        if (this.item === "job") {
+            if (this._oldValue instanceof Job) {
+                return `job ${this._oldValue.name}`;
+            }
+            if (this._newValue instanceof Job) {
+                return `job ${this._newValue.name}`;
+            }
+            return this.item;
+        }
         return this.item;
     }
 
@@ -93,7 +109,7 @@ export class Check {
     }
 
     get noForceMessage(): string {
-        return `${this.icon}  ${chalk.bold(this.item)} can be ${
+        return `${this.icon}  ${chalk.bold(this.getTitle())} can be ${
             this.action
         }, use ${chalk.bold("--force")} flag to apply`;
     }

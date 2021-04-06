@@ -26,7 +26,9 @@ export async function runUpdate(
 ): Promise<void> {
     const remoteWorkflow = await workflowItem.getRemote();
     if (!workflowItem.existsLocally()) {
-        remoteWorkflow.job.steps.forEach(step => step.makeManaged());
+        remoteWorkflow.jobs.forEach(job =>
+            job.steps.forEach(step => step.makeManaged())
+        );
         await workflowItem.setLocal(remoteWorkflow.render());
         return;
     }
@@ -37,7 +39,9 @@ export async function runUpdate(
         remoteWorkflow
     );
     if (removeMarker) {
-        newWorkflow.job.steps.forEach(step => step.makeNonManaged());
+        newWorkflow.jobs.forEach(job =>
+            job.steps.forEach(step => step.makeNonManaged())
+        );
     }
     await workflowItem.setLocal(newWorkflow.render());
 }

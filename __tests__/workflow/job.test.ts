@@ -2,7 +2,7 @@ import { Job } from "../../src/workflow/job";
 import { Step } from "../../src/workflow/step";
 
 describe("job", () => {
-    const job = new Job({
+    const job = new Job("main", {
         "runs-on": "runner",
         strategy: { matrix: [1, 2, 3] },
         env: { key: "value" },

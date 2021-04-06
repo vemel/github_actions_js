@@ -1,6 +1,7 @@
 import equal from "deep-equal";
 
 import { Check, TAction } from "./check";
+import { Job } from "./job";
 import { Step } from "./step";
 import { Workflow } from "./workflow";
 
@@ -19,15 +20,14 @@ export class Checker {
 
         return [
             ...this.getWorkflowChecks(update),
-            ...this.getJobChecks(update),
-            ...this.getStepChecks(update)
+            ...this.getJobsChecks(update)
         ];
     }
 
-    getStepErrors(): Array<string> {
+    getStepErrors(currentJob: Job): Array<string> {
         const stepIds = new Set();
         const result: Array<string> = [];
-        this.current.job.steps.forEach(step => {
+        currentJob.steps.forEach(step => {
             if (!step.id) return;
             if (stepIds.has(step.id))
                 result.push(`${step.name} step has duplicate id ${step.id}`);
@@ -36,9 +36,13 @@ export class Checker {
     }
 
     getErrors(): Array<Check> {
-        return this.getStepErrors().map(
-            error => new Check("error", "error", false, error)
-        );
+        const result = [] as Array<Check>;
+        this.current.jobs.forEach(job => {
+            this.getStepErrors(job).map(
+                error => new Check("error", "error", false, error)
+            );
+        });
+        return result;
     }
 
     static getAction(oldValue: unknown, newValue: unknown): TAction {
@@ -77,9 +81,29 @@ export class Checker {
         ];
     }
 
-    getJobChecks(update: Workflow): Array<Check> {
-        const currentJob = this.current.job;
-        const updateJob = update.job;
+    getJobsChecks(update: Workflow): Array<Check> {
+        const result = [] as Array<Check>;
+        update.jobNames.forEach(jobName => {
+            const updateJob = update.getJob(jobName);
+            if (!this.current.jobNames.includes(jobName)) {
+                result.push(new Check("job", "added", false, null, updateJob));
+                return;
+            }
+            const currentJob = this.current.getJob(jobName);
+            result.push(...this.getJobChecks(currentJob, updateJob));
+        });
+        this.current.jobNames
+            .filter(jobName => !update.jobNames.includes(jobName))
+            .map(jobName => {
+                const currentJob = this.current.getJob(jobName);
+                result.push(
+                    new Check("job", "deleted", true, currentJob, null)
+                );
+            });
+        return result;
+    }
+
+    getJobChecks(currentJob: Job, updateJob: Job): Array<Check> {
         return [
             new Check(
                 "job environment",
@@ -108,13 +132,14 @@ export class Checker {
                 true,
                 currentJob.runsIf,
                 updateJob.runsIf
-            )
+            ),
+            ...this.getStepChecks(currentJob, updateJob)
         ];
     }
 
-    getStepChecks(update: Workflow): Array<Check> {
-        const currentSteps = this.current.job.steps;
-        const updateSteps = update.job.steps;
+    getStepChecks(currentJob: Job, updateJob: Job): Array<Check> {
+        const currentSteps = currentJob.steps;
+        const updateSteps = updateJob.steps;
         return [
             ...currentSteps
                 .filter(step => step.findIndex(updateSteps) < 0)

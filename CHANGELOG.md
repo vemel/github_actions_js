@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Multiple jobs per workflow support
+- Actions for [Rust applications](https://github.com/actions-rs/example)
+
+### Fixed
+- Suggested `--force` updates were not showing step/job names correctly
+- Stored indexes are trimmed to last 10 used
 
 ## [0.8.0]
 ### Added
