@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.9.0]
 ### Added
 - Workflows for [Rust](https://github.com/actions-rs/example) projects
 - Workflows for [Go](https://github.com/mvdan/github-actions-golang) projects
@@ -15,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Suggested `--force` updates were not showing step/job names correctly
-- Stored indexes are trimmed to last 10 used
+- Stored indexes are trimmed to the last 20 used
 - Steps with the same data are considered the same
 - Steps diff for added/removed steps was incorrect
 - Accept `*.yaml` files as workflows
