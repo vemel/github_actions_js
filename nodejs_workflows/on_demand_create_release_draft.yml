@@ -6,6 +6,7 @@
 # - Creates or updates a release draft for `target` branch
 # - Release notes are populated from `Unreleased` section of `CHANGELOG.md`
 # - Sets suggested version as `name` and `tag` of the Release
+# - Project-agnostic, can be used on any kind of project, change path: ./package.json to path to your version file
 
 name: Create Release draft
 "on":

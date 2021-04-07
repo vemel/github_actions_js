@@ -105,6 +105,7 @@ ghactions -i node -u on_pull_merged
 - Release draft notes are merged from existing notes and Pull Request notes
 - Each entry added from Pull Request notes contains a link to the Pull Request
 - Release draft suggested version is based on Release notes
+- Project-agnostic, can be used on any kind of project, change `path: ./package.json` to path to your version file
 
 **Environment**
 
@@ -166,3 +167,4 @@ ghactions -i node -u on_demand_create_release_draft
 - Creates or updates a release draft for `target` branch
 - Release notes are populated from `Unreleased` section of `CHANGELOG.md`
 - Sets suggested version as `name` and `tag` of the Release
+- Project-agnostic, can be used on any kind of project, change `path: ./package.json` to path to your version file
