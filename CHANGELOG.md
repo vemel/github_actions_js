@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Multiple jobs per workflow support
 - Actions for [Rust applications](https://github.com/actions-rs/example)
+- Autocomplete repository root GitHub URLs with `/tree/master/.github/workflows`
 
 ### Fixed
 - Suggested `--force` updates were not showing step/job names correctly

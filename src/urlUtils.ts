@@ -99,9 +99,10 @@ export function replaceRef(url: string, ref: string): string {
             oldRef,
             ...directories
         ] = parsedURL.pathname.split("/");
-        parsedURL.pathname = `${owner}/${repo}/${tree}/${
-            ref || oldRef
-        }/${directories.join("/")}`;
+        const pathname = directories.join("/") || ".github/workflows";
+        parsedURL.pathname = `${owner}/${repo}/${tree || "tree"}/${
+            ref || oldRef || "master"
+        }/${pathname}`;
         return parsedURL.href;
     }
     return url;

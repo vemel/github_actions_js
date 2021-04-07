@@ -23,7 +23,7 @@ export function getHelp(): string {
         {
             header: "GitHub Actions Manager",
             content: [
-                "CLI tool to install and update GitHub Actions",
+                "CLI tool to install and update and share GitHub Actions workflows",
                 "",
                 `Documentation: ${DOCS_URL}`,
                 "",
