@@ -174,6 +174,10 @@ export async function selectWorkflows(
         "all",
         ...workflowIndex.names
     ];
+    const workflows = workflowIndex.getAllWorkflows();
+    await Promise.all(
+        workflows.filter(w => w.existsLocally()).map(w => w.getLocal())
+    );
     const choices = [
         ...(hasInstalled
             ? [
@@ -183,7 +187,7 @@ export async function selectWorkflows(
               ]
             : []),
         ` All workflows below ${chalk.grey("all")}`,
-        ...workflowIndex.getAllWorkflows().map(w => {
+        ...workflows.map(w => {
             const title = w.getTitle(
                 w.existsLocally() ? "is installed to" : "can be installed to",
                 w.existsLocally() ? chalk.green : chalk.white

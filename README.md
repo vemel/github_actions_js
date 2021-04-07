@@ -127,6 +127,7 @@ And finally, what if we could add these best practices for a new project with a 
 - [x] Generator for index READMEs
 - [x] Add `--clean` CLI flag to remove `github-actions-managed` flags
 - [ ] Interactive updates selection
+- [ ] Check workflow name and updates on index load
 
 ## Versioning
 

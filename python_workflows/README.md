@@ -61,7 +61,7 @@ ghactions -i python -u on_push_check
 ```
 
 - Starts on push to any branch
-- Installs package with `poetry`, `pipenv` or `requirements[-dev].txt`
+- Installs package with `poetry`, `pipenv`, `tox` or `requirements[-dev].txt`
 - Caches installed Python dependencies
 - Runs `flake8` if it is installed
 - Runs `pylint` if it is installed
