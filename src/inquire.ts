@@ -99,7 +99,7 @@ export async function chooseIndex(
                 url,
                 ...indexes.filter(index => index !== url)
             ] as Array<string>;
-            config.set("indexes", newIndexes.slice(0, 10));
+            config.set("indexes", newIndexes.slice(0, 30));
             return result;
         });
 }

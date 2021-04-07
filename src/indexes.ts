@@ -36,6 +36,12 @@ export const INDEXES: Array<IIndex> = [
             "https://github.com/dflook/terraform-github-actions/tree/master/example_workflows",
         title: "Terraform",
         shortcut: "terraform"
+    },
+    {
+        url:
+            "https://github.com/julia-actions/Example.jl/tree/action-tests/.github/workflows",
+        title: "Julia",
+        shortcut: "julia"
     }
 ];
 

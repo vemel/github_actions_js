@@ -19,7 +19,8 @@ Comes with awesome packs for
 [Node.js](./workflows/README.md),
 [Python](./workflows_py/README.md),
 [Go](https://github.com/mvdan/github-actions-golang),
-[Terraform](https://github.com/dflook/terraform-github-actions)
+[Terraform](https://github.com/dflook/terraform-github-actions),
+[Julia](https://github.com/julia-actions/Example.jl),
 and [Rust](https://github.com/actions-rs/example) projects.
 
 - [GitHub Actions Manager](#github-actions-manager)
@@ -74,6 +75,7 @@ And finally, what if we could add these best practices for a new project with a 
 - CI/CD for `Python` projects [installation guide](./python_workflows_py/README.md)
 - CI/CD for `Rust` projects by [@actions-rs](https://github.com/actions-rs/example)
 - CI/CD for `Go` projects by [@mvdan](https://github.com/mvdan/github-actions-golang)
+- CI/CD for `Julia` projects by [@julia-actions](https://github.com/julia-actions/Example.jl)
 - CI/CD for `Terraform` projects by [@dflook](https://github.com/dflook/terraform-github-actions)
 - Or provide path to any GitHub repository to clone their workflows (run `ghactions`, then select `From GitHub URL`)
 - Or even clone workflows from your local path (run `ghactions`, then select `From local folder`)

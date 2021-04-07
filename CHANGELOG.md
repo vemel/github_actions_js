@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Multiple jobs per workflow support
-- Actions for [Rust applications](https://github.com/actions-rs/example)
+- Workflows for [Rust](https://github.com/actions-rs/example) projects
+- Workflows for [Go](https://github.com/mvdan/github-actions-golang) projects
+- Workflows for [Terraform](https://github.com/dflook/terraform-github-actions) projects
+- Workflows for [Julia](https://github.com/julia-actions/Example.jl) projects
+- Multiple jobs in one workflow support
 - Autocomplete repository root GitHub URLs with `/tree/master/.github/workflows`
 
 ### Fixed
