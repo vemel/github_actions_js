@@ -11,7 +11,6 @@ describe("step", () => {
         expect(step.id).toBe("stepid");
         expect(step.name).toBe("stepname");
         expect(step.uses).toBe("using");
-        expect(step.equals(step.clone())).toBeTruthy();
         expect(new Step({ key: "value" }).name).toBe(null);
         expect(new Step({ name: "test" }).name).toBe("test");
         expect(new Step({ id: "test" }).name).toBe("test");
@@ -70,6 +69,15 @@ describe("step", () => {
                 script: "// github-actions-managed: true\nmyline\n  other"
             }
         });
+        expect(
+            new Step({
+                with: { "github-actions-managed": false },
+                name: "test"
+            }).makeManaged().data
+        ).toEqual({
+            with: { "github-actions-managed": true },
+            name: "test"
+        });
     });
 
     test("make non managed", () => {
@@ -104,5 +112,63 @@ describe("step", () => {
     test("clone", () => {
         const step = new Step({ id: "test", with: { script: "asd" } });
         expect(step.clone().id).toBe("test");
+    });
+
+    test("equals", () => {
+        const step = new Step({
+            run: "# github-actions-managed: true\nmyline"
+        });
+        expect(step.equals(step.clone())).toBeTruthy();
+        expect(step.equals(new Step({}))).toBeFalsy();
+    });
+
+    test("is same", () => {
+        expect(
+            new Step({
+                id: "test",
+                name: "test2"
+            }).isSame(
+                new Step({
+                    id: "test",
+                    name: "test3"
+                })
+            )
+        ).toBeTruthy();
+        expect(
+            new Step({
+                name: "test2"
+            }).isSame(
+                new Step({
+                    name: "test2"
+                })
+            )
+        ).toBeTruthy();
+        expect(
+            new Step({
+                name: "test2",
+                uses: "checkout@v2"
+            }).isSame(
+                new Step({
+                    uses: "checkout@v3"
+                })
+            )
+        ).toBeTruthy();
+        expect(
+            new Step({
+                name: "test2",
+                uses: "checkout@v2"
+            }).isSame(
+                new Step({
+                    name: "test3",
+                    uses: "checkout@v3"
+                })
+            )
+        ).toBeFalsy();
+        expect(new Step({}).isSame(new Step({}))).toBeTruthy();
+        expect(
+            new Step({}).isSame(
+                new Step({ with: { "github-actions-managed": true } })
+            )
+        ).toBeTruthy();
     });
 });

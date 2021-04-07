@@ -39,6 +39,11 @@ export class Step {
         return this.data.uses ? this.data.uses.split("@")[0] : null;
     }
 
+    get title(): string {
+        if (this.name) return `step ${this.name}`;
+        return "unnamed step";
+    }
+
     isManaged(): boolean {
         if (this.data.with?.["github-actions-managed"]) return true;
         if (this.data.run) {
@@ -115,7 +120,7 @@ export class Step {
             }
             return this;
         }
-        if (this.data.with?.["github-actions-managed"]) {
+        if (this.data.with?.["github-actions-managed"] !== undefined) {
             this.data.with["github-actions-managed"] = true;
             return this;
         }
@@ -130,7 +135,9 @@ export class Step {
         if (this.id && step.id) return this.id === step.id;
         if (this.name && step.name) return this.name === step.name;
         if (this.uses && step.uses) return this.uses === step.uses;
-        return false;
+        return this.clone()
+            .makeNonManaged()
+            .equals(step.clone().makeNonManaged());
     }
 
     equals(step: Step): boolean {

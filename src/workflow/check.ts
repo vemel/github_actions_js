@@ -47,16 +47,20 @@ export class Check {
         this._newValue = newValue;
     }
 
+    private static _dumpValue(value: unknown): string {
+        if (typeof value === "string") return value;
+        if (value === null) return "";
+        if (value instanceof Job) return yamlDump({ [value.name]: value.data });
+        if (value instanceof Step) return yamlDump(value.data);
+        return yamlDump(value);
+    }
+
     get oldValue(): string {
-        if (typeof this._oldValue === "string") return this._oldValue;
-        if (this._oldValue === null) return "";
-        return yamlDump(this._oldValue);
+        return Check._dumpValue(this._oldValue);
     }
 
     get newValue(): string {
-        if (typeof this._newValue === "string") return this._newValue;
-        if (this._newValue === null) return "";
-        return yamlDump(this._newValue);
+        return Check._dumpValue(this._newValue);
     }
 
     get color(): chalk.Chalk {
@@ -73,19 +77,19 @@ export class Check {
     private getTitle(): string {
         if (this.item === "step") {
             if (this._oldValue instanceof Step) {
-                return `step ${this._oldValue.name || "unnamed"}`;
+                return this._oldValue.title;
             }
             if (this._newValue instanceof Step) {
-                return `step ${this._newValue.name || "unnamed"}`;
+                return this._newValue.title;
             }
-            return "step unnamed";
+            return new Step({}).title;
         }
         if (this.item === "job") {
             if (this._oldValue instanceof Job) {
-                return `job ${this._oldValue.name}`;
+                return this._oldValue.title;
             }
             if (this._newValue instanceof Job) {
-                return `job ${this._newValue.name}`;
+                return this._newValue.title;
             }
             return this.item;
         }

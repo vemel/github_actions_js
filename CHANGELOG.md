@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Suggested `--force` updates were not showing step/job names correctly
 - Stored indexes are trimmed to last 10 used
+- Steps with the same data are considered the same
+- Steps diff for added/removed steps was incorrect
 
 ## [0.8.0]
 ### Added

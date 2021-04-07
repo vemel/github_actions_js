@@ -25,6 +25,10 @@ export class Job {
         this.data = data;
     }
 
+    get title(): string {
+        return `job ${this.name}`;
+    }
+
     get runsOn(): string {
         return this.data["runs-on"];
     }
