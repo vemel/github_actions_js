@@ -135,4 +135,4 @@ And finally, what if we could add these best practices for a new project with a 
 ## Latest changes
 
 Full changelog can be found in [Changelog](./CHANGELOG.md).
-Release notes can be found in [Releases](https://github.com/vemel/github_actions_js/releases).
+Release notes can be found in [Releases](./releases).
