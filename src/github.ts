@@ -47,8 +47,6 @@ async function listFiles(
 
     return contents
         .filter(item => item.type === "file")
-        .filter(item => path.extname(item.path) === ".yml")
-        .filter(item => path.basename(item.path) !== "index.yml")
         .map(item => item.download_url);
 }
 

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 
+import { EXTENSIONS } from "./../constants";
 import { listWorkflowURLs } from "./../github";
 import { isFileURL, isGitHubURL } from "./../urlUtils";
 import { WorkflowResource } from "./resource";
@@ -79,11 +80,10 @@ export class WorkflowIndex {
         url: string,
         workflowsPath: string
     ): Promise<WorkflowIndex> {
-        const result = new WorkflowIndex(
-            url,
-            workflowsPath,
-            await listWorkflowURLs(url)
+        const workflowURLs = (await listWorkflowURLs(url)).filter(url =>
+            EXTENSIONS.includes(path.parse(url).ext)
         );
+        const result = new WorkflowIndex(url, workflowsPath, workflowURLs);
         return result;
     }
 
@@ -94,7 +94,7 @@ export class WorkflowIndex {
         const rootPath = fileURLToPath(url);
         const files = fs.readdirSync(rootPath);
         const workflows: Array<string> = files
-            .filter(filePath => path.parse(filePath).ext === ".yml")
+            .filter(filePath => EXTENSIONS.includes(path.parse(filePath).ext))
             .map(filePath => pathToFileURL(path.join(rootPath, filePath)).href);
         return new WorkflowIndex(url, workflowsPath, workflows);
     }

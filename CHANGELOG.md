@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stored indexes are trimmed to last 10 used
 - Steps with the same data are considered the same
 - Steps diff for added/removed steps was incorrect
+- Accept `*.yaml` files as workflows
+- Mark manually added items in interactive mode
 
 ## [0.8.0]
 ### Added

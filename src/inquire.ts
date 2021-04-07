@@ -23,36 +23,42 @@ export async function chooseIndex(
     });
     const indexes: Array<string> = config.get("indexes");
     indexes.push(...defaultIndexes.filter(index => !indexes.includes(index)));
+    const titlePad = 15;
     return inquirer
         .prompt([
             {
                 name: "url",
                 type: "list",
-                message: "Select repository with workflows",
+                message:
+                    "Select project type or choose any repository with workflows",
                 pageSize: 30,
                 choices: [
                     ...indexes.map(url => {
                         const index = getIndexResource(url);
                         const title = index
-                            ? `${index.title} ${highlightURL(
+                            ? `${index.title.padEnd(titlePad)} ${highlightURL(
                                   replaceRef(url, ref)
                               )}`
-                            : highlightURL(replaceRef(url, ref));
+                            : `${"Recently used".padEnd(
+                                  titlePad
+                              )} ${highlightURL(replaceRef(url, ref))}`;
                         return {
                             name: title,
                             value: url
                         };
                     }),
                     {
-                        name: `From GitHub URL ${chalk.grey(
+                        name: `${"From GitHub URL".padEnd(
+                            titlePad
+                        )} ${chalk.grey(
                             "https://github.com/<owner>/<repo>/tree/main/.github/workflows"
                         )}`,
                         value: "github"
                     },
                     {
-                        name: `From local folder ${chalk.grey(
-                            "other/project/.github/workflows"
-                        )}`,
+                        name: `${"From directory".padEnd(
+                            titlePad
+                        )} ${chalk.grey("other/project/.github/workflows")}`,
                         value: "path"
                     }
                 ]

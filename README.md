@@ -78,7 +78,7 @@ And finally, what if we could add these best practices for a new project with a 
 - CI/CD for `Julia` projects by [@julia-actions](https://github.com/julia-actions/Example.jl)
 - CI/CD for `Terraform` projects by [@dflook](https://github.com/dflook/terraform-github-actions)
 - Or provide path to any GitHub repository to clone their workflows (run `ghactions`, then select `From GitHub URL`)
-- Or even clone workflows from your local path (run `ghactions`, then select `From local folder`)
+- Or even clone workflows from your local path (run `ghactions`, then select `From directory`)
 
 ## Advanced usage
 
