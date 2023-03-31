@@ -6,8 +6,8 @@ import path from "path";
 import { fileURLToPath, URL } from "url";
 import { promisify } from "util";
 
-import { UTF8 } from "./constants";
-import { getTempDir } from "./utils";
+import { UTF8 } from "./constants.js";
+import { getTempDir } from "./utils.js";
 
 export async function download(url: string): Promise<string> {
     const parsedUrl = new URL(url);
@@ -25,14 +25,14 @@ export async function download(url: string): Promise<string> {
         file.on("finish", function () {
             file.close();
             resolve(fs.readFileSync(dest, { encoding: UTF8 }));
-            fs.rmdirSync(tempPath, { recursive: true });
+            fs.rmSync(tempPath, { recursive: true, force: true });
         });
         request.on("error", function (err) {
-            fs.rmdirSync(tempPath, { recursive: true });
+            fs.rmSync(tempPath, { recursive: true, force: true });
             reject(err);
         });
         file.on("error", err => {
-            fs.rmdirSync(tempPath, { recursive: true });
+            fs.rmSync(tempPath, { recursive: true, force: true });
             reject(err);
         });
     });

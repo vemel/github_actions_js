@@ -4,10 +4,10 @@ import inquirer from "inquirer";
 import inquirerSelectDirectory from "inquirer-select-directory";
 import { pathToFileURL } from "url";
 
-import { getIndexResource, getShortcut, INDEXES } from "./indexes";
-import { highlightURL, replaceRef } from "./urlUtils";
-import { WorkflowResource } from "./workflow/resource";
-import { WorkflowIndex } from "./workflow/workflowIndex";
+import { getIndexResource, getShortcut, INDEXES } from "./indexes.js";
+import { highlightURL, replaceRef } from "./urlUtils.js";
+import { WorkflowResource } from "./workflow/resource.js";
+import { WorkflowIndex } from "./workflow/workflowIndex.js";
 
 export async function chooseIndex(
     url: string | undefined,
@@ -37,11 +37,11 @@ export async function chooseIndex(
                         const index = getIndexResource(url);
                         const title = index
                             ? `${index.title.padEnd(titlePad)} ${highlightURL(
-                                  replaceRef(url, ref)
-                              )}`
+                                replaceRef(url, ref)
+                            )}`
                             : `${"Recently used".padEnd(
-                                  titlePad
-                              )} ${highlightURL(replaceRef(url, ref))}`;
+                                titlePad
+                            )} ${highlightURL(replaceRef(url, ref))}`;
                         return {
                             name: title,
                             value: url
@@ -181,10 +181,10 @@ export async function selectWorkflows(
     const choices = [
         ...(hasInstalled
             ? [
-                  ` Installed workflows ${chalk.green(
-                      "(green ones)"
-                  )} ${chalk.grey("installed")}`
-              ]
+                ` Installed workflows ${chalk.green(
+                    "(green ones)"
+                )} ${chalk.grey("installed")}`
+            ]
             : []),
         ` All workflows below ${chalk.grey("all")}`,
         ...workflows.map(w => {

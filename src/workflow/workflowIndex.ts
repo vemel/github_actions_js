@@ -2,10 +2,10 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 
-import { EXTENSIONS } from "./../constants";
-import { listWorkflowURLs } from "./../github";
-import { isFileURL, isGitHubURL } from "./../urlUtils";
-import { WorkflowResource } from "./resource";
+import { EXTENSIONS } from "./../constants.js";
+import { listWorkflowURLs } from "./../github.js";
+import { isFileURL, isGitHubURL } from "./../urlUtils.js";
+import { WorkflowResource } from "./resource.js";
 
 export class WorkflowIndex {
     url: string;

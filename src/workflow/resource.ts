@@ -1,11 +1,11 @@
-import chalk from "chalk";
+import chalk, { ChalkInstance } from "chalk";
 import fs from "fs";
 import path from "path";
 import { promisify } from "util";
 
-import { UTF8 } from "../constants";
-import { download } from "../urlUtils";
-import { Workflow } from "./workflow";
+import { UTF8 } from "../constants.js";
+import { download } from "../urlUtils.js";
+import { Workflow } from "./workflow.js";
 
 export class WorkflowResource {
     path: string;
@@ -26,7 +26,7 @@ export class WorkflowResource {
         return this.name;
     }
 
-    getTitle(action = "in", color: chalk.Chalk = chalk.blue): string {
+    getTitle(action = "in", color: ChalkInstance = chalk.blue): string {
         return `${color(this.title)} ${chalk.grey(`${action} ${this.path}`)}`;
     }
 

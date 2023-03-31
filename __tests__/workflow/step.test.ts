@@ -1,4 +1,4 @@
-import { Step } from "./../../src/workflow/step";
+import { Step } from "./../../src/workflow/step.js";
 
 describe("step", () => {
     test("create", () => {

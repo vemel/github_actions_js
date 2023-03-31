@@ -26,7 +26,7 @@ test("get command name", () => {
 
 test("get temp dir", () => {
     const tempDir = getTempDir();
-    fs.rmdirSync(tempDir);
+    fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
 test("yaml dump", () => {

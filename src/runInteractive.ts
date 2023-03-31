@@ -2,20 +2,20 @@ import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 
-import { Namespace } from "./cli";
-import { LOCAL_WORKFLOWS_PATH } from "./constants";
+import { Namespace } from "./cli.js";
+import { LOCAL_WORKFLOWS_PATH } from "./constants.js";
 import {
     chooseIndex,
     confirmRerunApply,
     createWorkflowsDir,
     selectWorkflows
-} from "./inquire";
-import { getCheckResult, logCheck, runCheck } from "./runCheck";
-import { runList, runListAll } from "./runList";
-import { logUpdate, runUpdate } from "./runUpdate";
-import { highlightURL } from "./urlUtils";
-import { Check } from "./workflow/check";
-import { WorkflowResource } from "./workflow/resource";
+} from "./inquire.js";
+import { getCheckResult, logCheck, runCheck } from "./runCheck.js";
+import { runList, runListAll } from "./runList.js";
+import { logUpdate, runUpdate } from "./runUpdate.js";
+import { highlightURL } from "./urlUtils.js";
+import { Check } from "./workflow/check.js";
+import { WorkflowResource } from "./workflow/resource.js";
 
 async function logWorkflowChecks(
     resources: Array<WorkflowResource>,

@@ -1,5 +1,5 @@
-import { Job } from "../../src/workflow/job";
-import { Workflow } from "../../src/workflow/workflow";
+import { Job } from "../../src/workflow/job.js";
+import { Workflow } from "../../src/workflow/workflow.js";
 
 const renderResult = `# comment
 #

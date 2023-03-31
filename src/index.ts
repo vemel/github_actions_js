@@ -2,22 +2,22 @@ import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 
-import { getHelp, Namespace, parseArgs } from "./cli";
-import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants";
-import { JS_INDEX_URL } from "./indexes";
-import { runCheckAll } from "./runCheck";
-import { runInteractive } from "./runInteractive";
-import { runListAll } from "./runList";
-import { runUpdateAll } from "./runUpdate";
-import { highlightURL, replaceRef } from "./urlUtils";
+import { getHelp, Namespace, parseArgs } from "./cli.js";
+import { DOCS_URL, LOCAL_WORKFLOWS_PATH } from "./constants.js";
+import { JS_INDEX_URL } from "./indexes.js";
+import { runCheckAll } from "./runCheck.js";
+import { runInteractive } from "./runInteractive.js";
+import { runListAll } from "./runList.js";
+import { runUpdateAll } from "./runUpdate.js";
+import { highlightURL, replaceRef } from "./urlUtils.js";
 import {
     decapitalize,
     getCommandArgs,
     getCommandName,
     getVersionString
-} from "./utils";
-import { WorkflowResource } from "./workflow/resource";
-import { WorkflowIndex } from "./workflow/workflowIndex";
+} from "./utils.js";
+import { WorkflowResource } from "./workflow/resource.js";
+import { WorkflowIndex } from "./workflow/workflowIndex.js";
 
 async function main(): Promise<void> {
     let args: Namespace;
@@ -25,7 +25,7 @@ async function main(): Promise<void> {
     try {
         args = parseArgs();
     } catch (e) {
-        console.log(e.message);
+        console.log(e instanceof Error ? e.message : e);
         console.log("Use `--help` to know more");
         process.exit(1);
     }
@@ -75,7 +75,7 @@ async function main(): Promise<void> {
         console.log(`Using index ${highlightURL(workflowIndex.url)}`);
         workflows = workflowIndex.getWorkflows(args.names);
     } catch (e) {
-        console.log(chalk.red(`✗  ${e.message}`));
+        console.log(chalk.red(`✗  ${e instanceof Error ? e.message : e}`));
         process.exit(1);
     }
     if (workflows.length === 0) {

@@ -1,8 +1,8 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 
-import { DOCS_URL } from "./constants";
-import { getIndexURL } from "./indexes";
+import { DOCS_URL } from "./constants.js";
+import { getIndexURL } from "./indexes.js";
 
 export interface Namespace {
     help: boolean;

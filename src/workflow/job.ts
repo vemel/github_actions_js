@@ -1,4 +1,4 @@
-import { IStepData, Step } from "./step";
+import { IStepData, Step } from "./step.js";
 
 interface IEnv {
     [index: string]: string;

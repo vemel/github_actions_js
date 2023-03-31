@@ -1,10 +1,10 @@
 import chalk from "chalk";
 
-import { logDiff } from "./differ";
-import { getCheckResult, runCheck } from "./runCheck";
-import { Check } from "./workflow/check";
-import { Merger } from "./workflow/merger";
-import { WorkflowResource } from "./workflow/resource";
+import { logDiff } from "./differ.js";
+import { getCheckResult, runCheck } from "./runCheck.js";
+import { Check } from "./workflow/check.js";
+import { Merger } from "./workflow/merger.js";
+import { WorkflowResource } from "./workflow/resource.js";
 
 export function logUpdate(
     check: Check,

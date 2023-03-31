@@ -1,6 +1,6 @@
 import yaml from "js-yaml";
 
-import { IJobData, Job } from "./job";
+import { IJobData, Job } from "./job.js";
 
 interface Jobs {
     [index: string]: IJobData;

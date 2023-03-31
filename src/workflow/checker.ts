@@ -1,9 +1,9 @@
 import equal from "deep-equal";
 
-import { Check, TAction } from "./check";
-import { Job } from "./job";
-import { Step } from "./step";
-import { Workflow } from "./workflow";
+import { Check, TAction } from "./check.js";
+import { Job } from "./job.js";
+import { Step } from "./step.js";
+import { Workflow } from "./workflow.js";
 
 export class Checker {
     force: boolean;

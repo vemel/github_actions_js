@@ -1,5 +1,5 @@
-import { Job } from "../../src/workflow/job";
-import { Step } from "../../src/workflow/step";
+import { Job } from "../../src/workflow/job.js";
+import { Step } from "../../src/workflow/step.js";
 
 describe("job", () => {
     const job = new Job("main", {

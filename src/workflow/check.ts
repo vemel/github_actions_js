@@ -1,8 +1,8 @@
-import chalk from "chalk";
+import chalk, { ChalkInstance } from "chalk";
 
-import { yamlDump } from "./../utils";
-import { Job } from "./job";
-import { Step } from "./step";
+import { yamlDump } from "./../utils.js";
+import { Job } from "./job.js";
+import { Step } from "./step.js";
 
 type TWorkflowPart =
     | "error"
@@ -63,7 +63,8 @@ export class Check {
         return Check._dumpValue(this._newValue);
     }
 
-    get color(): chalk.Chalk {
+
+    get color(): ChalkInstance {
         return (
             {
                 added: chalk.green,
@@ -113,9 +114,8 @@ export class Check {
     }
 
     get noForceMessage(): string {
-        return `${this.icon}  ${chalk.bold(this.getTitle())} can be ${
-            this.action
-        }, use ${chalk.bold("--force")} flag to apply`;
+        return `${this.icon}  ${chalk.bold(this.getTitle())} can be ${this.action
+            }, use ${chalk.bold("--force")} flag to apply`;
     }
 
     get updateMessage(): string {

@@ -17,7 +17,7 @@
     "uglify": "uglifyjs dist/index.js -cm > dist/index.min.js && rm dist/index.js && mv dist/index.min.js dist/index.js"
   },
   "bin": {
-    "ghactions": "bin/ghactions"
+    "ghactions": "bin/ghactions.js"
   },
   "files": [
     "lib/*"
@@ -36,7 +36,7 @@
   "author": "Vlad Emelianov",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^5.2.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^7.0.1",
     "configstore": "^6.0.0",
