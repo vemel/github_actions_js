@@ -27,7 +27,7 @@ jobs:
       RELEASE_TYPE: rc
     steps:
       - name: Get Pull Request
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: pull-request
         with:
           script: |
@@ -79,18 +79,18 @@ jobs:
       - name: Checkout Pull Request base branch
         id: checkout
         if: steps.pull-request.outputs.result
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.pull-request.outputs.base }}
       - name: Get Unreleased notes
         id: unreleased
         if: steps.pull-request.outputs.result
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           get: Unreleased
           sanitize: true
       - name: Get or create Release draft
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: release
         if: steps.pull-request.outputs.result
         with:
@@ -134,7 +134,7 @@ jobs:
       - name: Build Release notes
         id: notes
         if: steps.pull-request.outputs.result
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           set: ${{ steps.release.outputs.body }}
           append: ${{ steps.pull-request.outputs.body }}
@@ -142,14 +142,14 @@ jobs:
       - name: Get suggested version
         id: version
         if: steps.pull-request.outputs.result
-        uses: vemel/nextversion@0.1.1
+        uses: vemel/nextversion@latest
         with:
           path: ./package.json
           type: pep440
           release: ${{ env.RELEASE_TYPE }}
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: update-release
         if: steps.pull-request.outputs.result
         with:
@@ -181,7 +181,7 @@ jobs:
             core.info(`Release URL: ${response.data.html_url}`);
       - name: Add comment to Pull Request
         id: add-comment
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         if: steps.pull-request.outputs.result
         with:
           script: |

@@ -31,7 +31,7 @@ jobs:
       - name: Get Pull Request
         id: pull-request
         if: env.NPM_TOKEN
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             // github-actions-managed: true
@@ -82,21 +82,18 @@ jobs:
       - name: Checkout Pull Request base branch
         id: checkout
         if: steps.pull-request.outputs.result
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           github-actions-managed: true
           ref: ${{ steps.pull-request.outputs.base }}
       - name: Get available scripts
         id: scripts
         if: steps.pull-request.outputs.result
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             // github-actions-managed: true
-            const { promisify } = require('util');
-            const exec = promisify(require('child_process').exec);
-
-            const output = (await exec('npm run')).stdout;
+            const output = (await exec.getExecOutput('npm run')).stdout;
             const scripts = output.split(/\r?\n/)
               .filter(line => line.startsWith('  ') && !line.startsWith('   '))
               .map(line => line.trim());
@@ -106,13 +103,13 @@ jobs:
             }
             return true;
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         id: setup-node
         if: steps.pull-request.outputs.result
         with:
           github-actions-managed: true
           registry-url: https://registry.npmjs.org/
-          node-version: 14
+          node-version: 18
       - name: Install package
         id: install
         if: steps.pull-request.outputs.result

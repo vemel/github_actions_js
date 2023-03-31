@@ -15,8 +15,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      PIP_NO_CACHE_DIR: false
-      PIP_USER: 1
       PIPENV_HIDE_EMOJIS: 1
       PIPENV_NOSPIN: 1
       PIPENV_IGNORE_VIRTUALENVS: 1
@@ -24,7 +22,7 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.9
+          - 3.11
     steps:
       - name: Add PYTHONUSERBASE to PATH
         id: add-pythonuserbase
@@ -32,14 +30,14 @@ jobs:
           echo '${{ env.PYTHONUSERBASE }}/bin/' >> $GITHUB_PATH
       - name: Checkout current branch
         id: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "${{ matrix.python-version }}"
       - name: Cache pip downloads
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache
         with:
           path: ${{ env.PYTHONUSERBASE }}

@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get Pull Request
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: pull-request
         with:
           script: |
@@ -60,13 +60,13 @@ jobs:
             core.setOutput('labels', pullRequest.labels.map(data => data.name));
       - name: Analyze PR notes
         id: notes
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           github-actions-managed: true
           set: ${{ steps.pull-request.outputs.body }}
       - name: Update Pull Request labels
         id: update-labels
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             // github-actions-managed: true

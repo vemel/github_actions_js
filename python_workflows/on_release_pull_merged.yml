@@ -27,7 +27,7 @@ jobs:
       - name: Get Pull Request
         id: pull-request
         if: env.PYPI_PASSWORD
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             let pullRequest = null;
@@ -77,15 +77,15 @@ jobs:
       - name: Checkout Pull Request base branch
         id: checkout
         if: steps.pull-request.outputs.result
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.pull-request.outputs.base }}
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         id: setup-python
         if: steps.pull-request.outputs.result
         with:
-          python-version: 3.9
+          python-version: 3.11
       - name: Publish new version to PyPI
         id: publish
         if: steps.pull-request.outputs.result

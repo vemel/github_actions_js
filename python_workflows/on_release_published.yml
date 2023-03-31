@@ -31,7 +31,7 @@ jobs:
       GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
     steps:
       - name: Get Release
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: release
         with:
           script: |
@@ -69,12 +69,12 @@ jobs:
             return true;
       - name: Checkout Release target branch
         id: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.release.outputs.target }}
       - name: Update version
         id: version
-        uses: vemel/nextversion@0.1.1
+        uses: vemel/nextversion@latest
         with:
           path: ./setup.cfg
           type: pep440
@@ -84,7 +84,7 @@ jobs:
             ./pyproject.toml
       - name: Add new release to CHANGELOG.md
         id: changelog
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           release: ${{ steps.version.outputs.result }}
           clear: true
@@ -92,7 +92,7 @@ jobs:
       - name: Clear Unreleased in CHANGELOG.md
         id: clear-unreleased
         if: ${{ steps.version.outputs.is-prerelease == 'false' }}
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           release: Unreleased
           clear: true
@@ -120,7 +120,7 @@ jobs:
           git push --set-upstream origin $BRANCH
       - name: Create Pull Request
         id: create-pull-request
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             const response = await github.pulls.create({

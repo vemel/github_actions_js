@@ -21,15 +21,15 @@ jobs:
     steps:
       - name: Checkout Release target branch
         id: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Get Unreleased notes
         id: unreleased
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           get: Unreleased
           sanitize: true
       - name: Get or create Release draft
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: release
         with:
           script: |
@@ -72,12 +72,12 @@ jobs:
             core.setOutput('body', unreleased);
       - name: Analyze Release notes
         id: notes
-        uses: vemel/nextchange@0.1.0
+        uses: vemel/nextchange@latest
         with:
           set: ${{ steps.release.outputs.body }}
       - name: Get suggested version
         id: version
-        uses: vemel/nextversion@0.1.1
+        uses: vemel/nextversion@latest
         with:
           path: ./package.json
           type: pep440
@@ -85,7 +85,7 @@ jobs:
           result: ${{ steps.notes.outputs.label }}
       - name: Update release draft
         id: update-release
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             const releaseId = ${{ steps.release.outputs.id }};

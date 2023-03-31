@@ -29,16 +29,13 @@ jobs:
     steps:
       - name: Checkout current branch
         id: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Get available scripts
         id: scripts
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
-            const { promisify } = require('util');
-            const exec = promisify(require('child_process').exec);
-
-            const output = (await exec('npm run')).stdout;
+            const output = (await exec.getExecOutput('npm run')).stdout;
             const scripts = output.split(/\r?\n/)
               .filter(line => line.startsWith('  ') && !line.startsWith('   '))
               .map(line => line.trim());
@@ -57,21 +54,13 @@ jobs:
               result = true;
             }
             return result;
-      - name: Cache npm downloads
-        uses: actions/cache@v2
-        id: cache
-        if: steps.scripts.outputs.result
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-
       - name: Set up Node
         id: setup-node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
+          cache: npm
       - name: Install package
         id: install
         if: steps.scripts.outputs.result
