@@ -14,32 +14,27 @@ export const INDEXES: Array<IIndex> = [
         shortcut: "node"
     },
     {
-        url:
-            "https://github.com/vemel/github_actions_js/tree/main/python_workflows",
+        url: "https://github.com/vemel/github_actions_js/tree/main/python_workflows",
         title: "Python",
         shortcut: "python"
     },
     {
-        url:
-            "https://github.com/actions-rs/example/tree/master/.github/workflows",
+        url: "https://github.com/actions-rs/example/tree/master/.github/workflows",
         title: "Rust",
         shortcut: "rust"
     },
     {
-        url:
-            "https://github.com/mvdan/github-actions-golang/tree/master/.github/workflows",
+        url: "https://github.com/mvdan/github-actions-golang/tree/master/.github/workflows",
         title: "Go",
         shortcut: "go"
     },
     {
-        url:
-            "https://github.com/dflook/terraform-github-actions/tree/master/example_workflows",
+        url: "https://github.com/dflook/terraform-github-actions/tree/master/example_workflows",
         title: "Terraform",
         shortcut: "terraform"
     },
     {
-        url:
-            "https://github.com/julia-actions/Example.jl/tree/action-tests/.github/workflows",
+        url: "https://github.com/julia-actions/Example.jl/tree/action-tests/.github/workflows",
         title: "Julia",
         shortcut: "julia"
     }

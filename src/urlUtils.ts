@@ -67,14 +67,8 @@ export function isFileURL(url: string): boolean {
 export function highlightURL(url: string): string {
     if (isGitHubURL(url)) {
         const parsedURL = new URL(url);
-        const [
-            ,
-            owner,
-            repo,
-            tree,
-            ref,
-            ...directories
-        ] = parsedURL.pathname.split("/");
+        const [, owner, repo, tree, ref, ...directories] =
+            parsedURL.pathname.split("/");
         return `${chalk.grey(parsedURL.origin)}/${chalk.blue(
             owner
         )}/${chalk.blue(repo)}/${chalk.grey(tree)}/${chalk.grey(
@@ -91,18 +85,11 @@ export function highlightURL(url: string): string {
 export function replaceRef(url: string, ref: string): string {
     if (isGitHubURL(url)) {
         const parsedURL = new URL(url);
-        const [
-            ,
-            owner,
-            repo,
-            tree,
-            oldRef,
-            ...directories
-        ] = parsedURL.pathname.split("/");
+        const [, owner, repo, tree, oldRef, ...directories] =
+            parsedURL.pathname.split("/");
         const pathname = directories.join("/") || ".github/workflows";
-        parsedURL.pathname = `${owner}/${repo}/${tree || "tree"}/${
-            ref || oldRef || "master"
-        }/${pathname}`;
+        parsedURL.pathname = `${owner}/${repo}/${tree || "tree"}/${ref || oldRef || "master"
+            }/${pathname}`;
         return parsedURL.href;
     }
     return url;
